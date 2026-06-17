@@ -7,3 +7,7 @@ A native iOS app for DevPlace (https://devplace.net) made with SwiftUI.
 A multiplatform Swift SDK for the DevPlace API.
 
 This will later be a separate project in a separte repository. But for now it lives inside of the iOS app project for convenience and easier iteration during the early development phase.
+
+## Status of development
+
+The app just shows a list of the text content from the fetched posts of the feed for a non logged in user.

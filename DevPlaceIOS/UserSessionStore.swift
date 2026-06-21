@@ -13,10 +13,6 @@ final class UserSessionStore {
     private let emailKey: KeychainWrapper.Key = "email"
     private let passwordKey: KeychainWrapper.Key = "password"
     
-    var token: AuthToken?
-    
-    var isLoggedIn: Bool { token != nil }
-    
     var email: String? {
         get {
             return keychainWrapper.decode(forKey: emailKey.rawValue)

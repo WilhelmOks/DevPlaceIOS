@@ -21,7 +21,7 @@ final class MockDevPlaceApi: DevPlaceApi {
             accessToken: UUID().uuidString,
             expireTime: Date().addingTimeInterval(60 * 60 + 10)
         )
-        UserSessionStore.shared.token = token
+        AppState.shared.token = token
     }
     
     func feed() async throws -> Feed {

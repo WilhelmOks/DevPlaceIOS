@@ -1,54 +1,40 @@
 import Foundation
 
 public struct AuthToken: Hashable, Sendable {
-    public let id: Int
-    public let key: String
+    public let tokenType: String
+    public let accessToken: String
     public let expireTime: Date
-    public let userId: Int
     
-    public init(id: Int, key: String, expireTime: Date, userId: Int) {
-        self.id = id
-        self.key = key
+    public init(tokenType: String, accessToken: String, expireTime: Date) {
+        self.tokenType = tokenType
+        self.accessToken = accessToken
         self.expireTime = expireTime
-        self.userId = userId
     }
     
     public var isExpired: Bool {
         expireTime < Date()
     }
+    
+    public var willExpireSoon: Bool {
+        let oneHour: TimeInterval = 3600
+        return expireTime.timeIntervalSinceNow < oneHour
+    }
 }
 
 public extension AuthToken {
     struct CodingData: Codable {
-        public struct Container: Codable {
-            let auth_token: AuthToken.CodingData
-        }
-        
-        public let id: Int
-        public let key: String
-        public let expire_time: Int
-        public let user_id: Int
+        public let token_type: String
+        public let access_token: String
+        public let expires_in: Int
     }
 }
 
 public extension AuthToken.CodingData {
     var decoded: AuthToken {
         .init(
-            id: id,
-            key: key,
-            expireTime: Date(timeIntervalSince1970: TimeInterval(expire_time)),
-            userId: user_id
-        )
-    }
-}
-
-public extension AuthToken {
-    var encoded: AuthToken.CodingData {
-        .init(
-            id: id,
-            key: key,
-            expire_time: Int(expireTime.timeIntervalSince1970),
-            user_id: userId
+            tokenType: token_type,
+            accessToken: access_token,
+            expireTime: Date(timeIntervalSinceNow: TimeInterval(expires_in))
         )
     }
 }

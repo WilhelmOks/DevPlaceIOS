@@ -7,7 +7,7 @@ extension DevPlaceApi where Self == ProdDevPlaceApi {
     }
 }
 
-class ProdDevPlaceApi: DevPlaceApi {
+final class ProdDevPlaceApi: DevPlaceApi {
     static let shared = ProdDevPlaceApi()
     
     let logger = DevPlaceRequestLogger()
@@ -17,7 +17,20 @@ class ProdDevPlaceApi: DevPlaceApi {
         request = DevPlaceRequest(requestLogger: logger)
     }
     
+    func logIn(email: String, password: String) async throws {
+        let token = try await request.getAuthToken(email: email, password: password)
+        UserSessionStore.shared.token = token
+    }
+    
     func feed() async throws -> Feed {
-        try await request.getFeed(token: nil)
+        try await request.getFeed(token: UserSessionStore.shared.token)
+    }
+    
+    func post(title: String?, topic: String?, content: String) async throws {
+        guard let token = UserSessionStore.shared.token else {
+            print("Can't post when not logged in")
+            return
+        }
+        try await request.createPost(title: title, topic: topic, content: content, token: token)
     }
 }

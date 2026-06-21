@@ -23,14 +23,15 @@ final class ProdDevPlaceApi: DevPlaceApi {
     }
     
     func feed() async throws -> Feed {
-        try await request.getFeed(token: AppState.shared.token)
+        try await refreshTokenIfNeeded()
+        return try await request.getFeed(token: AppState.shared.token)
     }
     
     func post(title: String?, topic: String?, content: String) async throws {
         guard let token = AppState.shared.token else {
-            print("Can't post when not logged in")
-            return
+            throw DevPlaceError.notLoggedIn
         }
+        try await refreshTokenIfNeeded()
         try await request.createPost(title: title, topic: topic, content: content, token: token)
     }
 }

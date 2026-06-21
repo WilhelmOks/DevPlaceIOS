@@ -4,6 +4,7 @@ import DevPlaceSwiftSDK
 struct ContentView: View {
     var api: DevPlaceApi = .prod
     @State var feed: Feed?
+    @State var appState = AppState.shared
     
     var posts: [Post] {
         feed?.posts ?? []
@@ -17,10 +18,22 @@ struct ContentView: View {
                 Button("go to log in") {
                     logInPresented = true
                 }
+                .buttonStyle(.bordered)
                 
                 Button("create a test post") {
                     Task {
                         try await api.post(title: "test", topic: "test topic", content: "test post from ios")
+                    }
+                }
+                .buttonStyle(.bordered)
+                
+                Button("reload feed") {
+                    Task {
+                        do {
+                            feed = try await api.feed()
+                        } catch {
+                            print("Error: \(error)")
+                        }
                     }
                 }
                 .buttonStyle(.bordered)
@@ -34,9 +47,13 @@ struct ContentView: View {
         .fullScreenCover(isPresented: $logInPresented) {
             LogInView(api: api)
         }
+        .onChange(of: appState.token) { _, _ in
+            Task {
+                feed = try await api.feed()
+            }
+        }
         .task {
             do {
-                //try await api.logIn(email: "(my email)", password: "(my password)")
                 feed = try await api.feed()
             } catch {
                 print("Error: \(error)")

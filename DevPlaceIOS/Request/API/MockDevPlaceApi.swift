@@ -26,10 +26,12 @@ final class MockDevPlaceApi: DevPlaceApi {
     
     func feed() async throws -> Feed {
         await mockDelay()
+        try await refreshTokenIfNeeded()
         return .mock
     }
     
     func post(title: String?, topic: String?, content: String) async throws {
         await mockDelay()
+        try await refreshTokenIfNeeded()
     }
 }

@@ -6,3 +6,22 @@ protocol DevPlaceApi {
     func feed() async throws -> Feed
     func post(title: String?, topic: String?, content: String) async throws
 }
+
+extension DevPlaceApi {
+    private func logInWithStoredCredentials() async throws {
+        let store = UserSessionStore.shared
+        guard let email = store.email, let password = store.password else {
+            return
+        }
+        try await logIn(email: email, password: password)
+    }
+    
+    func refreshTokenIfNeeded() async throws {
+        if let token = AppState.shared.token {
+            if token.willExpireSoon {
+                try await logInWithStoredCredentials()
+                dlog("Refreshed token which was about to expire soon")
+            }
+        }
+    }
+}

@@ -10,7 +10,12 @@ extension DevPlaceApi where Self == MockDevPlaceApi {
 final class MockDevPlaceApi: DevPlaceApi {
     static let shared = MockDevPlaceApi()
     
+    private func mockDelay(delay: TimeInterval = 1) async {
+        try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+    }
+    
     func logIn(email: String, password: String) async throws {
+        await mockDelay()
         let token = AuthToken(
             tokenType: "bearer",
             accessToken: UUID().uuidString,
@@ -20,10 +25,11 @@ final class MockDevPlaceApi: DevPlaceApi {
     }
     
     func feed() async throws -> Feed {
-        .mock
+        await mockDelay()
+        return .mock
     }
     
     func post(title: String?, topic: String?, content: String) async throws {
-        
+        await mockDelay()
     }
 }

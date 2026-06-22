@@ -10,4 +10,11 @@ This will later be a separate project in a separte repository. But for now it li
 
 ## Status of development
 
-The app just shows a list of the text content from the fetched posts of the feed for a non logged in user.
+The development is at the very beginning.
+
+Done:
+* sign in
+* sign out
+* forgot password via redirect to browser
+* sign up via redirect to browser
+* listing posts in the feed (only the first page)

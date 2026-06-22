@@ -12,6 +12,8 @@ private struct SettingsViewContent: View {
     @State var viewModel: SettingsView.ViewModel
     @State var appState = AppState.shared
     
+    @State private var logOutConfirmationPresented = false
+    
     enum FullscreenNavigationItem: Identifiable {
         case signIn
         
@@ -66,8 +68,7 @@ private struct SettingsViewContent: View {
             Section {
                 if appState.isLoggedIn {
                     Button {
-                        //TODO: add confirmation
-                        viewModel.logOut()
+                        logOutConfirmationPresented = true
                     } label: {
                         Label {
                             Text("Sign out")
@@ -76,6 +77,15 @@ private struct SettingsViewContent: View {
                         }
                     }
                     .buttonStyle(.form)
+                    .alert(
+                        "Do you want to sign out?",
+                        isPresented: $logOutConfirmationPresented
+                    ) {
+                        Button(role: .cancel, action: {})
+                        Button("Sign out", role: .destructive) {
+                            viewModel.logOut()
+                        }
+                    }
                 }
             }
             .listRowBackground(Color.BG_1)

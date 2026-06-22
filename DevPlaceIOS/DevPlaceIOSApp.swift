@@ -15,7 +15,7 @@ struct DevPlaceIOSApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            MainView()
                 .preferredColorScheme(.dark)
         }
     }

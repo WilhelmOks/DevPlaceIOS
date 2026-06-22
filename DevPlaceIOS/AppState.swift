@@ -11,4 +11,10 @@ final class AppState {
     var token: AuthToken?
     
     var isLoggedIn: Bool { token != nil }
+    
+    var feed: Feed?
+    
+    func clear() {
+        feed = nil
+    }
 }

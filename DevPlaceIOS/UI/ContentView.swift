@@ -45,7 +45,8 @@ struct ContentView: View {
             .padding()
         }
         .fullScreenCover(isPresented: $logInPresented) {
-            LogInView(api: api)
+            LogInView()
+                .environment(\.api, api)
         }
         .onChange(of: appState.token) { _, _ in
             Task {

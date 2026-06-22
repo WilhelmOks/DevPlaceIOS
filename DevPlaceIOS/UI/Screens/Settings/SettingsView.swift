@@ -1,13 +1,16 @@
-//
-//  SettingsView.swift
-//  DevPlaceIOS
-//
-//  Created by Wilhelm Oks on 22.06.26.
-//
-
 import SwiftUI
 
 struct SettingsView: View {
+    @Environment(\.api) var api
+    
+    var body: some View {
+        SettingsViewContent(viewModel: .init(api: api))
+    }
+}
+
+private struct SettingsViewContent: View {
+    @State var viewModel: LogInView.ViewModel
+    
     enum FullscreenNavigationItem: Identifiable {
         case signIn
         

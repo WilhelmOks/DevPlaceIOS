@@ -1,10 +1,3 @@
-//
-//  MainView.swift
-//  DevPlaceIOS
-//
-//  Created by Wilhelm Oks on 22.06.26.
-//
-
 import SwiftUI
 
 struct MainView: View {

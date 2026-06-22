@@ -1,13 +1,17 @@
 import SwiftUI
 
 struct LogInView: View {
+    @Environment(\.api) var api
+    
+    var body: some View {
+        LogInViewContent(viewModel: .init(api: api))
+    }
+}
+
+private struct LogInViewContent: View {
     @Environment(\.dismiss) private var dismiss
     
     @State var viewModel: LogInView.ViewModel
-    
-    init(api: DevPlaceApi = .prod) {
-        _viewModel = .init(wrappedValue: .init(api: api))
-    }
     
     var body: some View {
         NavigationStack {
@@ -66,6 +70,7 @@ struct LogInView: View {
                     .stroke(.FG_2)
                     .fill(.BG_1)
             }
+            .disabled(viewModel.isLoading)
         }
     }
     
@@ -123,7 +128,8 @@ struct LogInView: View {
 }
 
 #Preview("mock") {
-    LogInView(api: .mock)
+    LogInView()
+        .environment(\.api, .mock)
 }
 
 #Preview("prod") {

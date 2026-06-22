@@ -9,7 +9,8 @@ struct SettingsView: View {
 }
 
 private struct SettingsViewContent: View {
-    @State var viewModel: LogInView.ViewModel
+    @State var viewModel: SettingsView.ViewModel
+    @State var appState = AppState.shared
     
     enum FullscreenNavigationItem: Identifiable {
         case signIn
@@ -25,13 +26,15 @@ private struct SettingsViewContent: View {
                 .background {
                     Color.BG_2.ignoresSafeArea()
                 }
-                //.foregroundStyle(.FG_1)
+                .foregroundStyle(.FG_1)
                 .navigationTitle(Text("Settings"))
                 .toolbar {
-                    if true {
+                    if !appState.isLoggedIn {
                         ToolbarItem(placement: .topBarTrailing) {
-                            Button("Sign in") {
+                            Button {
                                 fullscreenNavigationItem = .signIn
+                            } label: {
+                                Text("Sign in")
                             }
                             .buttonStyle(.glassProminent)
                         }
@@ -49,12 +52,34 @@ private struct SettingsViewContent: View {
     @ViewBuilder private func content() -> some View {
         Form {
             Section {
-                if true {
-                    Button("Sign out") {
-                        
+                if appState.isLoggedIn {
+                    NavigationLink(destination: Text("Profile")) {
+                        Label {
+                            Text("Profile")
+                        } icon: {
+                            Image(systemName: "person")
+                        }
                     }
+                    .buttonStyle(.form)
                 }
             }
+            .listRowBackground(Color.BG_1)
+            
+            Section {
+                if appState.isLoggedIn {
+                    Button {
+                        viewModel.logOut()
+                    } label: {
+                        Label {
+                            Text("Sign out")
+                        } icon: {
+                            Image(systemName: "iphone.and.arrow.right.outward")
+                        }
+                    }
+                    .buttonStyle(.form)
+                }
+            }
+            .listRowBackground(Color.BG_1)
         }
         .scrollContentBackground(.hidden)
     }

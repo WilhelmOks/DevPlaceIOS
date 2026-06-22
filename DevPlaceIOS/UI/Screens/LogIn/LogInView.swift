@@ -74,11 +74,13 @@ struct LogInView: View {
             ProgressView()
                 .opacity(viewModel.isLoading ? 1 : 0)
             
-            Button("Sign in") {
+            Button {
                 viewModel.logIn()
+            } label: {
+                Text("Sign in")
+                    .frame(maxWidth: .infinity)
             }
-            .buttonStyle(.glassProminent)
-            .controlSize(.large)
+            .buttonStyle(.accentGradient)
             .bold()
             .disabled(!viewModel.canSubmit)
             .opacity(viewModel.isLoading ? 0 : 1)

@@ -1,29 +1,47 @@
-//
-//  FeedView.swift
-//  DevPlaceIOS
-//
-//  Created by Wilhelm Oks on 22.06.26.
-//
-
 import SwiftUI
+import DevPlaceSwiftSDK
 
 struct FeedView: View {
+    @Environment(\.api) var api
+    
+    var body: some View {
+        FeedViewContent(viewModel: .init(api: api))
+    }
+}
+
+private struct FeedViewContent: View {
+    @State var viewModel: FeedView.ViewModel
+    @State var appState: AppState = .shared
+    
     var body: some View {
         content()
             .background {
-                Color.BG_2.ignoresSafeArea()
+                Color.BG_1.ignoresSafeArea()
             }
             .foregroundStyle(.FG_1)
             .navigationTitle(Text("Feed"))
+            .alert($viewModel.alertMessage)
+            .onAppear {
+                if appState.feed == nil {
+                    Task {
+                        await viewModel.load()
+                    }
+                }
+            }
+            .refreshable {
+                await viewModel.load()
+            }
     }
     
     @ViewBuilder private func content() -> some View {
         ScrollView {
-            VStack {
-                Text("...")
+            LazyVStack {
+                let posts = appState.feed?.posts ?? []
+                ForEach(posts, id: \.id) { post in
+                    FeedPostView(post: post)
+                }
             }
             .frame(maxWidth: .infinity)
-            .padding()
         }
     }
 }

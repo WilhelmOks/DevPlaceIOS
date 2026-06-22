@@ -21,39 +21,37 @@ private struct SettingsViewContent: View {
     @State var fullscreenNavigationItem: FullscreenNavigationItem?
     
     var body: some View {
-        NavigationStack {
-            content()
-                .background {
-                    Color.BG_2.ignoresSafeArea()
-                }
-                .foregroundStyle(.FG_1)
-                .navigationTitle(Text("Settings"))
-                .toolbar {
-                    if !appState.isLoggedIn {
-                        ToolbarItem(placement: .topBarTrailing) {
-                            Button {
-                                fullscreenNavigationItem = .signIn
-                            } label: {
-                                Text("Sign in")
-                            }
-                            .buttonStyle(.glassProminent)
+        content()
+            .background {
+                Color.BG_2.ignoresSafeArea()
+            }
+            .foregroundStyle(.FG_1)
+            .navigationTitle(Text("Settings"))
+            .toolbar {
+                if !appState.isLoggedIn {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button {
+                            fullscreenNavigationItem = .signIn
+                        } label: {
+                            Text("Sign in")
                         }
+                        .buttonStyle(.glassProminent)
                     }
                 }
-                .fullScreenCover(item: $fullscreenNavigationItem) { item in
-                    switch item {
-                    case .signIn:
-                        LogInView()
-                    }
+            }
+            .fullScreenCover(item: $fullscreenNavigationItem) { item in
+                switch item {
+                case .signIn:
+                    LogInView()
                 }
-        }
+            }
     }
     
     @ViewBuilder private func content() -> some View {
         Form {
             Section {
                 if appState.isLoggedIn {
-                    NavigationLink(destination: Text("Profile")) {
+                    NavigationLink(destination: ProfileView()) {
                         Label {
                             Text("Profile")
                         } icon: {
@@ -68,6 +66,7 @@ private struct SettingsViewContent: View {
             Section {
                 if appState.isLoggedIn {
                     Button {
+                        //TODO: add confirmation
                         viewModel.logOut()
                     } label: {
                         Label {
@@ -86,5 +85,7 @@ private struct SettingsViewContent: View {
 }
 
 #Preview {
-    SettingsView()
+    NavigationStack {
+        SettingsView()
+    }
 }

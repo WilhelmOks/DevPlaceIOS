@@ -1,20 +1,13 @@
-//
-//  FeedView.swift
-//  DevPlaceIOS
-//
-//  Created by Wilhelm Oks on 22.06.26.
-//
-
 import SwiftUI
 
-struct FeedView: View {
+struct ProfileView: View {
     var body: some View {
         content()
             .background {
                 Color.BG_2.ignoresSafeArea()
             }
             .foregroundStyle(.FG_1)
-            .navigationTitle(Text("Feed"))
+            .navigationTitle(Text("Profile"))
     }
     
     @ViewBuilder private func content() -> some View {
@@ -30,6 +23,6 @@ struct FeedView: View {
 
 #Preview {
     NavigationStack {
-        FeedView()
+        ProfileView()
     }
 }

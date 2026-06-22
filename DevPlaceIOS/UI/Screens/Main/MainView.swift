@@ -8,7 +8,9 @@ struct MainView: View {
     @ViewBuilder private func content() -> some View {
         TabView {
             Tab {
-                FeedView()
+                NavigationStack {
+                    FeedView()
+                }
             } label: {
                 Label {
                     Text("Feed")
@@ -18,7 +20,9 @@ struct MainView: View {
             }
             
             Tab {
-                Text("Notifications Content")
+                NavigationStack {
+                    NotificationsView()
+                }
             } label: {
                 Label {
                     Text("Notifications")
@@ -28,7 +32,9 @@ struct MainView: View {
             }
 
             Tab {
-                SettingsView()
+                NavigationStack {
+                    SettingsView()
+                }
             } label: {
                 Label {
                     Text("Settings")

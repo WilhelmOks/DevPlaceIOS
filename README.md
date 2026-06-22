@@ -1,3 +1,5 @@
+<img width="128" height="128" alt="DevPlace app icon" src="https://github.com/user-attachments/assets/932e6c18-674f-4a41-9d48-10b9d152e0d7" />
+
 # DevPlace iOS
 
 A native iOS app for DevPlace (https://devplace.net) made with SwiftUI.

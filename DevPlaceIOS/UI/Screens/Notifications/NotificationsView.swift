@@ -1,6 +1,17 @@
 import SwiftUI
+import DevPlaceSwiftSDK
 
 struct NotificationsView: View {
+    @Environment(\.api) var api
+    
+    var body: some View {
+        NotificationsViewContent(viewModel: .init(api: api))
+    }
+}
+
+private struct NotificationsViewContent: View {
+    @State var viewModel: NotificationsView.ViewModel
+    
     var body: some View {
         content()
             .background {

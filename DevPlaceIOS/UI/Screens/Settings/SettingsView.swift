@@ -24,10 +24,7 @@ private struct SettingsViewContent: View {
     
     var body: some View {
         content()
-            .background {
-                Color.BG_2.ignoresSafeArea()
-            }
-            .foregroundStyle(.FG_1)
+            .screenStyle()
             .navigationTitle(Text("Settings"))
             .toolbar {
                 if !appState.isLoggedIn {

@@ -15,10 +15,7 @@ private struct FeedViewContent: View {
     
     var body: some View {
         content()
-            .background {
-                Color.BG_1.ignoresSafeArea()
-            }
-            .foregroundStyle(.FG_1)
+            .screenStyle(bgColor: .BG_1)
             .navigationTitle(Text("Feed"))
             .alert($viewModel.alertMessage)
             .onAppear {

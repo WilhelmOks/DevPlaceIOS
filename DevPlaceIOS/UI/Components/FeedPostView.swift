@@ -15,7 +15,7 @@ struct FeedPostView: View {
                 }
                 
                 if let topic = post.data.topic {
-                    Text(topic).font(.title)
+                    CapsuleLabel(text: topic)
                 }
                 
                 Text(post.data.content)

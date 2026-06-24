@@ -3,10 +3,7 @@ import SwiftUI
 struct ProfileView: View {
     var body: some View {
         content()
-            .background {
-                Color.BG_2.ignoresSafeArea()
-            }
-            .foregroundStyle(.FG_1)
+            .screenStyle()
             .navigationTitle(Text("Profile"))
     }
     

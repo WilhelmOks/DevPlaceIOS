@@ -7,6 +7,7 @@ struct CapsuleLabel: View {
     
     var body: some View {
         Text(text.uppercased())
+            .font(.subheadline)
             .fontWeight(.medium)
             .foregroundStyle(foregroundColor)
             .padding(.horizontal, 12)

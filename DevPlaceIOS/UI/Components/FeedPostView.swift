@@ -10,12 +10,10 @@ struct FeedPostView: View {
                 .padding(.bottom, 8)
             
             VStack(alignment: .leading, spacing: 8) {
-                if let title = post.data.title {
-                    Text(title).font(.largeTitle)
-                }
+                topArea()
                 
-                if let topic = post.data.topic {
-                    CapsuleLabel(text: topic)
+                if let title = post.data.title {
+                    Text(title).font(.title)
                 }
                 
                 Text(post.data.content)
@@ -33,6 +31,20 @@ struct FeedPostView: View {
     
     @ViewBuilder private func hLine() -> some View {
         Color.FG_2.frame(height: 1).opacity(0.3)
+    }
+    
+    @ViewBuilder private func topArea() -> some View {
+        HStack(alignment: .top) {
+            VStack(alignment: .leading) {
+                if let topic = post.data.topic {
+                    CapsuleLabel(text: topic)
+                }
+            }
+            
+            Spacer()
+            
+            RelativeTimeLabel(date: post.data.createdAt)
+        }
     }
 }
 

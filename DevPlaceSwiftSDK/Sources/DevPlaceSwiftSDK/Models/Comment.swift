@@ -4,25 +4,25 @@ public struct Comment: Hashable, Sendable, Identifiable {
     public var id: String { "comment:" + data.id }
     public let data: Data
     public let author: User
-    public let timeAgo: String
+    //public let timeAgo: String // exists in API; format on demand from data.createdAt
     public let myVote: Int
     public let votes: Votes
+    public let attachments: [Attachment]
     //public let children: [Comment] // empty array in sample - type cannot be confirmed from JSON
-    //public let attachments: [???] // empty array in sample - type unknown
     //public let reactions: ??? // empty in sample - type unknown
 
     public init(
         data: Data,
         author: User,
-        timeAgo: String,
         myVote: Int,
         votes: Votes,
+        attachments: [Attachment],
     ) {
         self.data = data
         self.author = author
-        self.timeAgo = timeAgo
         self.myVote = myVote
         self.votes = votes
+        self.attachments = attachments
     }
 }
 
@@ -70,11 +70,11 @@ extension Comment {
     struct CodingData: Decodable {
         let comment: Data.CodingData
         let author: User.CodingData
-        let time_ago: String
+        //let time_ago: String // not needed because it is formatted on demand from created_at
         let my_vote: Int
         let votes: Votes.CodingData
+        let attachments: [Attachment.CodingData]
         //let children: [???] // empty array in sample - type unknown
-        //let attachments: [???] // empty array in sample - type unknown
         //let reactions: ??? // empty in sample - type unknown
     }
 }
@@ -103,9 +103,9 @@ extension Comment.CodingData {
         .init(
             data: comment.decoded,
             author: author.decoded,
-            timeAgo: time_ago,
             myVote: my_vote,
             votes: votes.decoded,
+            attachments: attachments.map(\.decoded),
         )
     }
 }

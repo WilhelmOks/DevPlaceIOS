@@ -13,6 +13,7 @@ extension Collection where Element == Post {
                     slug: nil,
                     userId: "u1",
                     stars: 3,
+                    image: nil,
                     createdAt: Date().addingTimeInterval(-30),
                     updatedAt: Date().addingTimeInterval(-15),
                 ),
@@ -21,6 +22,8 @@ extension Collection where Element == Post {
                 commentCount: 2,
                 recentComments: .mock,
                 bookmarked: false,
+                attachments: [],
+                poll: nil,
             ),
             .init(
                 data: .init(
@@ -31,6 +34,7 @@ extension Collection where Element == Post {
                     slug: nil,
                     userId: "u1",
                     stars: 0,
+                    image: nil,
                     createdAt: Date().addingTimeInterval(-30),
                     updatedAt: nil,
                 ),
@@ -39,6 +43,8 @@ extension Collection where Element == Post {
                 commentCount: 0,
                 recentComments: [],
                 bookmarked: false,
+                attachments: [],
+                poll: nil,
             ),
             .init(
                 data: .init(
@@ -49,6 +55,7 @@ extension Collection where Element == Post {
                     slug: nil,
                     userId: "u1",
                     stars: 1,
+                    image: nil,
                     createdAt: Date().addingTimeInterval(-60),
                     updatedAt: nil,
                 ),
@@ -57,6 +64,8 @@ extension Collection where Element == Post {
                 commentCount: 0,
                 recentComments: [],
                 bookmarked: true,
+                attachments: [],
+                poll: nil,
             ),
             .init(
                 data: .init(
@@ -67,6 +76,7 @@ extension Collection where Element == Post {
                     slug: nil,
                     userId: "u1",
                     stars: 42,
+                    image: nil,
                     createdAt: Date().addingTimeInterval(-60 * 60),
                     updatedAt: nil,
                 ),
@@ -75,6 +85,8 @@ extension Collection where Element == Post {
                 commentCount: 0,
                 recentComments: [],
                 bookmarked: false,
+                attachments: [],
+                poll: nil,
             ),
             .init(
                 data: .init(
@@ -85,6 +97,7 @@ extension Collection where Element == Post {
                     slug: nil,
                     userId: "u1",
                     stars: 1337,
+                    image: nil,
                     createdAt: Date().addingTimeInterval(-60 * 60 * 24),
                     updatedAt: nil,
                 ),
@@ -93,6 +106,8 @@ extension Collection where Element == Post {
                 commentCount: 0,
                 recentComments: [],
                 bookmarked: false,
+                attachments: [],
+                poll: nil,
             ),
         ]
     }

@@ -3,7 +3,7 @@ import Foundation
 public struct User: Hashable, Sendable, Identifiable {
     public let id: String
     public let username: String
-    //public let avatarSeed: ??? // null in sample - type unknown
+    public let avatarSeed: String?
     public let role: String?
     public let bio: String
     public let location: String
@@ -13,10 +13,11 @@ public struct User: Hashable, Sendable, Identifiable {
     public let xp: Int
     public let stars: Int
     public let createdAt: Date
-    
+
     public init(
         id: String,
         username: String,
+        avatarSeed: String?,
         role: String? = nil,
         bio: String,
         location: String,
@@ -29,6 +30,7 @@ public struct User: Hashable, Sendable, Identifiable {
     ) {
         self.id = id
         self.username = username
+        self.avatarSeed = avatarSeed
         self.role = role
         self.bio = bio
         self.location = location
@@ -45,7 +47,7 @@ extension User {
     struct CodingData: Decodable {
         let uid: String
         let username: String
-        //let avatar_seed: ??? // null in sample - type unknown
+        let avatar_seed: String?
         let role: String?
         let bio: String
         let location: String
@@ -63,6 +65,7 @@ extension User.CodingData {
         .init(
             id: uid,
             username: username,
+            avatarSeed: avatar_seed,
             role: role,
             bio: bio,
             location: location,

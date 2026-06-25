@@ -8,9 +8,9 @@ public struct Post: Hashable, Sendable, Identifiable {
     public let commentCount: Int
     public let recentComments: [Comment]
     public let bookmarked: Bool
-    //public let attachments: [???] // empty array in sample - type unknown
+    public let attachments: [Attachment]
+    public let poll: Poll?
     //public let reactions: ??? // empty in sample - type unknown
-    //public let poll: ??? // null in sample - type unknown
 
     public init(
         data: Data,
@@ -19,6 +19,8 @@ public struct Post: Hashable, Sendable, Identifiable {
         commentCount: Int,
         recentComments: [Comment],
         bookmarked: Bool,
+        attachments: [Attachment],
+        poll: Poll?,
     ) {
         self.data = data
         self.author = author
@@ -26,6 +28,8 @@ public struct Post: Hashable, Sendable, Identifiable {
         self.commentCount = commentCount
         self.recentComments = recentComments
         self.bookmarked = bookmarked
+        self.attachments = attachments
+        self.poll = poll
     }
 }
 
@@ -38,10 +42,10 @@ public extension Post {
         public let slug: String?
         public let userId: String
         public let stars: Int
-        //public let image: String?
+        public let image: String?
         public let createdAt: Date
         public let updatedAt: Date?
-        
+
         public init(
             id: String,
             title: String?,
@@ -50,6 +54,7 @@ public extension Post {
             slug: String?,
             userId: String,
             stars: Int,
+            image: String?,
             createdAt: Date,
             updatedAt: Date?,
         ) {
@@ -60,6 +65,7 @@ public extension Post {
             self.slug = slug
             self.userId = userId
             self.stars = stars
+            self.image = image
             self.createdAt = createdAt
             self.updatedAt = updatedAt
         }
@@ -75,9 +81,9 @@ extension Post {
         let comment_count: Int
         let recent_comments: [Comment.CodingData]
         let bookmarked: Bool
-        //let attachments: [???] // empty array in sample - type unknown
+        let attachments: [Attachment.CodingData]
+        let poll: Poll.CodingData?
         //let reactions: ??? // empty in sample - type unknown
-        //let poll: ??? // null in sample - type unknown
     }
 }
 
@@ -90,7 +96,7 @@ extension Post.Data {
         let slug: String?
         let user_uid: String
         let stars: Int
-        //let image: String?
+        let image: String?
         let created_at: Date
         let updated_at: Date?
     }
@@ -105,6 +111,8 @@ extension Post.CodingData {
             commentCount: comment_count,
             recentComments: recent_comments.map(\.decoded),
             bookmarked: bookmarked,
+            attachments: attachments.map(\.decoded),
+            poll: poll?.decoded,
         )
     }
 }
@@ -119,6 +127,7 @@ extension Post.Data.CodingData {
             slug: slug,
             userId: user_uid,
             stars: stars,
+            image: image,
             createdAt: created_at,
             updatedAt: updated_at,
         )

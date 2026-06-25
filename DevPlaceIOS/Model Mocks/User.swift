@@ -6,6 +6,7 @@ extension User {
         .init(
             id: "u1",
             username: "cheeze_on_wheels",
+            avatarSeed: nil,
             role: "Member",
             bio: "No cheeze, no wheels.",
             location: "Bali, Indonesia",
@@ -22,6 +23,7 @@ extension User {
         .init(
             id: "u2",
             username: "null_void",
+            avatarSeed: nil,
             role: "Member",
             bio: "Voice of the Void",
             location: "Moscow, Russia",

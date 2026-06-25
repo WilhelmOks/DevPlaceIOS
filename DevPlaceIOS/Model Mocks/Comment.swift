@@ -15,9 +15,9 @@ extension Collection where Element == Comment {
                     createdAt: Date().addingTimeInterval(-60 * 11),
                 ),
                 author: .mock2,
-                timeAgo: "11m ago",
                 myVote: 0,
                 votes: .init(up: 0, down: 0),
+                attachments: [],
             ),
             .init(
                 data: .init(
@@ -30,9 +30,9 @@ extension Collection where Element == Comment {
                     createdAt: Date().addingTimeInterval(-60 * 5),
                 ),
                 author: .mock,
-                timeAgo: "5m ago",
                 myVote: 1,
                 votes: .init(up: 2, down: 0),
+                attachments: [],
             ),
         ]
     }

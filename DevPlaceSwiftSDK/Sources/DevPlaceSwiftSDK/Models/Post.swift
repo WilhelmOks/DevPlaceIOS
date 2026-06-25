@@ -3,9 +3,29 @@ import Foundation
 public struct Post: Hashable, Sendable, Identifiable {
     public var id: String { "post:" + data.id }
     public let data: Data
-    
-    public init(data: Data) {
+    public let author: User
+    public let myVote: Int
+    public let commentCount: Int
+    public let recentComments: [Comment]
+    public let bookmarked: Bool
+    //public let attachments: [???] // empty array in sample - type unknown
+    //public let reactions: ??? // empty in sample - type unknown
+    //public let poll: ??? // null in sample - type unknown
+
+    public init(
+        data: Data,
+        author: User,
+        myVote: Int,
+        commentCount: Int,
+        recentComments: [Comment],
+        bookmarked: Bool,
+    ) {
         self.data = data
+        self.author = author
+        self.myVote = myVote
+        self.commentCount = commentCount
+        self.recentComments = recentComments
+        self.bookmarked = bookmarked
     }
 }
 
@@ -49,6 +69,15 @@ public extension Post {
 extension Post {
     struct CodingData: Decodable {
         let post: Data.CodingData
+        let author: User.CodingData
+        //let time_ago: String // not needed because it is formatted by demand by using the creation time or edit time.
+        let my_vote: Int
+        let comment_count: Int
+        let recent_comments: [Comment.CodingData]
+        let bookmarked: Bool
+        //let attachments: [???] // empty array in sample - type unknown
+        //let reactions: ??? // empty in sample - type unknown
+        //let poll: ??? // null in sample - type unknown
     }
 }
 
@@ -70,7 +99,12 @@ extension Post.Data {
 extension Post.CodingData {
     var decoded: Post {
         .init(
-            data: post.decoded
+            data: post.decoded,
+            author: author.decoded,
+            myVote: my_vote,
+            commentCount: comment_count,
+            recentComments: recent_comments.map(\.decoded),
+            bookmarked: bookmarked,
         )
     }
 }

@@ -16,6 +16,11 @@ extension Collection where Element == Post {
                     createdAt: Date().addingTimeInterval(-30),
                     updatedAt: Date().addingTimeInterval(-15),
                 ),
+                author: .mock,
+                myVote: 0,
+                commentCount: 2,
+                recentComments: .mock,
+                bookmarked: false,
             ),
             .init(
                 data: .init(
@@ -29,6 +34,11 @@ extension Collection where Element == Post {
                     createdAt: Date().addingTimeInterval(-30),
                     updatedAt: nil,
                 ),
+                author: .mock,
+                myVote: 0,
+                commentCount: 0,
+                recentComments: [],
+                bookmarked: false,
             ),
             .init(
                 data: .init(
@@ -42,6 +52,11 @@ extension Collection where Element == Post {
                     createdAt: Date().addingTimeInterval(-60),
                     updatedAt: nil,
                 ),
+                author: .mock2,
+                myVote: 1,
+                commentCount: 0,
+                recentComments: [],
+                bookmarked: true,
             ),
             .init(
                 data: .init(
@@ -55,6 +70,11 @@ extension Collection where Element == Post {
                     createdAt: Date().addingTimeInterval(-60 * 60),
                     updatedAt: nil,
                 ),
+                author: .mock,
+                myVote: 0,
+                commentCount: 0,
+                recentComments: [],
+                bookmarked: false,
             ),
             .init(
                 data: .init(
@@ -68,6 +88,11 @@ extension Collection where Element == Post {
                     createdAt: Date().addingTimeInterval(-60 * 60 * 24),
                     updatedAt: nil,
                 ),
+                author: .mock2,
+                myVote: -1,
+                commentCount: 0,
+                recentComments: [],
+                bookmarked: false,
             ),
         ]
     }

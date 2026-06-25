@@ -1,0 +1,131 @@
+import Foundation
+
+public struct Comment: Hashable, Sendable, Identifiable {
+    public var id: String { "comment:" + data.id }
+    public let data: Data
+    public let author: User
+    public let timeAgo: String
+    public let myVote: Int
+    public let votes: Votes
+    //public let children: [Comment] // empty array in sample - type cannot be confirmed from JSON
+    //public let attachments: [???] // empty array in sample - type unknown
+    //public let reactions: ??? // empty in sample - type unknown
+
+    public init(
+        data: Data,
+        author: User,
+        timeAgo: String,
+        myVote: Int,
+        votes: Votes,
+    ) {
+        self.data = data
+        self.author = author
+        self.timeAgo = timeAgo
+        self.myVote = myVote
+        self.votes = votes
+    }
+}
+
+public extension Comment {
+    struct Data: Hashable, Sendable, Identifiable {
+        public let id: String
+        public let userId: String
+        public let content: String
+        public let parentId: String?
+        public let targetType: String
+        public let targetId: String
+        public let createdAt: Date
+
+        public init(
+            id: String,
+            userId: String,
+            content: String,
+            parentId: String?,
+            targetType: String,
+            targetId: String,
+            createdAt: Date,
+        ) {
+            self.id = id
+            self.userId = userId
+            self.content = content
+            self.parentId = parentId
+            self.targetType = targetType
+            self.targetId = targetId
+            self.createdAt = createdAt
+        }
+    }
+
+    struct Votes: Hashable, Sendable {
+        public let up: Int
+        public let down: Int
+
+        public init(up: Int, down: Int) {
+            self.up = up
+            self.down = down
+        }
+    }
+}
+
+extension Comment {
+    struct CodingData: Decodable {
+        let comment: Data.CodingData
+        let author: User.CodingData
+        let time_ago: String
+        let my_vote: Int
+        let votes: Votes.CodingData
+        //let children: [???] // empty array in sample - type unknown
+        //let attachments: [???] // empty array in sample - type unknown
+        //let reactions: ??? // empty in sample - type unknown
+    }
+}
+
+extension Comment.Data {
+    struct CodingData: Decodable {
+        let uid: String
+        let user_uid: String
+        let content: String
+        let parent_uid: String?
+        let target_type: String
+        let target_uid: String
+        let created_at: Date
+    }
+}
+
+extension Comment.Votes {
+    struct CodingData: Decodable {
+        let up: Int
+        let down: Int
+    }
+}
+
+extension Comment.CodingData {
+    var decoded: Comment {
+        .init(
+            data: comment.decoded,
+            author: author.decoded,
+            timeAgo: time_ago,
+            myVote: my_vote,
+            votes: votes.decoded,
+        )
+    }
+}
+
+extension Comment.Data.CodingData {
+    var decoded: Comment.Data {
+        .init(
+            id: uid,
+            userId: user_uid,
+            content: content,
+            parentId: parent_uid,
+            targetType: target_type,
+            targetId: target_uid,
+            createdAt: created_at,
+        )
+    }
+}
+
+extension Comment.Votes.CodingData {
+    var decoded: Comment.Votes {
+        .init(up: up, down: down)
+    }
+}

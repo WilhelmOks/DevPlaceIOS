@@ -80,6 +80,7 @@ Color tokens `Color.BG_1`, `Color.BG_2`, `Color.FG_1`, `Color.FG_2` are defined 
 - **Concurrency:** Swift `async`/`await` only — do not introduce `Combine`. (The existing `import Combine` in some files is vestigial and can be removed.)
 - **Swift 6 trailing commas:** the project uses trailing commas in multi-line parameter and argument lists. Preserve that style when editing.
 - **Indentation:** 4 spaces.
+- **leading whitespace** whitespace on empty lines is allowed. Don't remove it between indented code. Add it to match the level of indentation when you create new code.
 
 ## Code philosophy
 

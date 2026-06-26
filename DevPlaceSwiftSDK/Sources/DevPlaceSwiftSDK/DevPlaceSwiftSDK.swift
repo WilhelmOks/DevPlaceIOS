@@ -69,6 +69,57 @@ public extension DevPlaceRequest {
         return response.decoded
     }
 
+    func signUp(
+        username: String,
+        password: String,
+        confirmPassword: String,
+        recaptchaResponse: String? = nil
+    ) async throws {
+        struct Body: Encodable {
+            let username: String
+            let password: String
+            let confirm_password: String
+            let g_recaptcha_response: String?
+
+            enum CodingKeys: String, CodingKey {
+                case username
+                case password
+                case confirm_password
+                case g_recaptcha_response = "g-recaptcha-response"
+            }
+        }
+
+        let config = makeConfig(.post, path: "auth/signup", contentType: .jsonBody)
+        let body = Body(
+            username: username,
+            password: password,
+            confirm_password: confirmPassword,
+            g_recaptcha_response: recaptchaResponse
+        )
+        try await request.requestJson(config: config, json: body, apiError: ApiError.self)
+    }
+
+    func forgotPassword(email: String) async throws {
+        struct Body: Encodable {
+            let email: String
+        }
+
+        let config = makeConfig(.post, path: "auth/forgot-password", contentType: .jsonBody)
+        let body = Body(email: email)
+        try await request.requestJson(config: config, json: body, apiError: ApiError.self)
+    }
+
+    func resetPassword(resetToken: String, password: String, confirmPassword: String) async throws {
+        struct Body: Encodable {
+            let password: String
+            let confirm_password: String
+        }
+
+        let config = makeConfig(.post, path: "auth/reset-password/\(resetToken)", contentType: .jsonBody)
+        let body = Body(password: password, confirm_password: confirmPassword)
+        try await request.requestJson(config: config, json: body, apiError: ApiError.self)
+    }
+
     // MARK: - Feed
 
     func getFeed(

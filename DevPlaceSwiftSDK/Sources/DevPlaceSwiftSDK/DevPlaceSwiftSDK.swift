@@ -181,7 +181,7 @@ public extension DevPlaceRequest {
 
     // MARK: - Comments
 
-    func createComment(targetType: String, targetId: String, content: String, parentId: String?, token: AuthToken) async throws {
+    func createComment(targetType: TargetType, targetId: String, content: String, parentId: String?, token: AuthToken) async throws {
         struct Body: Encodable {
             let target_type: String
             let target_uid: String
@@ -190,7 +190,7 @@ public extension DevPlaceRequest {
         }
 
         let config = makeConfig(.post, path: "comments/create", contentType: .jsonBody, token: token)
-        let body = Body(target_type: targetType, target_uid: targetId, content: content, parent_uid: parentId)
+        let body = Body(target_type: targetType.rawValue, target_uid: targetId, content: content, parent_uid: parentId)
         try await request.requestJson(config: config, json: body, apiError: ApiError.self)
     }
 
@@ -329,7 +329,7 @@ public extension DevPlaceRequest {
 
     // MARK: - Engagement
 
-    func vote(targetType: String, targetId: String, value: Int, token: AuthToken) async throws {
+    func vote(targetType: TargetType, targetId: String, value: Int, token: AuthToken) async throws {
         struct Body: Encodable {
             let value: Int
         }
@@ -338,7 +338,7 @@ public extension DevPlaceRequest {
         try await request.requestJson(config: config, json: body, apiError: ApiError.self)
     }
 
-    func react(targetType: String, targetId: String, emoji: String, token: AuthToken) async throws {
+    func react(targetType: TargetType, targetId: String, emoji: String, token: AuthToken) async throws {
         struct Body: Encodable {
             let emoji: String
         }
@@ -347,7 +347,7 @@ public extension DevPlaceRequest {
         try await request.requestJson(config: config, json: body, apiError: ApiError.self)
     }
 
-    func toggleBookmark(targetType: String, targetId: String, token: AuthToken) async throws {
+    func toggleBookmark(targetType: TargetType, targetId: String, token: AuthToken) async throws {
         let config = makeConfig(.post, path: "bookmarks/\(targetType)/\(targetId)", token: token)
         try await request.requestJson(config: config, apiError: ApiError.self)
     }

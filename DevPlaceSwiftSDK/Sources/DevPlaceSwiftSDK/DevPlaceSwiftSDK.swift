@@ -414,11 +414,11 @@ public extension DevPlaceRequest {
         let lineBreak = "\r\n"
         
         var body = Data()
-        body.append("--\(boundary)\(lineBreak)".data(using: .utf8)!)
-        body.append("Content-Disposition: form-data; name=\"file\"; filename=\"\(filename)\"\(lineBreak)".data(using: .utf8)!)
-        body.append("Content-Type: \(mimeType)\(lineBreak)\(lineBreak)".data(using: .utf8)!)
+        body.append(Data("--\(boundary)\(lineBreak)".utf8))
+        body.append(Data("Content-Disposition: form-data; name=\"file\"; filename=\"\(filename)\"\(lineBreak)".utf8))
+        body.append(Data("Content-Type: \(mimeType)\(lineBreak)\(lineBreak)".utf8))
         body.append(data)
-        body.append("\(lineBreak)--\(boundary)--\(lineBreak)".data(using: .utf8)!)
+        body.append(Data("\(lineBreak)--\(boundary)--\(lineBreak)".utf8))
 
         let config = makeConfig(.post, path: "uploads/upload", contentType: .multipartFormData(boundary: boundary), token: token)
         let response: UploadResponse.CodingData = try await request.requestJson(config: config, data: body, apiError: ApiError.self)

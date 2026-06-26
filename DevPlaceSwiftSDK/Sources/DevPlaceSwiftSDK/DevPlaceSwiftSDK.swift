@@ -9,6 +9,7 @@ public struct DevPlaceRequest: Sendable {
     enum ContentTypeKind {
         case urlEncoded
         case jsonBody
+        case multipartFormData(boundary: String)
     }
 
     public init(requestLogger: Logger, ignoreCertificateErrors: Bool = false) {
@@ -39,6 +40,8 @@ public struct DevPlaceRequest: Sendable {
             headers["Content-Type"] = "application/x-www-form-urlencoded"
         case .jsonBody:
             headers["Content-Type"] = "application/json"
+        case .multipartFormData(let boundary):
+            headers["Content-Type"] = "multipart/form-data; boundary=\(boundary)"
         }
 
         return .init(
@@ -405,6 +408,22 @@ public extension DevPlaceRequest {
     }
 
     // MARK: - Uploads
+
+    func uploadFile(data: Data, filename: String, mimeType: String, token: AuthToken) async throws -> UploadResponse {
+        let boundary = "Boundary-\(UUID().uuidString)"
+        let lineBreak = "\r\n"
+        
+        var body = Data()
+        body.append("--\(boundary)\(lineBreak)".data(using: .utf8)!)
+        body.append("Content-Disposition: form-data; name=\"file\"; filename=\"\(filename)\"\(lineBreak)".data(using: .utf8)!)
+        body.append("Content-Type: \(mimeType)\(lineBreak)\(lineBreak)".data(using: .utf8)!)
+        body.append(data)
+        body.append("\(lineBreak)--\(boundary)--\(lineBreak)".data(using: .utf8)!)
+
+        let config = makeConfig(.post, path: "uploads/upload", contentType: .multipartFormData(boundary: boundary), token: token)
+        let response: UploadResponse.CodingData = try await request.requestJson(config: config, data: body, apiError: ApiError.self)
+        return response.decoded
+    }
 
     func uploadFromUrl(url: String, filename: String? = nil, token: AuthToken) async throws -> UploadResponse {
         struct Body: Encodable {

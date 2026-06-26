@@ -4,7 +4,7 @@ public struct User: Hashable, Sendable, Identifiable {
     public let id: String
     public let username: String
     public let avatarSeed: String?
-    public let role: String?
+    public let role: Role?
     public let bio: String
     public let location: String
     public let gitLink: String
@@ -18,7 +18,7 @@ public struct User: Hashable, Sendable, Identifiable {
         id: String,
         username: String,
         avatarSeed: String?,
-        role: String? = nil,
+        role: Role? = nil,
         bio: String,
         location: String,
         gitLink: String,
@@ -66,7 +66,7 @@ extension User.CodingData {
             id: uid,
             username: username,
             avatarSeed: avatar_seed,
-            role: role,
+            role: role.flatMap(Role.init(rawValue:)),
             bio: bio,
             location: location,
             gitLink: git_link,

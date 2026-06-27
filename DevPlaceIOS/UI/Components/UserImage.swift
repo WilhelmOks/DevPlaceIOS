@@ -7,7 +7,8 @@ struct UserImage: View {
     @ScaledMetric private var scale = 1
     
     var body: some View {
-        let urlString = "https://devplace.net/avatar/multiavatar/\(user.username)"
+        let seed = user.avatarSeed ?? user.username
+        let urlString = "https://devplace.net/avatar/multiavatar/\(seed)"
         
         AsyncSVGImage(url: URL(string: urlString)) { image in
             image.resizable()

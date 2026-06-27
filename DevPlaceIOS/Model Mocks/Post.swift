@@ -93,7 +93,23 @@ extension Collection where Element == Post {
                     id: "5",
                     title: nil,
                     topic: nil,
-                    content: "content 5",
+                    content: """
+                        content 5
+                        Here is some *italic* text and here is some **bold** text.
+                        > blockquote
+                        asdf
+
+                        lorem ipsum
+
+                        ```
+                        code block
+                        line 2
+                        ```
+
+                        Text with `inline code` in it.
+
+                        end
+                        """,
                     slug: nil,
                     userId: "u1",
                     stars: 1337,

@@ -1,4 +1,5 @@
 import SwiftUI
+import MarkdownUI
 import DevPlaceSwiftSDK
 
 struct FeedPostView: View {
@@ -13,10 +14,14 @@ struct FeedPostView: View {
                 topArea()
                 
                 if let title = post.data.title {
-                    Text(title).font(.title)
+                    let markdownTitle = LocalizedStringKey(title)
+                    Text(markdownTitle)
+                        .font(.title)
                 }
                 
-                Text(post.data.content)
+                Markdown(post.data.content)
+                    .markdownTheme(.devPlace)
+                    .markdownSoftBreakMode(.lineBreak)
             }
             .padding(.horizontal)
             

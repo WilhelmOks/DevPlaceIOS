@@ -12,7 +12,7 @@ extension User {
             location: "Bali, Indonesia",
             gitLink: "https://github.com/cheeze-on-wheels",
             website: "https://cheeze-on-wheels.dev",
-            level: 2,
+            level: 1337,
             xp: 180,
             stars: 0,
             createdAt: Date().addingTimeInterval(-60 * 60 * 24 * 10),

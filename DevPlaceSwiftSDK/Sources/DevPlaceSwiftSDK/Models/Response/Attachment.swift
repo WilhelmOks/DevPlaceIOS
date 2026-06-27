@@ -2,9 +2,9 @@ import Foundation
 
 public struct Attachment: Hashable, Sendable, Identifiable {
     public let id: String
-    public let filename: String
+    public let filename: String?
     public let url: String
-    public let size: Int
+    public let size: Int?
     public let isImage: Bool
     public let isVideo: Bool
     public let mimeType: String
@@ -13,9 +13,9 @@ public struct Attachment: Hashable, Sendable, Identifiable {
 
     public init(
         id: String,
-        filename: String,
+        filename: String?,
         url: String,
-        size: Int,
+        size: Int?,
         isImage: Bool,
         isVideo: Bool,
         mimeType: String,
@@ -37,9 +37,9 @@ public struct Attachment: Hashable, Sendable, Identifiable {
 extension Attachment {
     struct CodingData: Decodable {
         let uid: String
-        let filename: String
+        let filename: String?
         let url: String
-        let size: Int
+        let size: Int?
         let is_image: Bool
         let is_video: Bool
         let mime_type: String

@@ -5,16 +5,16 @@ public struct Poll: Hashable, Sendable, Identifiable {
     public let question: String
     public let options: [PollOption]
     public let total: Int
-    public let myChoice: String
-    public let voted: String
+    public let myChoice: String?
+    public let voted: String?
 
     public init(
         id: String,
         question: String,
         options: [PollOption],
         total: Int,
-        myChoice: String,
-        voted: String,
+        myChoice: String?,
+        voted: String?,
     ) {
         self.id = id
         self.question = question
@@ -31,8 +31,8 @@ extension Poll {
         let question: String
         let options: [PollOption.CodingData]
         let total: Int
-        let my_choice: String
-        let voted: String
+        let my_choice: String?
+        let voted: String?
     }
 }
 

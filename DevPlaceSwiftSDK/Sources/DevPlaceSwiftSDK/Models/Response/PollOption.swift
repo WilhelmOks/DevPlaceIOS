@@ -27,7 +27,7 @@ extension PollOption {
         let uid: String
         let label: String
         let count: Int
-        let votes: Int
+        let votes: Int?
         let pct: Int
     }
 }
@@ -38,7 +38,7 @@ extension PollOption.CodingData {
             id: uid,
             label: label,
             count: count,
-            votes: votes,
+            votes: votes ?? 0,
             pct: pct,
         )
     }

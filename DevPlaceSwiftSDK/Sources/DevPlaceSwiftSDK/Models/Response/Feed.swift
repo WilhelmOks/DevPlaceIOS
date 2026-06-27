@@ -3,7 +3,7 @@ import Foundation
 public struct Feed: Hashable, Sendable {
     public let posts: [Post]
     public let currentTab: String
-    public let currentTopic: String
+    public let currentTopic: String?
     public let search: String
     public let nextCursor: Date?
     public let totalMembers: Int
@@ -16,7 +16,7 @@ public struct Feed: Hashable, Sendable {
     public init(
         posts: [Post],
         currentTab: String,
-        currentTopic: String,
+        currentTopic: String?,
         search: String,
         nextCursor: Date?,
         totalMembers: Int,
@@ -42,7 +42,7 @@ extension Feed {
     struct CodingData: Decodable {
         let posts: [Post.CodingData]
         let current_tab: String
-        let current_topic: String
+        let current_topic: String?
         let search: String
         let next_cursor: Date?
         let total_members: Int

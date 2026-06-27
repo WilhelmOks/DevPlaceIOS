@@ -35,7 +35,9 @@ struct FeedPostView: View {
     
     @ViewBuilder private func topArea() -> some View {
         HStack(alignment: .top) {
-            VStack(alignment: .leading) {
+            VStack(alignment: .leading, spacing: 10) {
+                UserAvatarView(user: post.author)
+                
                 if let topic = post.data.topic {
                     CapsuleLabel(text: topic)
                 }

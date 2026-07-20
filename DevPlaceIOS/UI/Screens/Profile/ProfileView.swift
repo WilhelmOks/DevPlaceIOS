@@ -17,7 +17,7 @@ private struct ProfileViewContent: View {
     var body: some View {
         content()
             .screenStyle()
-            .navigationTitle(Text("Profile"))
+            .navigationTitle(Text(viewModel.navigationTitle))
             .alert($viewModel.alertMessage)
             .task {
                 await viewModel.load()

@@ -19,6 +19,10 @@ extension ProfileView {
             self.api = api
         }
         
+        var navigationTitle: String {
+            username ?? profile?.user.username ?? "Profile"
+        }
+        
         func load() async {
             isLoading = true
             defer { isLoading = false }

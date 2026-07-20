@@ -19,10 +19,10 @@ public struct Profile: Hashable, Sendable, Identifiable {
     public let apiKey: String
     public let aiCorrectionEnabled: Bool
     public let aiCorrectionSync: Bool
-    public let aiCorrectionPrompt: String
+    public let aiCorrectionPrompt: String?
     public let aiModifierEnabled: Bool
     public let aiModifierSync: Bool
-    public let aiModifierPrompt: String
+    public let aiModifierPrompt: String?
     public let telegramPaired: Bool
     public let notifTelegramPaired: Bool
     public let canManageCustomization: Bool
@@ -64,10 +64,10 @@ public struct Profile: Hashable, Sendable, Identifiable {
         apiKey: String,
         aiCorrectionEnabled: Bool,
         aiCorrectionSync: Bool,
-        aiCorrectionPrompt: String,
+        aiCorrectionPrompt: String?,
         aiModifierEnabled: Bool,
         aiModifierSync: Bool,
-        aiModifierPrompt: String,
+        aiModifierPrompt: String?,
         telegramPaired: Bool,
         notifTelegramPaired: Bool,
         canManageCustomization: Bool,
@@ -132,10 +132,10 @@ extension Profile {
         let api_key: String
         let ai_correction_enabled: Bool
         let ai_correction_sync: Bool
-        let ai_correction_prompt: String
+        let ai_correction_prompt: String?
         let ai_modifier_enabled: Bool
         let ai_modifier_sync: Bool
-        let ai_modifier_prompt: String
+        let ai_modifier_prompt: String?
         let telegram_paired: Bool
         let notif_telegram_paired: Bool
         let can_manage_customization: Bool

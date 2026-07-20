@@ -3,7 +3,7 @@ import Foundation
 public struct Gist: Hashable, Sendable, Identifiable {
     public var id: String { "gist:" + data.id }
     public let data: Data
-    public let author: User
+    public let author: User?
     //public let timeAgo: String // exists in API; format on demand from data.createdAt
     public let myVote: Int
     public let commentCount: Int
@@ -11,7 +11,7 @@ public struct Gist: Hashable, Sendable, Identifiable {
 
     public init(
         data: Data,
-        author: User,
+        author: User?,
         myVote: Int,
         commentCount: Int,
         recentComments: [Comment],
@@ -35,7 +35,7 @@ public extension Gist {
         public let language: String
         public let stars: Int
         public let createdAt: Date
-        public let updatedAt: Date
+        public let updatedAt: Date?
 
         public init(
             id: String,
@@ -47,7 +47,7 @@ public extension Gist {
             language: String,
             stars: Int,
             createdAt: Date,
-            updatedAt: Date,
+            updatedAt: Date?,
         ) {
             self.id = id
             self.slug = slug
@@ -66,7 +66,7 @@ public extension Gist {
 extension Gist {
     struct CodingData: Decodable {
         let gist: Data.CodingData
-        let author: User.CodingData
+        let author: User.CodingData?
         //let time_ago: String // not needed because it is formatted on demand from created_at
         let my_vote: Int
         let comment_count: Int
@@ -85,7 +85,7 @@ extension Gist.Data {
         let language: String
         let stars: Int
         let created_at: Date
-        let updated_at: Date
+        let updated_at: Date?
     }
 }
 
@@ -93,7 +93,7 @@ extension Gist.CodingData {
     var decoded: Gist {
         .init(
             data: gist.decoded,
-            author: author.decoded,
+            author: author?.decoded,
             myVote: my_vote,
             commentCount: comment_count,
             recentComments: recent_comments.map(\.decoded),

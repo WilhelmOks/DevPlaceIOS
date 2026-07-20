@@ -30,8 +30,8 @@ public extension Project {
         public let projectType: String
         public let status: String
         public let stars: Int
-        public let isPrivate: Bool
-        public let readOnly: Bool
+        public let isPrivate: Bool?
+        public let readOnly: Bool?
         public let releaseDate: String?
         public let demoDate: String?
         public let createdAt: Date
@@ -47,8 +47,8 @@ public extension Project {
             projectType: String,
             status: String,
             stars: Int,
-            isPrivate: Bool,
-            readOnly: Bool,
+            isPrivate: Bool?,
+            readOnly: Bool?,
             releaseDate: String?,
             demoDate: String?,
             createdAt: Date,
@@ -82,8 +82,8 @@ extension Project {
         let project_type: String
         let status: String
         let stars: Int
-        let is_private: Bool
-        let read_only: Bool
+        let is_private: Bool?
+        let read_only: Bool?
         let release_date: String?
         let demo_date: String?
         let created_at: Date
@@ -105,8 +105,8 @@ extension Project.Data {
         let project_type: String
         let status: String
         let stars: Int
-        let is_private: Bool
-        let read_only: Bool
+        let is_private: Bool?
+        let read_only: Bool?
         let release_date: String?
         let demo_date: String?
         let created_at: Date

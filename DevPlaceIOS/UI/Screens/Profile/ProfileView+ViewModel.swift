@@ -24,7 +24,7 @@ extension ProfileView {
             defer { isLoading = false }
             
             do {
-                profile = try await api.profile(username: nil)
+                profile = try await api.profile(username: username)
             } catch {
                 alertMessage = .presentedError(error)
             }

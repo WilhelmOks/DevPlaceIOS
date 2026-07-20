@@ -26,8 +26,8 @@ private struct FeedViewContent: View {
                 }
             }
             .refreshable {
+                //TODO: fix the scroll freeze
                 await viewModel.load()
-                try? await Task.sleep(for: .seconds(0.2)) //artificial delay to prevent the pull-to-refresh view from freezing in the scroll state.
             }
     }
     

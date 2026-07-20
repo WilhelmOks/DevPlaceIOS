@@ -16,6 +16,7 @@ struct FeedPostView: View {
                 if let title = post.data.title {
                     let markdownTitle = LocalizedStringKey(title)
                     Text(markdownTitle)
+                        .lineSpacing(0)
                         .font(.title)
                 }
                 

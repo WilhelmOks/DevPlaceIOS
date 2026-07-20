@@ -11,7 +11,8 @@ struct SettingsView: View {
 private struct SettingsViewContent: View {
     @State var viewModel: SettingsView.ViewModel
     @State var appState = AppState.shared
-    
+    @Bindable var appSettings = AppSettingsStore.shared
+
     @State private var logOutConfirmationPresented = false
     
     enum FullscreenNavigationItem: Identifiable {
@@ -59,6 +60,22 @@ private struct SettingsViewContent: View {
                     }
                     .buttonStyle(.form)
                 }
+            }
+            .listRowBackground(Color.BG_1)
+            
+            Section {
+                Picker(selection: $appSettings.appearance) {
+                    ForEach(AppSettingsStore.AppearanceMode.allCases) { mode in
+                        Text(mode.title).tag(mode)
+                    }
+                } label: {
+                    Label {
+                        Text("Appearance")
+                    } icon: {
+                        Image(systemName: "circle.lefthalf.filled")
+                    }
+                }
+                .tint(Color.accentColor)
             }
             .listRowBackground(Color.BG_1)
             

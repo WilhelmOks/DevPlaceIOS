@@ -2,9 +2,11 @@ import SwiftUI
 
 @main
 struct DevPlaceIOSApp: App {
+    @State private var appSettings = AppSettingsStore.shared
+
     init() {
         let userSessionStore = UserSessionStore.shared
-        
+
         if let email = userSessionStore.email, let password = userSessionStore.password {
             Task {
                 let api: DevPlaceApi = .prod
@@ -12,11 +14,11 @@ struct DevPlaceIOSApp: App {
             }
         }
     }
-    
+
     var body: some Scene {
         WindowGroup {
             MainView()
-                .preferredColorScheme(.dark)
+                .preferredColorScheme(appSettings.appearance.colorScheme)
         }
     }
 }

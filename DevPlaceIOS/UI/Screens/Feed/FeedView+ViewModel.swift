@@ -19,5 +19,17 @@ extension FeedView {
                 alertMessage = .presentedError(error)
             }
         }
+        
+        func refresh() async {
+            do {
+                let newFeed = try await api.feed()
+                Task { @MainActor in
+                    try? await Task.sleep(for: .milliseconds(300))
+                    AppState.shared.feed = newFeed
+                }
+            } catch {
+                alertMessage = .presentedError(error)
+            }
+        }
     }
 }

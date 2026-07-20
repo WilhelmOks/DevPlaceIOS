@@ -26,8 +26,7 @@ private struct FeedViewContent: View {
                 }
             }
             .refreshable {
-                //TODO: fix the scroll freeze
-                await viewModel.load()
+                await viewModel.refresh()
             }
     }
     

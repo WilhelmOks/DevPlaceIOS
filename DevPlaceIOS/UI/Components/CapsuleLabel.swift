@@ -5,13 +5,14 @@ struct CapsuleLabel: View {
     var foregroundColor: Color = .FG_1
     var backgroundColor: Color = .gray.opacity(0.5)
     
+    @ScaledMetric private var scale = 1.0
+    
     var body: some View {
         Text(text.uppercased())
-            .font(.subheadline)
-            .fontWeight(.medium)
+            .font(.system(size: 12 * scale, weight: .medium))
             .foregroundStyle(foregroundColor)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 4)
+            .padding(.horizontal, 8 * scale)
+            .padding(.vertical, 3 * scale)
             .background {
                 Capsule().fill(backgroundColor)
             }

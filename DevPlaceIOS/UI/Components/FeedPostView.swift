@@ -31,7 +31,7 @@ struct FeedPostView: View {
         }
         .foregroundStyle(Color.FG_1)
         .background {
-            Color.BG_2
+            Color.BG_1
         }
     }
     
@@ -67,6 +67,6 @@ struct FeedPostView: View {
         .frame(maxWidth: .infinity)
     }
     .background {
-        Color.BG_1.ignoresSafeArea()
+        Color.BG_2.ignoresSafeArea()
     }
 }

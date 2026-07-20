@@ -15,7 +15,7 @@ private struct FeedViewContent: View {
     
     var body: some View {
         content()
-            .screenStyle(bgColor: .BG_1)
+            .screenStyle(bgColor: .BG_2)
             .navigationTitle(Text("Feed"))
             .alert($viewModel.alertMessage)
             .onAppear {

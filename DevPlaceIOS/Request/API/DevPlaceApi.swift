@@ -5,6 +5,7 @@ protocol DevPlaceApi {
     func logIn(email: String, password: String) async throws
     func feed() async throws -> Feed
     func post(title: String?, topic: String?, content: String) async throws
+    func profile(username: String?) async throws -> Profile
 }
 
 extension DevPlaceApi {

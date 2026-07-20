@@ -32,10 +32,10 @@ public extension Project {
         public let stars: Int
         public let isPrivate: Bool
         public let readOnly: Bool
-        public let releaseDate: String
-        public let demoDate: String
+        public let releaseDate: String?
+        public let demoDate: String?
         public let createdAt: Date
-        public let updatedAt: Date
+        public let updatedAt: Date?
         //public let platforms: ??? // null in sample - type unknown
 
         public init(
@@ -49,10 +49,10 @@ public extension Project {
             stars: Int,
             isPrivate: Bool,
             readOnly: Bool,
-            releaseDate: String,
-            demoDate: String,
+            releaseDate: String?,
+            demoDate: String?,
             createdAt: Date,
-            updatedAt: Date,
+            updatedAt: Date?,
         ) {
             self.id = id
             self.slug = slug
@@ -84,10 +84,10 @@ extension Project {
         let stars: Int
         let is_private: Bool
         let read_only: Bool
-        let release_date: String
-        let demo_date: String
+        let release_date: String?
+        let demo_date: String?
         let created_at: Date
-        let updated_at: Date
+        let updated_at: Date?
         let author_name: String
         let my_vote: Int
         let recent_comments: [Comment.CodingData]
@@ -107,10 +107,10 @@ extension Project.Data {
         let stars: Int
         let is_private: Bool
         let read_only: Bool
-        let release_date: String
-        let demo_date: String
+        let release_date: String?
+        let demo_date: String?
         let created_at: Date
-        let updated_at: Date
+        let updated_at: Date?
         //let platforms: ??? // null in sample - type unknown
     }
 }

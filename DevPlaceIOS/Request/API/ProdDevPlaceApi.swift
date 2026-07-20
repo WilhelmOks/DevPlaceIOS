@@ -34,4 +34,18 @@ final class ProdDevPlaceApi: DevPlaceApi {
         try await refreshTokenIfNeeded()
         try await request.createPost(title: title, topic: topic, content: content, token: token)
     }
+    
+    func profile(username: String?) async throws -> Profile {
+        try await refreshTokenIfNeeded()
+        if let username {
+            // Fetching user profiles of other users should be fine without a token.
+            return try await request.getProfile(username: username, token: AppState.shared.token)
+        } else {
+            // Fetching own profile requires a token.
+            guard let token = AppState.shared.token else {
+                throw DevPlaceError.notLoggedIn
+            }
+            return try await request.getProfile(username: username, token: token)
+        }
+    }
 }

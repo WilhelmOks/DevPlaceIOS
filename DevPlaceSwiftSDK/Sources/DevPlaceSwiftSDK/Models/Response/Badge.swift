@@ -1,11 +1,11 @@
 import Foundation
 
 public struct Badge: Hashable, Sendable {
-    public let name: String
+    public let name: String?
     public let createdAt: Date
 
     public init(
-        name: String,
+        name: String?,
         createdAt: Date,
     ) {
         self.name = name
@@ -15,7 +15,7 @@ public struct Badge: Hashable, Sendable {
 
 extension Badge {
     struct CodingData: Decodable {
-        let name: String
+        let name: String?
         let created_at: Date
     }
 }

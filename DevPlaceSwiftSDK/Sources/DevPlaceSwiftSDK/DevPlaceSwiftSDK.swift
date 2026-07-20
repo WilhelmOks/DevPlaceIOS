@@ -277,10 +277,18 @@ public extension DevPlaceRequest {
 
     // MARK: - Profile
 
-    func getProfile(username: String, tab: String? = nil, token: AuthToken?) async throws -> Profile {
+    /// Fetches a user's profile.
+    ///
+    /// - Parameters:
+    ///   - username: The username of the profile to fetch. When `nil`, the API returns the profile
+    ///     of the currently logged-in user (identified by `token`).
+    ///   - tab: Optional tab selector forwarded as a URL parameter.
+    ///   - token: The auth token used for the request.
+    func getProfile(username: String?, tab: String? = nil, token: AuthToken?) async throws -> Profile {
         var parameters: [String: String] = [:]
         if let tab { parameters["tab"] = tab }
-        let config = makeConfig(.get, path: "profile/\(username)", urlParameters: parameters, token: token)
+        let path = if let username { "profile/\(username)" } else { "profile" }
+        let config = makeConfig(.get, path: path, urlParameters: parameters, token: token)
         let response: Profile.CodingData = try await request.requestJson(config: config, apiError: ApiError.self)
         return response.decoded
     }

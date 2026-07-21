@@ -40,6 +40,14 @@ private struct ProfileViewContent: View {
                         .padding(.vertical, 10)
                     
                     infoRowsArea(profile)
+                    
+                    //TODO: place those badges somewhere else.
+                    Divider()
+                    VFlowStack(spacing: 8) {
+                        ForEach(profile.badges, id: \.self) { badge in
+                            UserBadgeView(badge: badge)
+                        }
+                    }
                 }
             }
             .frame(maxWidth: .infinity)

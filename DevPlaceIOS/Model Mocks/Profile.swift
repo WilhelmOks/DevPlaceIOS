@@ -6,7 +6,7 @@ extension Profile {
         .init(
             user: .mock,
             posts: .mock,
-            badges: [],
+            badges: .mock,
             badgeTotal: 0,
             badgeEarned: 0,
             projects: [],

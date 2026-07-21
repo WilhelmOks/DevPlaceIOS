@@ -35,14 +35,14 @@ private struct ProfileViewContent: View {
                         .padding(.bottom, 10)
                     
                     HStack(spacing: 20) {
-                        numericInfo(label: "Posts", numericText: "\(profile.posts.count)")
+                        numericInfo(label: "Posts", numericText: profile.posts.count.formatted())
                         
-                        numericInfo(label: "Level", numericText: "\(profile.user.level)")
+                        numericInfo(label: "Level", numericText: profile.user.level.formatted())
                         
-                        numericInfo(label: "Stars", numericText: "\(profile.user.stars)")
+                        numericInfo(label: "Stars", numericText: profile.user.stars.formatted())
                         
                         if let rank = profile.rank {
-                            numericInfo(label: "Rank", numericText: "#\(rank)")
+                            numericInfo(label: "Rank", numericText: "#\(rank.formatted())")
                         }
                     }
                     

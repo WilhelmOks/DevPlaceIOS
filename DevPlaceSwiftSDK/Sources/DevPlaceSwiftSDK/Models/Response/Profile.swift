@@ -28,7 +28,7 @@ public struct Profile: Hashable, Sendable, Identifiable {
     public let canManageCustomization: Bool
     public let custDisableGlobal: Bool
     public let custDisablePagetype: Bool
-    public let rank: Int
+    public let rank: Int?
     public let followersCount: Int
     public let followingCount: Int
     public let viewerIsAdmin: Bool
@@ -73,7 +73,7 @@ public struct Profile: Hashable, Sendable, Identifiable {
         canManageCustomization: Bool,
         custDisableGlobal: Bool,
         custDisablePagetype: Bool,
-        rank: Int,
+        rank: Int?,
         followersCount: Int,
         followingCount: Int,
         viewerIsAdmin: Bool,
@@ -141,7 +141,7 @@ extension Profile {
         let can_manage_customization: Bool
         let cust_disable_global: Bool
         let cust_disable_pagetype: Bool
-        let rank: Int
+        let rank: Int?
         let followers_count: Int
         let following_count: Int
         let viewer_is_admin: Bool

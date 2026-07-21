@@ -34,6 +34,7 @@ private struct ProfileViewContent: View {
                     UserImage(user: profile.user, size: .large)
                     
                     sectionTitle("Bio")
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     
                     Markdown(profile.user.bio)
                         .multilineTextAlignment(.leading)
@@ -41,8 +42,15 @@ private struct ProfileViewContent: View {
                     
                     Divider()
                     
-                    let text = "\(String(describing: viewModel.profile))"
-                    Text(text)
+                    infoRow(title: "Location", text: profile.user.location)
+                    
+                    Divider()
+                    
+                    infoRow(title: "Git Link", link: profile.user.gitLink)
+                    
+                    Divider()
+                    
+                    infoRow(title: "Website", link: profile.user.website)
                 }
             }
             .frame(maxWidth: .infinity)
@@ -52,10 +60,35 @@ private struct ProfileViewContent: View {
     
     @ViewBuilder private func sectionTitle(_ title: String) -> some View {
         Text(title)
-            .font(.system(size: 19, weight: .semibold))
+            .fontWeight(.semibold)
             .multilineTextAlignment(.leading)
             .foregroundStyle(.FG_2)
-            .frame(maxWidth: .infinity, alignment: .leading)
+    }
+    
+    @ViewBuilder private func infoRow(title: String, text: String) -> some View {
+        HStack {
+            sectionTitle(title)
+            
+            Spacer()
+            
+            Text(text)
+                .multilineTextAlignment(.trailing)
+        }
+    }
+    
+    @ViewBuilder private func infoRow(title: String, link: String) -> some View {
+        HStack {
+            sectionTitle(title)
+            
+            Spacer()
+            
+            if let url = URL(string: link) {
+                Link(destination: url) {
+                    Text(link)
+                        .multilineTextAlignment(.trailing)
+                }
+            }
+        }
     }
 }
 

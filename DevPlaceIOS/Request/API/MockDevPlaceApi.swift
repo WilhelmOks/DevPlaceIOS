@@ -10,7 +10,7 @@ extension DevPlaceApi where Self == MockDevPlaceApi {
 final class MockDevPlaceApi: DevPlaceApi {
     static let shared = MockDevPlaceApi()
     
-    private func mockDelay(delay: TimeInterval = 1) async {
+    private func mockDelay(_ delay: TimeInterval = 1) async {
         try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
     }
     
@@ -36,7 +36,7 @@ final class MockDevPlaceApi: DevPlaceApi {
     }
     
     func profile(username: String?) async throws -> Profile {
-        await mockDelay()
+        await mockDelay(0.1)
         try await refreshTokenIfNeeded()
         return .mock
     }

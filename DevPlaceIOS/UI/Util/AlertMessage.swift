@@ -31,6 +31,8 @@ extension AlertMessage {
             switch dpApiError {
             case .generalError(status: _, error: let error1):
                 switch error1 {
+                case is CancellationError:
+                    return .none()
                 case let error2 as KreeRequest.Error<DevPlaceApiError.CodingData>:
                     switch error2 {
                     case .generalError(_, let error3):

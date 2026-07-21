@@ -32,6 +32,21 @@ private struct ProfileViewContent: View {
             VStack(spacing: 10) {
                 if let profile = viewModel.profile {
                     UserImage(user: profile.user, size: .large)
+                        .padding(.bottom, 10)
+                    
+                    HStack(spacing: 20) {
+                        numericInfo(label: "Posts", numericText: "\(profile.posts.count)")
+                        
+                        numericInfo(label: "Level", numericText: "\(profile.user.level)")
+                        
+                        numericInfo(label: "Stars", numericText: "\(profile.user.stars)")
+                        
+                        if let rank = profile.rank {
+                            numericInfo(label: "Rank", numericText: "#\(rank)")
+                        }
+                    }
+                    
+                    Divider()
                     
                     sectionTitle("Bio")
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -89,6 +104,19 @@ private struct ProfileViewContent: View {
                 }
             }
         }
+    }
+    
+    @ViewBuilder private func numericInfo(label: String, numericText: String) -> some View {
+        VStack(spacing: 2) {
+            Text(numericText)
+                .font(.system(size: 18 * scale))
+                .fontWeight(.bold)
+            
+            Text(label.uppercased())
+                .font(.system(size: 14 * scale))
+                .foregroundStyle(.FG_2)
+        }
+        .multilineTextAlignment(.center)
     }
 }
 

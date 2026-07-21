@@ -34,42 +34,71 @@ private struct ProfileViewContent: View {
                     UserImage(user: profile.user, size: .large)
                         .padding(.bottom, 10)
                     
-                    HStack(spacing: 20) {
-                        numericInfo(label: "Posts", numericText: profile.posts.count.formatted())
-                        
-                        numericInfo(label: "Level", numericText: profile.user.level.formatted())
-                        
-                        numericInfo(label: "Stars", numericText: profile.user.stars.formatted())
-                        
-                        if let rank = profile.rank {
-                            numericInfo(label: "Rank", numericText: "#\(rank.formatted())")
-                        }
-                    }
+                    numericInfoArea(profile)
                     
-                    Divider()
+                    levelProgressArea(profile)
+                        .padding(.vertical, 10)
                     
-                    sectionTitle("Bio")
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    
-                    Markdown(profile.user.bio)
-                        .multilineTextAlignment(.leading)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    
-                    Divider()
-                    
-                    infoRow(title: "Location", text: profile.user.location)
-                    
-                    Divider()
-                    
-                    infoRow(title: "Git Link", link: profile.user.gitLink)
-                    
-                    Divider()
-                    
-                    infoRow(title: "Website", link: profile.user.website)
+                    infoRowsArea(profile)
                 }
             }
             .frame(maxWidth: .infinity)
             .padding()
+        }
+    }
+    
+    @ViewBuilder private func numericInfoArea(_ profile: Profile) -> some View {
+        HStack(spacing: 20) {
+            numericInfo(label: "Posts", numericText: profile.posts.count.formatted())
+            
+            numericInfo(label: "Level", numericText: profile.user.level.formatted())
+            
+            numericInfo(label: "Stars", numericText: profile.user.stars.formatted())
+            
+            if let rank = profile.rank {
+                numericInfo(label: "Rank", numericText: "#\(rank.formatted())")
+            }
+        }
+    }
+    
+    @ViewBuilder private func levelProgressArea(_ profile: Profile) -> some View {
+        VStack(spacing: 4) {
+            let progressValue = 0.32 //TODO: get the real number from the API (currently not exposed via the API)
+            
+            HStack {
+                Text("Progress to next level")
+                
+                Spacer()
+                
+                Text("\(progressValue.formatted(.percent))")
+            }
+            .font(.system(size: 12 * scale))
+            .foregroundStyle(.FG_2)
+            
+            ProgressView(value: progressValue)
+        }
+    }
+    
+    @ViewBuilder private func infoRowsArea(_ profile: Profile) -> some View {
+        VStack(spacing: 10) {
+            sectionTitle("Bio")
+                .frame(maxWidth: .infinity, alignment: .leading)
+            
+            Markdown(profile.user.bio)
+                .multilineTextAlignment(.leading)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            
+            Divider()
+            
+            infoRow(title: "Location", text: profile.user.location)
+            
+            Divider()
+            
+            infoRow(title: "Git Link", link: profile.user.gitLink)
+            
+            Divider()
+            
+            infoRow(title: "Website", link: profile.user.website)
         }
     }
     

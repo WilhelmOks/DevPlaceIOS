@@ -23,6 +23,10 @@ extension ProfileView {
             username ?? profile?.user.username ?? "Profile"
         }
         
+        var isMyOwnProfile: Bool {
+            profile?.isOwner ?? false
+        }
+        
         func load() async {
             isLoading = true
             defer { isLoading = false }

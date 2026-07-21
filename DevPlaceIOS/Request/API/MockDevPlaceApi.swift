@@ -38,6 +38,6 @@ final class MockDevPlaceApi: DevPlaceApi {
     func profile(username: String?) async throws -> Profile {
         await mockDelay()
         try await refreshTokenIfNeeded()
-        throw DevPlaceError.notLoggedIn //TODO: return a mock
+        return .mock
     }
 }

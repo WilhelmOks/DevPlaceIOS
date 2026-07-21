@@ -3,6 +3,7 @@ import DevPlaceSwiftSDK
 
 struct UserImage: View {
     let user: User
+    var size: Size = .normal
     
     @ScaledMetric private var scale = 1
     
@@ -20,7 +21,21 @@ struct UserImage: View {
                 ProgressView()
             }
         }
-        .frame(width: 42 * scale, height: 42 * scale)
+        .frame(width: size.points * scale, height: size.points * scale)
+    }
+}
+
+extension UserImage {
+    enum Size {
+        case normal
+        case large
+        
+        var points: CGFloat {
+            switch self {
+            case .normal: 42
+            case .large: 100
+            }
+        }
     }
 }
 
@@ -28,6 +43,7 @@ struct UserImage: View {
     VStack(spacing: 10) {
         UserImage(user: .mock)
         UserImage(user: .mock2)
+        UserImage(user: .mock2, size: .large)
     }
     .padding()
 }

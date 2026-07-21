@@ -57,7 +57,7 @@ private struct ProfileViewContent: View {
     
     @ViewBuilder private func numericInfoArea(_ profile: Profile) -> some View {
         HStack(spacing: 20) {
-            numericInfo(label: "Posts", numericText: profile.posts.count.formatted())
+            numericInfo(label: "Posts", numericText: profile.postsCount.formatted())
             
             numericInfo(label: "Level", numericText: profile.user.level.formatted())
             

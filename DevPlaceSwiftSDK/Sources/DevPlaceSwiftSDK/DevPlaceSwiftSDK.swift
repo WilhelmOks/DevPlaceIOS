@@ -337,12 +337,12 @@ public extension DevPlaceRequest {
 
     // MARK: - Engagement
 
-    func vote(targetType: TargetType, targetId: String, value: Int, token: AuthToken) async throws {
+    func vote(targetType: TargetType, targetId: String, vote: Vote, token: AuthToken) async throws {
         struct Body: Encodable {
             let value: Int
         }
         let config = makeConfig(.post, path: "votes/\(targetType)/\(targetId)", contentType: .jsonBody, token: token)
-        let body = Body(value: value)
+        let body = Body(value: vote.value)
         try await request.requestJson(config: config, json: body, apiError: ApiError.self)
     }
 

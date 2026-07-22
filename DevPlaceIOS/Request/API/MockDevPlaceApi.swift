@@ -40,4 +40,9 @@ final class MockDevPlaceApi: DevPlaceApi {
         try await refreshTokenIfNeeded()
         return .mock
     }
+    
+    func vote(targetType: TargetType, targetId: String, vote: Vote) async throws {
+        await mockDelay(0.2)
+        try await refreshTokenIfNeeded()
+    }
 }

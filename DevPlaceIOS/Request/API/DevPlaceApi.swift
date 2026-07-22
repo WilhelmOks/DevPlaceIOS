@@ -6,6 +6,7 @@ protocol DevPlaceApi {
     func feed() async throws -> Feed
     func post(title: String?, topic: String?, content: String) async throws
     func profile(username: String?) async throws -> Profile
+    func vote(targetType: TargetType, targetId: String, vote: Vote) async throws
 }
 
 extension DevPlaceApi {

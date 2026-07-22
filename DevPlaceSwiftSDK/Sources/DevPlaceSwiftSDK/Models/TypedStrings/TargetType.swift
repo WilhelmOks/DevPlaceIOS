@@ -1,4 +1,4 @@
-public enum TargetType: String {
+public enum TargetType: String, Hashable, Sendable {
     case post = "post"
     case project = "project"
     case news = "news"

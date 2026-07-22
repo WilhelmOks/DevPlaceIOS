@@ -35,6 +35,14 @@ final class ProdDevPlaceApi: DevPlaceApi {
         try await request.createPost(title: title, topic: topic, content: content, token: token)
     }
     
+    func vote(targetType: TargetType, targetId: String, vote: Vote) async throws {
+        guard let token = AppState.shared.token else {
+            throw DevPlaceError.notLoggedIn
+        }
+        try await refreshTokenIfNeeded()
+        try await request.vote(targetType: targetType, targetId: targetId, vote: vote, token: token)
+    }
+    
     func profile(username: String?) async throws -> Profile {
         try await refreshTokenIfNeeded()
         if let username {

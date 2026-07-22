@@ -23,6 +23,10 @@ struct FeedPostView: View {
                 Markdown(post.data.content)
                     .markdownTheme(.devPlace)
                     .markdownSoftBreakMode(.lineBreak)
+                
+                Divider()
+                
+                VoteView(targetType: .post, targetId: post.data.id, count: post.data.stars, currentVote: post.myVote)
             }
             .padding(.horizontal)
             
@@ -73,4 +77,5 @@ struct FeedPostView: View {
     .background {
         Color.BG_2.ignoresSafeArea()
     }
+    .environment(\.api, .mock)
 }

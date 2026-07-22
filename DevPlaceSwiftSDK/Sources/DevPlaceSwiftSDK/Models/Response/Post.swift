@@ -4,7 +4,7 @@ public struct Post: Hashable, Sendable, Identifiable {
     public var id: String { "post:" + data.id }
     public let data: Data
     public let author: User
-    public let myVote: Int
+    public let myVote: Vote
     public let commentCount: Int
     public let recentComments: [Comment]
     public let bookmarked: Bool
@@ -15,7 +15,7 @@ public struct Post: Hashable, Sendable, Identifiable {
     public init(
         data: Data,
         author: User,
-        myVote: Int,
+        myVote: Vote,
         commentCount: Int,
         recentComments: [Comment],
         bookmarked: Bool,
@@ -104,10 +104,15 @@ extension Post.Data {
 
 extension Post.CodingData {
     var decoded: Post {
-        .init(
+        let myVote: Vote = switch my_vote {
+            case 1: .up
+            case -1: .down
+            default: .none
+        }
+        return .init(
             data: post.decoded,
             author: author.decoded,
-            myVote: my_vote,
+            myVote: myVote,
             commentCount: comment_count,
             recentComments: recent_comments.map(\.decoded),
             bookmarked: bookmarked,

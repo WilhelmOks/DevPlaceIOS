@@ -6,11 +6,16 @@ struct DevPlaceIOSApp: App {
 
     init() {
         let userSessionStore = UserSessionStore.shared
+        let api: DevPlaceApi = .prod
 
         if let email = userSessionStore.email, let password = userSessionStore.password {
             Task {
-                let api: DevPlaceApi = .prod
                 try await api.logIn(email: email, password: password)
+                AppState.shared.feed = try await api.feed()
+            }
+        } else {
+            Task {
+                AppState.shared.feed = try await api.feed()
             }
         }
     }

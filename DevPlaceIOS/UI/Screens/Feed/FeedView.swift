@@ -11,20 +11,13 @@ struct FeedView: View {
 
 private struct FeedViewContent: View {
     @State var viewModel: FeedView.ViewModel
-    @State var appState: AppState = .shared
+    let appState = AppState.shared
     
     var body: some View {
         content()
             .screenStyle(bgColor: .BG_2)
             .navigationTitle(Text("Feed"))
             .alert($viewModel.alertMessage)
-            .onAppear {
-                if appState.feed == nil {
-                    Task {
-                        await viewModel.load()
-                    }
-                }
-            }
             .refreshable {
                 await viewModel.refresh()
             }

@@ -10,7 +10,7 @@ struct SettingsView: View {
 
 private struct SettingsViewContent: View {
     @State var viewModel: SettingsView.ViewModel
-    @State var appState = AppState.shared
+    let appState = AppState.shared
     @Bindable var appSettings = AppSettingsStore.shared
 
     @State private var logOutConfirmationPresented = false

@@ -11,6 +11,8 @@ struct VoteView: View {
     
     var body: some View {
         VoteViewContent(
+            count: count,
+            currentVote: currentVote,
             viewModel: .init(
                 targetType: targetType,
                 targetId: targetId,
@@ -23,6 +25,8 @@ struct VoteView: View {
 }
 
 private struct VoteViewContent: View {
+    let count: Int
+    let currentVote: Vote
     @State var viewModel: VoteView.ViewModel
     
     @ScaledMetric private var scale = 1.0
@@ -32,6 +36,12 @@ private struct VoteViewContent: View {
     var body: some View {
         content()
             .alert($viewModel.alertMessage)
+            .onChange(of: count) { _, newValue in
+                viewModel.count = newValue
+            }
+            .onChange(of: currentVote) { _, newValue in
+                viewModel.currentVote = newValue
+            }
     }
     
     @ViewBuilder private func content() -> some View {

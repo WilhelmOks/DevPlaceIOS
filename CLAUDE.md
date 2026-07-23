@@ -99,6 +99,7 @@ Color tokens `Color.BG_1`, `Color.BG_2`, `Color.FG_1`, `Color.FG_2` are defined 
     ))
     ```
 - **User preferences / settings:** always add to `AppSettingsStore` (`DevPlaceIOS/AppSettingsStore.swift`) with a `didSet`-persisted `UserDefaults` key, following the existing `appearance` / `showFeedAttachments` pattern. Don't invent parallel storage.
+- **Tap / press interactions:** default to native interactive components (`Button`, `NavigationLink`, `Toggle`, `Link`, etc.). Do not reach for gesture recognizers (`.onTapGesture`, `TapGesture`, `LongPressGesture`, etc.) unless the user explicitly asks for one — gesture recognizers bypass the accessibility affordances that native components provide (traits, focus, VoiceOver actions, hit-testing).
 
 ## Code philosophy
 

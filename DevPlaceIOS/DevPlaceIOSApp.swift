@@ -11,11 +11,11 @@ struct DevPlaceIOSApp: App {
         if let email = userSessionStore.email, let password = userSessionStore.password {
             Task {
                 try await api.logIn(email: email, password: password)
-                AppState.shared.feed = try await api.feed()
+                try await AppState.shared.loadFeed(api: api)
             }
         } else {
             Task {
-                AppState.shared.feed = try await api.feed()
+                try await AppState.shared.loadFeed(api: api)
             }
         }
     }

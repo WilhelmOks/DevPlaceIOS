@@ -14,6 +14,14 @@ final class AppState {
     
     var feed: Feed?
     
+    func loadFeed(api: DevPlaceApi) async throws {
+        AppState.shared.feed = try await api.feed()
+    }
+    
+    func loadMoreFeed(api: DevPlaceApi) async throws {
+        //TODO: implement
+    }
+    
     func clear() {
         feed = nil
     }

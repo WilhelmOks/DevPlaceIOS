@@ -14,7 +14,7 @@ extension FeedView {
         
         func load() async {
             do {
-                AppState.shared.feed = try await api.feed()
+                try await AppState.shared.loadFeed(api: api)
             } catch {
                 alertMessage = .presentedError(error)
             }

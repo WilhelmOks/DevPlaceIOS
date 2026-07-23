@@ -36,6 +36,16 @@ private struct PollViewContent: View {
             Text("\(viewModel.total) \(viewModel.total == 1 ? "vote" : "votes")")
                 .font(.footnote)
                 .foregroundStyle(Color.FG_2)
+                .padding(.horizontal, 4)
+        }
+        .padding(12)
+        .overlay {
+            RoundedRectangle(cornerRadius: 12)
+                .strokeBorder(Color.FG_2.opacity(0.25), lineWidth: 1)
+        }
+        .background {
+            RoundedRectangle(cornerRadius: 12)
+                .foregroundStyle(.BG_2)
         }
     }
     
@@ -68,7 +78,7 @@ private struct PollViewContent: View {
                 GeometryReader { geo in
                     RoundedRectangle(cornerRadius: 10)
                         .fill(Color.accentColor.opacity(isSelected ? 0.3 : 0.2))
-                        .padding(1)
+                        .padding(0.5)
                         .frame(width: geo.size.width * CGFloat(option.pct) / 100)
                 }
             }
@@ -79,9 +89,15 @@ private struct PollViewContent: View {
                         lineWidth: isSelected ? 1.5 : 1,
                     )
             }
+            .background {
+                RoundedRectangle(cornerRadius: 10)
+                    .foregroundStyle(.BG_1)
+                    .padding(0.5)
+            }
+            .contentShape(RoundedRectangle(cornerRadius: 10))
         }
         .buttonStyle(.plain)
-        .disabled(!viewModel.userCanVote)
+        .allowsHitTesting(viewModel.userCanVote)
     }
 }
 

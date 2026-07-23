@@ -30,7 +30,7 @@ extension PollView {
         }
         
         func tap(optionId: String) async {
-            guard !isLoading else { return }
+            guard !isLoading, userCanVote else { return }
             let newChoice: String? = myChoice == optionId ? nil : optionId
             await apply(newChoice: newChoice)
         }

@@ -3,6 +3,7 @@ import Observation
 import DevPlaceSwiftSDK
 
 @Observable
+@MainActor
 final class AppState {
     static let shared = AppState()
     
@@ -23,8 +24,13 @@ final class AppState {
             return
         }
         let nextPage = try await api.feed(before: cursor)
+        let existingIds = Set(currentFeed.posts.map(\.id))
+        for duplicate in nextPage.posts where existingIds.contains(duplicate.id) {
+            dlog("load-more in feed returned duplicate post from backend: \(duplicate.id)")
+        }
+        let newPosts = nextPage.posts.filter { !existingIds.contains($0.id) }
         feed = Feed(
-            posts: currentFeed.posts + nextPage.posts,
+            posts: currentFeed.posts + newPosts,
             currentTab: nextPage.currentTab,
             currentTopic: nextPage.currentTopic,
             search: nextPage.search,

@@ -15,6 +15,10 @@ extension VoteView {
         
         var isLoading = false
         
+        var userCanVote: Bool {
+            AppState.shared.isLoggedIn
+        }
+        
         init(
             targetType: TargetType,
             targetId: String,

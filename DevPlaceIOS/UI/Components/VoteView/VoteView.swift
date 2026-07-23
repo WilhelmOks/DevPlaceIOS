@@ -54,6 +54,7 @@ private struct VoteViewContent: View {
             }
             .buttonStyle(.plain)
             .foregroundStyle(viewModel.currentVote == .down ? Color.accentColor : Color.FG_2)
+            .disabled(!viewModel.userCanVote)
             
             Text("\(viewModel.count)")
                 .font(.system(size: 14 * scale))
@@ -68,6 +69,7 @@ private struct VoteViewContent: View {
             }
             .buttonStyle(.plain)
             .foregroundStyle(viewModel.currentVote == .up ? Color.accentColor : Color.FG_2)
+            .disabled(!viewModel.userCanVote)
         }
     }
 }

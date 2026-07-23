@@ -98,6 +98,7 @@ Color tokens `Color.BG_1`, `Color.BG_2`, `Color.FG_1`, `Color.FG_2` are defined 
         other: 42,
     ))
     ```
+- **User preferences / settings:** always add to `AppSettingsStore` (`DevPlaceIOS/AppSettingsStore.swift`) with a `didSet`-persisted `UserDefaults` key, following the existing `appearance` / `showFeedAttachments` pattern. Don't invent parallel storage.
 
 ## Code philosophy
 

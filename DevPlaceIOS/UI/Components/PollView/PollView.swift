@@ -8,12 +8,14 @@ struct PollView: View {
     
     var body: some View {
         PollViewContent(
+            poll: poll,
             viewModel: .init(poll: poll, api: api),
         )
     }
 }
 
 private struct PollViewContent: View {
+    let poll: Poll
     @State var viewModel: PollView.ViewModel
     
     private let outerCornerRadius: CGFloat = 12
@@ -28,6 +30,11 @@ private struct PollViewContent: View {
     var body: some View {
         content()
             .alert($viewModel.alertMessage)
+            .onChange(of: poll) { _, newValue in
+                viewModel.options = newValue.options
+                viewModel.total = newValue.total
+                viewModel.myChoice = newValue.myChoice
+            }
     }
     
     @ViewBuilder private func content() -> some View {

@@ -22,7 +22,19 @@ extension Collection where Element == Post {
                 commentCount: 2,
                 recentComments: .mock,
                 bookmarked: false,
-                attachments: [],
+                attachments: [
+                    .init(
+                        id: "att-1-1",
+                        filename: "photo.jpg",
+                        url: "https://picsum.photos/id/1015/600/400",
+                        size: nil,
+                        isImage: true,
+                        isVideo: false,
+                        mimeType: "image/jpeg",
+                        createdAt: Date().addingTimeInterval(-30),
+                        canModify: false,
+                    ),
+                ],
                 poll: nil,
             ),
             .init(
@@ -64,7 +76,19 @@ extension Collection where Element == Post {
                 commentCount: 0,
                 recentComments: [],
                 bookmarked: true,
-                attachments: [],
+                attachments: [
+                    .init(
+                        id: "att-3-1",
+                        filename: "clip.mp4",
+                        url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+                        size: nil,
+                        isImage: false,
+                        isVideo: true,
+                        mimeType: "video/mp4",
+                        createdAt: Date().addingTimeInterval(-60),
+                        canModify: false,
+                    ),
+                ],
                 poll: nil,
             ),
             .init(
@@ -122,7 +146,19 @@ extension Collection where Element == Post {
                 commentCount: 0,
                 recentComments: [],
                 bookmarked: false,
-                attachments: [],
+                attachments: [
+                    .init(
+                        id: "att-5-1",
+                        filename: "landscape.jpg",
+                        url: "https://picsum.photos/id/1018/800/500",
+                        size: nil,
+                        isImage: true,
+                        isVideo: false,
+                        mimeType: "image/jpeg",
+                        createdAt: Date().addingTimeInterval(-60 * 60 * 24),
+                        canModify: false,
+                    ),
+                ],
                 poll: nil,
             ),
         ]

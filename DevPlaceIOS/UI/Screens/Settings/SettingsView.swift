@@ -80,6 +80,20 @@ private struct SettingsViewContent: View {
             .listRowBackground(Color.BG_1)
             
             Section {
+                Toggle(isOn: $appSettings.showFeedAttachments) {
+                    Label {
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text("Show one attachment per post in feed")
+                        }
+                    } icon: {
+                        Image(systemName: "photo")
+                    }
+                }
+                .tint(Color.accentColor)
+            }
+            .listRowBackground(Color.BG_1)
+            
+            Section {
                 if appState.isLoggedIn {
                     Button {
                         logOutConfirmationPresented = true

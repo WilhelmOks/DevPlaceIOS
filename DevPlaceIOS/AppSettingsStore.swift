@@ -8,6 +8,7 @@ final class AppSettingsStore {
     
     private let userDefaults: UserDefaults = .standard
     private let appearanceKey = "appearance"
+    private let showFeedAttachmentsKey = "showFeedAttachments"
     
     var appearance: AppearanceMode {
         didSet {
@@ -15,9 +16,16 @@ final class AppSettingsStore {
         }
     }
     
+    var showFeedAttachments: Bool {
+        didSet {
+            userDefaults.set(showFeedAttachments, forKey: showFeedAttachmentsKey)
+        }
+    }
+    
     private init() {
         let raw = UserDefaults.standard.string(forKey: appearanceKey)
         self.appearance = raw.flatMap(AppearanceMode.init(rawValue:)) ?? .dark
+        self.showFeedAttachments = (userDefaults.object(forKey: showFeedAttachmentsKey) as? Bool) ?? true
     }
 }
 

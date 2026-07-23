@@ -4,6 +4,7 @@ import DevPlaceSwiftSDK
 
 struct FeedPostView: View {
     let post: Post
+    let appSettings = AppSettingsStore.shared
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -23,6 +24,10 @@ struct FeedPostView: View {
                 Markdown(post.data.content)
                     .markdownTheme(.devPlace)
                     .markdownSoftBreakMode(.lineBreak)
+                
+                if appSettings.showFeedAttachments, let attachment = post.attachments.first {
+                    AttachmentViewer(attachment: attachment)
+                }
                 
                 Divider()
                 

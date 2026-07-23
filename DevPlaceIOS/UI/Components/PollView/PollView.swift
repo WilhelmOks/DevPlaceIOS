@@ -16,6 +16,15 @@ struct PollView: View {
 private struct PollViewContent: View {
     @State var viewModel: PollView.ViewModel
     
+    private let outerCornerRadius: CGFloat = 12
+    private let outerPadding: CGFloat = 12
+    private let optionCornerRadius: CGFloat = 10
+    private let optionHorizontalPadding: CGFloat = 12
+    private let optionVerticalPadding: CGFloat = 10
+    private let subtleBorderOpacity: Double = 0.25
+    private let unselectedFillOpacity: Double = 0.2
+    private let selectedFillOpacity: Double = 0.3
+    
     var body: some View {
         content()
             .alert($viewModel.alertMessage)
@@ -38,13 +47,13 @@ private struct PollViewContent: View {
                 .foregroundStyle(Color.FG_2)
                 .padding(.horizontal, 4)
         }
-        .padding(12)
+        .padding(outerPadding)
         .overlay {
-            RoundedRectangle(cornerRadius: 12)
-                .strokeBorder(Color.FG_2.opacity(0.25), lineWidth: 1)
+            RoundedRectangle(cornerRadius: outerCornerRadius)
+                .strokeBorder(Color.FG_2.opacity(subtleBorderOpacity), lineWidth: 1)
         }
         .background {
-            RoundedRectangle(cornerRadius: 12)
+            RoundedRectangle(cornerRadius: outerCornerRadius)
                 .foregroundStyle(.BG_2)
         }
     }
@@ -72,29 +81,25 @@ private struct PollViewContent: View {
                     .monospacedDigit()
                     .foregroundStyle(Color.FG_2)
             }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 10)
+            .padding(.horizontal, optionHorizontalPadding)
+            .padding(.vertical, optionVerticalPadding)
             .background(alignment: .leading) {
                 GeometryReader { geo in
-                    RoundedRectangle(cornerRadius: 10)
-                        .fill(Color.accentColor.opacity(isSelected ? 0.3 : 0.2))
-                        .padding(0.5)
+                    Rectangle()
+                        .fill(Color.accentColor.opacity(isSelected ? selectedFillOpacity : unselectedFillOpacity))
                         .frame(width: geo.size.width * CGFloat(option.pct) / 100)
                 }
             }
+            .background(Color.BG_1)
+            .clipShape(RoundedRectangle(cornerRadius: optionCornerRadius))
             .overlay {
-                RoundedRectangle(cornerRadius: 10)
+                RoundedRectangle(cornerRadius: optionCornerRadius)
                     .strokeBorder(
-                        isSelected ? Color.accentColor : Color.FG_2.opacity(0.25),
+                        isSelected ? Color.accentColor : Color.FG_2.opacity(subtleBorderOpacity),
                         lineWidth: isSelected ? 1.5 : 1,
                     )
             }
-            .background {
-                RoundedRectangle(cornerRadius: 10)
-                    .foregroundStyle(.BG_1)
-                    .padding(0.5)
-            }
-            .contentShape(RoundedRectangle(cornerRadius: 10))
+            .contentShape(RoundedRectangle(cornerRadius: optionCornerRadius))
         }
         .buttonStyle(.plain)
         .allowsHitTesting(viewModel.userCanVote)

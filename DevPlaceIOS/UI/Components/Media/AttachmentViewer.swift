@@ -19,7 +19,7 @@ struct AttachmentViewer: View {
     }
     
     var body: some View {
-        if let url = URL(string: attachment.url) {
+        if let url = URL(string: fullUrl) {
             content(url: url)
                 .fullScreenCover(item: $fullscreen) { item in
                     switch item {
@@ -56,6 +56,14 @@ struct AttachmentViewer: View {
             }
             .buttonStyle(.plain)
             .accessibilityLabel(Text("Image attachment. Tap to view fullscreen."))
+        }
+    }
+    
+    private var fullUrl: String {
+        if attachment.url.hasPrefix("/") {
+            return "https://devplace.net" + attachment.url
+        } else {
+            return attachment.url
         }
     }
 }

@@ -30,6 +30,16 @@ private struct FeedViewContent: View {
                 ForEach(posts, id: \.id) { post in
                     FeedPostView(post: post)
                 }
+                if appState.feed?.nextCursor != nil {
+                    ProgressView()
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .onAppear {
+                            Task {
+                                await viewModel.loadMore()
+                            }
+                        }
+                }
             }
             .frame(maxWidth: .infinity)
         }

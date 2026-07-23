@@ -24,7 +24,7 @@ final class MockDevPlaceApi: DevPlaceApi {
         AppState.shared.token = token
     }
     
-    func feed() async throws -> Feed {
+    func feed(before: Date?) async throws -> Feed {
         await mockDelay()
         try await refreshTokenIfNeeded()
         return .mock

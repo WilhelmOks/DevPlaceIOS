@@ -22,9 +22,9 @@ final class ProdDevPlaceApi: DevPlaceApi {
         AppState.shared.token = token
     }
     
-    func feed() async throws -> Feed {
+    func feed(before: Date?) async throws -> Feed {
         try await refreshTokenIfNeeded()
-        return try await request.getFeed(token: AppState.shared.token)
+        return try await request.getFeed(before: before, token: AppState.shared.token)
     }
     
     func post(title: String?, topic: String?, content: String) async throws {

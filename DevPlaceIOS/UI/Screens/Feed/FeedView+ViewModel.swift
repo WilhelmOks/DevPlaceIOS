@@ -8,6 +8,8 @@ extension FeedView {
         
         var alertMessage: AlertMessage = .none()
         
+        var isLoadingMore = false
+        
         init(api: DevPlaceApi) {
             self.api = api
         }
@@ -27,6 +29,17 @@ extension FeedView {
                     try? await Task.sleep(for: .milliseconds(300))
                     AppState.shared.feed = newFeed
                 }
+            } catch {
+                alertMessage = .presentedError(error)
+            }
+        }
+        
+        func loadMore() async {
+            guard !isLoadingMore else { return }
+            isLoadingMore = true
+            defer { isLoadingMore = false }
+            do {
+                try await AppState.shared.loadMoreFeed(api: api)
             } catch {
                 alertMessage = .presentedError(error)
             }

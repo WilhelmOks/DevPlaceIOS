@@ -81,6 +81,23 @@ Color tokens `Color.BG_1`, `Color.BG_2`, `Color.FG_1`, `Color.FG_2` are defined 
 - **Swift 6 trailing commas:** the project uses trailing commas in multi-line parameter and argument lists. Preserve that style when editing.
 - **Indentation:** 4 spaces.
 - **leading whitespace** whitespace on empty lines is allowed. Don't remove it between indented code. Add it to match the level of indentation when you create new code.
+- **Nested multi-line calls:** when an argument is itself a multi-line call, the inner call's opening `(` goes on its own line — never stack `Outer(arg: .init(` on the same line. Each call's `(` opens after its own indent, arguments are indented one level in, and the closing `)` sits on its own line at the outer indent. Example:
+
+    ```swift
+    // Correct
+    Outer(
+        arg: .init(
+            field: "value",
+            other: 42,
+        )
+    )
+
+    // Wrong — .init( piggybacked on the outer call's argument line
+    Outer(arg: .init(
+        field: "value",
+        other: 42,
+    ))
+    ```
 
 ## Code philosophy
 

@@ -56,7 +56,7 @@ extension Collection where Element == Post {
                 recentComments: [],
                 bookmarked: false,
                 attachments: [],
-                poll: nil,
+                poll: .mockLayoutContainer,
             ),
             .init(
                 data: .init(
@@ -89,7 +89,7 @@ extension Collection where Element == Post {
                         canModify: false,
                     ),
                 ],
-                poll: nil,
+                poll: .mockTestingFrameworkAlreadyVoted,
             ),
             .init(
                 data: .init(
@@ -110,7 +110,7 @@ extension Collection where Element == Post {
                 recentComments: [],
                 bookmarked: false,
                 attachments: [],
-                poll: nil,
+                poll: .mockConcurrency,
             ),
             .init(
                 data: .init(

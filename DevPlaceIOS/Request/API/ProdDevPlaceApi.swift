@@ -43,6 +43,11 @@ final class ProdDevPlaceApi: DevPlaceApi {
         try await request.vote(targetType: targetType, targetId: targetId, vote: vote, token: token)
     }
     
+    func submitPollChoice(pollId: String, optionId: String?) async throws {
+        // TODO: call request.submitPollChoice(pollId:optionId:token:) once DevPlaceSwiftSDK exposes it
+        try await refreshTokenIfNeeded()
+    }
+    
     func profile(username: String?) async throws -> Profile {
         try await refreshTokenIfNeeded()
         if let username {

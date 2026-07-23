@@ -346,6 +346,8 @@ public extension DevPlaceRequest {
         try await request.requestJson(config: config, json: body, apiError: ApiError.self)
     }
 
+    // TODO: add submitPollChoice(pollId:optionId:token:) once the backend endpoint is defined
+
     func react(targetType: TargetType, targetId: String, emoji: String, token: AuthToken) async throws {
         struct Body: Encodable {
             let emoji: String

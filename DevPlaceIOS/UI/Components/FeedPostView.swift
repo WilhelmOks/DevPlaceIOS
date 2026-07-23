@@ -25,6 +25,10 @@ struct FeedPostView: View {
                     .markdownTheme(.devPlace)
                     .markdownSoftBreakMode(.lineBreak)
                 
+                if let poll = post.poll {
+                    PollView(poll: poll)
+                }
+                
                 if appSettings.showFeedAttachments, let attachment = post.attachments.first {
                     AttachmentViewer(attachment: attachment)
                 }

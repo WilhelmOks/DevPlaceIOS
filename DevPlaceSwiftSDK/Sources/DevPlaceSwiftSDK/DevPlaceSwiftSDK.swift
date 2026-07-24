@@ -337,6 +337,12 @@ public extension DevPlaceRequest {
 
     // MARK: - Engagement
 
+    /// Casts a vote on a target.
+    ///
+    /// The endpoint toggles rather than sets: submitting the vote value the user already holds
+    /// removes it. To take away an existing upvote, send `.up` again (not `.none`); likewise
+    /// send `.down` again to clear an existing downvote. There is no "set to zero" — `.none`
+    /// does not clear a vote. Submitting the opposite value replaces the current vote.
     func vote(targetType: TargetType, targetId: String, vote: Vote, token: AuthToken) async throws {
         struct Body: Encodable {
             let value: Int

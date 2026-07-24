@@ -36,16 +36,16 @@ extension VoteView {
         func voteUp() async {
             guard !isLoading else { return }
             let newVote: Vote = currentVote == .up ? .none : .up
-            await apply(newVote: newVote)
+            await apply(selectedVote: .up, newVote: newVote)
         }
         
         func voteDown() async {
             guard !isLoading else { return }
             let newVote: Vote = currentVote == .down ? .none : .down
-            await apply(newVote: newVote)
+            await apply(selectedVote: .down, newVote: newVote)
         }
         
-        private func apply(newVote: Vote) async {
+        private func apply(selectedVote: Vote, newVote: Vote) async {
             isLoading = true
             defer { isLoading = false }
             
@@ -56,7 +56,7 @@ extension VoteView {
             count = previousCount + newVote.value - previousVote.value
             
             do {
-                try await api.vote(targetType: targetType, targetId: targetId, vote: newVote)
+                try await api.vote(targetType: targetType, targetId: targetId, vote: selectedVote)
             } catch {
                 currentVote = previousVote
                 count = previousCount

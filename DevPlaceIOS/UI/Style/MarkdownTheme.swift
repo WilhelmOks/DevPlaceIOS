@@ -6,7 +6,7 @@ extension Theme {
         .code {
             FontFamilyVariant(.monospaced)
             FontSize(.em(0.85))
-            BackgroundColor(.BG_1)
+            BackgroundColor(.BG_2)
         }
         .blockquote { configuration in
             HStack(spacing: 0) {
@@ -32,7 +32,7 @@ extension Theme {
                     .padding(.vertical, 6)
                     .padding(.horizontal, 10)
             }
-            .background(Color.BG_1)
+            .background(Color.BG_2)
             .clipShape(RoundedRectangle(cornerRadius: 8))
             .markdownMargin(top: 6, bottom: 16)
         }

@@ -1,5 +1,4 @@
 import SwiftUI
-import MarkdownUI
 import DevPlaceSwiftSDK
 
 struct FeedPostView: View {
@@ -12,18 +11,9 @@ struct FeedPostView: View {
                 .padding(.bottom, 8)
             
             VStack(alignment: .leading, spacing: 8) {
-                topArea()
+                PostHeaderView(author: post.author, topic: post.data.topic, date: post.data.createdAt)
                 
-                if let title = post.data.title {
-                    let markdownTitle = LocalizedStringKey(title)
-                    Text(markdownTitle)
-                        .lineSpacing(0)
-                        .font(.title)
-                }
-                
-                Markdown(post.data.content)
-                    .markdownTheme(.devPlace)
-                    .markdownSoftBreakMode(.lineBreak)
+                postContentLink()
                 
                 if let poll = post.poll {
                     PollView(poll: poll)
@@ -52,23 +42,17 @@ struct FeedPostView: View {
         Color.FG_2.frame(height: 1).opacity(0.3)
     }
     
-    @ViewBuilder private func topArea() -> some View {
-        HStack(alignment: .top) {
-            VStack(alignment: .leading, spacing: 10) {
-                NavigationLink {
-                    ProfileView(username: post.author.username)
-                } label: {
-                    UserAvatarView(user: post.author)
-                }
-                
-                if let topic = post.data.topic {
-                    CapsuleLabel(text: topic)
-                }
+    @ViewBuilder private func postContentLink() -> some View {
+        if let slug = post.data.slug {
+            NavigationLink {
+                PostView(slug: slug)
+            } label: {
+                PostContentView(title: post.data.title, content: post.data.content)
+                    .contentShape(Rectangle())
             }
-            
-            Spacer()
-            
-            RelativeTimeLabel(date: post.data.createdAt)
+            .buttonStyle(.plain)
+        } else {
+            PostContentView(title: post.data.title, content: post.data.content)
         }
     }
 }

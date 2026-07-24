@@ -92,21 +92,21 @@ private struct ProfileViewContent: View {
             sectionTitle("Bio")
                 .frame(maxWidth: .infinity, alignment: .leading)
             
-            Markdown(profile.user.bio)
+            Markdown(profile.user.bio ?? "")
                 .multilineTextAlignment(.leading)
                 .frame(maxWidth: .infinity, alignment: .leading)
             
             Divider()
             
-            infoRow(title: "Location", text: profile.user.location)
+            infoRow(title: "Location", text: profile.user.location ?? "")
             
             Divider()
             
-            infoRow(title: "Git Link", link: profile.user.gitLink)
+            infoRow(title: "Git Link", link: profile.user.gitLink ?? "")
             
             Divider()
             
-            infoRow(title: "Website", link: profile.user.website)
+            infoRow(title: "Website", link: profile.user.website ?? "")
         }
     }
     

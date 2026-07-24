@@ -12,7 +12,7 @@ public struct User: Hashable, Sendable, Identifiable {
     public let level: Int
     public let xp: Int
     public let stars: Int
-    public let createdAt: Date
+    public let createdAt: Date?
 
     public init(
         id: String,
@@ -26,7 +26,7 @@ public struct User: Hashable, Sendable, Identifiable {
         level: Int,
         xp: Int,
         stars: Int,
-        createdAt: Date,
+        createdAt: Date?,
     ) {
         self.id = id
         self.username = username
@@ -49,14 +49,14 @@ extension User {
         let username: String
         let avatar_seed: String?
         let role: String?
-        let bio: String
-        let location: String
-        let git_link: String
-        let website: String
-        let level: Int
-        let xp: Int
-        let stars: Int
-        let created_at: Date
+        let bio: String?
+        let location: String?
+        let git_link: String?
+        let website: String?
+        let level: Int?
+        let xp: Int?
+        let stars: Int?
+        let created_at: Date?
     }
 }
 
@@ -67,13 +67,13 @@ extension User.CodingData {
             username: username,
             avatarSeed: avatar_seed,
             role: role.flatMap(Role.init(rawValue:)),
-            bio: bio,
-            location: location,
-            gitLink: git_link,
-            website: website,
-            level: level,
-            xp: xp,
-            stars: stars,
+            bio: bio ?? "",
+            location: location ?? "",
+            gitLink: git_link ?? "",
+            website: website ?? "",
+            level: level ?? 0,
+            xp: xp ?? 0,
+            stars: stars ?? 0,
             createdAt: created_at,
         )
     }

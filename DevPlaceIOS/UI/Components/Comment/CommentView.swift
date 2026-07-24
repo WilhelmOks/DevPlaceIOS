@@ -82,7 +82,7 @@ private struct VerticalLine: Shape {
             .frame(maxWidth: .infinity)
         }
         .background {
-            Color.BG_2.ignoresSafeArea()
+            Color.BG_1.ignoresSafeArea()
         }
         .environment(\.api, .mock)
     }

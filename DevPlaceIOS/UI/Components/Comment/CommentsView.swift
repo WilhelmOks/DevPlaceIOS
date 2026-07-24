@@ -3,10 +3,11 @@ import DevPlaceSwiftSDK
 
 struct CommentsView: View {
     let comments: [Comment]
+    var baseIndentationLevel: Int = 0
     
     var body: some View {
         VStack(spacing: 0) {
-            ForEach(comments.indented()) { item in
+            ForEach(comments.indented(startingAt: baseIndentationLevel)) { item in
                 CommentView(comment: item.comment, indentationLevel: item.level)
             }
         }
@@ -33,7 +34,7 @@ private extension Array where Element == Comment {
         CommentsView(comments: .mock)
     }
     .background {
-        Color.BG_2.ignoresSafeArea()
+        Color.BG_1.ignoresSafeArea()
     }
     .environment(\.api, .mock)
 }

@@ -27,7 +27,7 @@ struct FeedPostView: View {
             }
             .padding(.horizontal)
             
-            CommentsView(comments: post.recentComments)
+            CommentsView(comments: post.recentComments, baseIndentationLevel: 1)
                 .padding(.top, 8)
             
             hLine()

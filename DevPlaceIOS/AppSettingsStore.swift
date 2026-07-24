@@ -10,6 +10,9 @@ final class AppSettingsStore {
     private let appearanceKey = "appearance"
     private let showFeedAttachmentsKey = "showFeedAttachments"
     private let showFeedCommentsKey = "showFeedComments"
+    private let recentEmojisKey = "recentEmojis"
+    
+    private let maxRecentEmojis = 30
     
     var appearance: AppearanceMode {
         didSet {
@@ -29,11 +32,24 @@ final class AppSettingsStore {
         }
     }
     
+    var recentEmojis: [String] {
+        didSet {
+            userDefaults.set(recentEmojis, forKey: recentEmojisKey)
+        }
+    }
+    
     private init() {
         let raw = UserDefaults.standard.string(forKey: appearanceKey)
         self.appearance = raw.flatMap(AppearanceMode.init(rawValue:)) ?? .dark
         self.showFeedAttachments = (userDefaults.object(forKey: showFeedAttachmentsKey) as? Bool) ?? true
         self.showFeedComments = (userDefaults.object(forKey: showFeedCommentsKey) as? Bool) ?? true
+        self.recentEmojis = (userDefaults.array(forKey: recentEmojisKey) as? [String]) ?? []
+    }
+    
+    func recordEmojiPick(_ emoji: String) {
+        var updated = recentEmojis.filter { $0 != emoji }
+        updated.insert(emoji, at: 0)
+        recentEmojis = Array(updated.prefix(maxRecentEmojis))
     }
 }
 

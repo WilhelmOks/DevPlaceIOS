@@ -18,6 +18,7 @@ extension Collection where Element == Comment {
                 myVote: 0,
                 votes: .init(up: 0, down: 0),
                 attachments: [],
+                children: [],
             ),
             .init(
                 data: .init(
@@ -33,6 +34,7 @@ extension Collection where Element == Comment {
                 myVote: 1,
                 votes: .init(up: 2, down: 0),
                 attachments: [],
+                children: [],
             ),
         ]
     }

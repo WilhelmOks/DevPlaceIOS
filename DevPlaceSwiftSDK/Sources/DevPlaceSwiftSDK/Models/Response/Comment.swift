@@ -8,7 +8,7 @@ public struct Comment: Hashable, Sendable, Identifiable {
     public let myVote: Int
     public let votes: Votes
     public let attachments: [Attachment]
-    //public let children: [Comment] // empty array in sample - type cannot be confirmed from JSON
+    public let children: [Comment]
     //public let reactions: ??? // empty in sample - type unknown
 
     public init(
@@ -17,12 +17,14 @@ public struct Comment: Hashable, Sendable, Identifiable {
         myVote: Int,
         votes: Votes,
         attachments: [Attachment],
+        children: [Comment],
     ) {
         self.data = data
         self.author = author
         self.myVote = myVote
         self.votes = votes
         self.attachments = attachments
+        self.children = children
     }
 }
 
@@ -74,7 +76,7 @@ extension Comment {
         let my_vote: Int
         let votes: Votes.CodingData
         let attachments: [Attachment.CodingData]
-        //let children: [???] // empty array in sample - type unknown
+        let children: [Comment.CodingData]
         //let reactions: ??? // empty in sample - type unknown
     }
 }
@@ -106,6 +108,7 @@ extension Comment.CodingData {
             myVote: my_vote,
             votes: votes.decoded,
             attachments: attachments.map(\.decoded),
+            children: children.map(\.decoded),
         )
     }
 }

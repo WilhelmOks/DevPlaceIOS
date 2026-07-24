@@ -70,6 +70,10 @@ private struct PostViewContent: View {
         .background {
             Color.BG_1
         }
+        .contentShape(Rectangle())
+        .onTapGesture(count: 2) {
+            Task { await viewModel.doubleTapPost() }
+        }
     }
     
     @ViewBuilder private func commentsSection(_ detail: PostDetail) -> some View {
@@ -81,7 +85,12 @@ private struct PostViewContent: View {
                     .padding(.horizontal)
                     .padding(.top)
                 
-                CommentsView(comments: detail.comments)
+                CommentsView(
+                    comments: detail.comments,
+                    onDoubleTapComment: { comment in
+                        Task { await viewModel.doubleTapComment(comment) }
+                    },
+                )
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }

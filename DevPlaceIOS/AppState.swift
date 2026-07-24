@@ -13,7 +13,13 @@ final class AppState {
     
     var isLoggedIn: Bool { token != nil }
     
+    var currentUser: User?
+    
     var feed: Feed?
+    
+    func isCurrentUser(id: String) -> Bool {
+        currentUser?.id == id
+    }
     
     func loadFeed(api: DevPlaceApi) async throws {
         AppState.shared.feed = try await api.feed()
@@ -92,88 +98,29 @@ final class AppState {
         feed = currentFeed.replacingPosts(updatedPosts)
     }
     
-    func clear() {
-        feed = nil
-    }
-}
-
-private extension Feed {
-    func replacingPosts(_ newPosts: [Post]) -> Feed {
-        Feed(
-            posts: newPosts,
-            currentTab: currentTab,
-            currentTopic: currentTopic,
-            search: search,
-            nextCursor: nextCursor,
-            totalMembers: totalMembers,
-            postsToday: postsToday,
-            totalProjects: totalProjects,
-            totalGists: totalGists,
-            topAuthors: topAuthors,
-        )
-    }
-}
-
-private extension Post {
-    func replacingRecentComments(_ newComments: [Comment]) -> Post {
-        Post(
-            data: data,
-            author: author,
-            myVote: myVote,
-            commentCount: commentCount,
-            recentComments: newComments,
-            bookmarked: bookmarked,
-            attachments: attachments,
-            poll: poll,
-        )
-    }
-}
-
-private extension Array where Element == Comment {
-    func updatingVote(commentId: String, vote: Vote) -> [Comment] {
-        map { comment in
-            let updatedChildren = comment.children.updatingVote(commentId: commentId, vote: vote)
-            if comment.data.id == commentId {
-                return comment.applyingVote(vote, children: updatedChildren)
-            } else {
-                return comment.replacingChildren(updatedChildren)
-            }
+    /// Performs an optimistic upvote toggle: if the current vote is already `.up` it is removed,
+    /// otherwise it becomes `.up`. The backend `vote` endpoint toggles, so the selected value sent
+    /// is always `.up`. `apply` is called with the new optimistic vote, and again with the previous
+    /// vote to revert if the request fails.
+    func performVoteToggle(
+        targetType: TargetType,
+        targetId: String,
+        currentVote: Vote,
+        api: DevPlaceApi,
+        apply: (Vote) -> Void,
+    ) async {
+        let newVote: Vote = currentVote == .up ? .none : .up
+        apply(newVote)
+        do {
+            try await api.vote(targetType: targetType, targetId: targetId, vote: .up)
+        } catch {
+            apply(currentVote)
+            dlog("Double-tap vote failed: \(error)")
         }
-    }
-}
-
-private extension Comment {
-    func applyingVote(_ newVote: Vote, children: [Comment]) -> Comment {
-        var up = votes.up
-        var down = votes.down
-        switch myVote {
-        case .up: up -= 1
-        case .down: down -= 1
-        case .none: break
-        }
-        switch newVote {
-        case .up: up += 1
-        case .down: down += 1
-        case .none: break
-        }
-        return Comment(
-            data: data,
-            author: author,
-            myVote: newVote,
-            votes: Comment.Votes(up: up, down: down),
-            attachments: attachments,
-            children: children,
-        )
     }
     
-    func replacingChildren(_ newChildren: [Comment]) -> Comment {
-        Comment(
-            data: data,
-            author: author,
-            myVote: myVote,
-            votes: votes,
-            attachments: attachments,
-            children: newChildren,
-        )
+    func clear() {
+        feed = nil
+        currentUser = nil
     }
 }

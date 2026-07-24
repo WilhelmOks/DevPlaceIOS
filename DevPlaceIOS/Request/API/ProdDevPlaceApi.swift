@@ -20,6 +20,7 @@ final class ProdDevPlaceApi: DevPlaceApi {
     func logIn(email: String, password: String) async throws {
         let token = try await request.getAuthToken(email: email, password: password)
         AppState.shared.token = token
+        AppState.shared.currentUser = try? await request.getProfile(username: nil, token: token).user
     }
     
     func feed(before: Date?) async throws -> Feed {

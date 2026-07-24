@@ -40,5 +40,40 @@ extension PostView {
                 alertMessage = .presentedError(error)
             }
         }
+        
+        func doubleTapPost() async {
+            guard let detail = postDetail else { return }
+            guard !AppState.shared.isCurrentUser(id: detail.post.userId) else {
+                // TODO: edit the post (editing own posts is not implemented yet)
+                return
+            }
+            await AppState.shared.performVoteToggle(
+                targetType: .post,
+                targetId: detail.post.id,
+                currentVote: detail.myVote,
+                api: api,
+            ) { newVote in
+                let newCount = detail.starCount + newVote.value - detail.myVote.value
+                postDetail = detail.with(myVote: newVote, starCount: newCount)
+                AppState.shared.updatePostVoteInFeed(postId: detail.post.id, vote: newVote, count: newCount)
+            }
+        }
+        
+        func doubleTapComment(_ comment: Comment) async {
+            guard let detail = postDetail else { return }
+            guard !AppState.shared.isCurrentUser(id: comment.data.userId) else {
+                // TODO: edit the comment (editing own comments is not implemented yet)
+                return
+            }
+            await AppState.shared.performVoteToggle(
+                targetType: .comment,
+                targetId: comment.data.id,
+                currentVote: comment.myVote,
+                api: api,
+            ) { newVote in
+                postDetail = detail.with(comments: detail.comments.updatingVote(commentId: comment.data.id, vote: newVote))
+                AppState.shared.updateCommentVoteInFeed(commentId: comment.data.id, vote: newVote)
+            }
+        }
     }
 }

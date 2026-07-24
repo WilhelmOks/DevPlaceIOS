@@ -3,7 +3,10 @@ import DevPlaceSwiftSDK
 
 struct FeedPostView: View {
     let post: Post
+    var onSelect: ((String) -> Void)? = nil
+    
     let appSettings = AppSettingsStore.shared
+    @Environment(\.api) var api
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -13,7 +16,7 @@ struct FeedPostView: View {
             VStack(alignment: .leading, spacing: 8) {
                 PostHeaderView(author: post.author, date: post.data.createdAt)
                 
-                postContentLink()
+                PostContentView(topic: post.data.topic, title: post.data.title, content: post.data.content)
                 
                 if let poll = post.poll {
                     PollView(poll: poll)
@@ -28,8 +31,13 @@ struct FeedPostView: View {
             .padding(.horizontal)
             
             if appSettings.showFeedComments {
-                CommentsView(comments: post.recentComments, baseIndentationLevel: 1)
-                    .padding(.top, 8)
+                CommentsView(
+                    comments: post.recentComments,
+                    baseIndentationLevel: 1,
+                    onSingleTapComment: { _ in navigateToPost() },
+                    onDoubleTapComment: { comment in Task { await handleDoubleTapComment(comment) } },
+                )
+                .padding(.top, 8)
             }
             
             hLine()
@@ -39,23 +47,48 @@ struct FeedPostView: View {
         .background {
             Color.BG_1
         }
+        .contentShape(Rectangle())
+        .onTapGesture(count: 2) { Task { await handleDoubleTapPost() } }
+        .onTapGesture { navigateToPost() }
     }
     
     @ViewBuilder private func hLine() -> some View {
         Color.FG_2.frame(height: 1).opacity(0.3)
     }
     
-    @ViewBuilder private func postContentLink() -> some View {
-        if let slug = post.data.slug {
-            NavigationLink {
-                PostView(slug: slug)
-            } label: {
-                PostContentView(topic: post.data.topic, title: post.data.title, content: post.data.content)
-                    .contentShape(Rectangle())
-            }
-            .buttonStyle(.plain)
-        } else {
-            PostContentView(topic: post.data.topic, title: post.data.title, content: post.data.content)
+    private func navigateToPost() {
+        guard let slug = post.data.slug else { return }
+        onSelect?(slug)
+    }
+    
+    private func handleDoubleTapPost() async {
+        guard !AppState.shared.isCurrentUser(id: post.data.userId) else {
+            // Editing isn't possible from the feed, so a double tap on your own post does nothing.
+            return
+        }
+        await AppState.shared.performVoteToggle(
+            targetType: .post,
+            targetId: post.data.id,
+            currentVote: post.myVote,
+            api: api,
+        ) { newVote in
+            let newCount = post.data.stars + newVote.value - post.myVote.value
+            AppState.shared.updatePostVoteInFeed(postId: post.data.id, vote: newVote, count: newCount)
+        }
+    }
+    
+    private func handleDoubleTapComment(_ comment: Comment) async {
+        guard !AppState.shared.isCurrentUser(id: comment.data.userId) else {
+            // Editing isn't possible from the feed, so a double tap on your own comment does nothing.
+            return
+        }
+        await AppState.shared.performVoteToggle(
+            targetType: .comment,
+            targetId: comment.data.id,
+            currentVote: comment.myVote,
+            api: api,
+        ) { newVote in
+            AppState.shared.updateCommentVoteInFeed(commentId: comment.data.id, vote: newVote)
         }
     }
 }

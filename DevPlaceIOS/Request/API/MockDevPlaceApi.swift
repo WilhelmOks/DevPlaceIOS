@@ -22,6 +22,7 @@ final class MockDevPlaceApi: DevPlaceApi {
             expireTime: Date().addingTimeInterval(60 * 60 + 10)
         )
         AppState.shared.token = token
+        AppState.shared.currentUser = Profile.mock.user
     }
     
     func feed(before: Date?) async throws -> Feed {

@@ -4,6 +4,8 @@ import DevPlaceSwiftSDK
 struct CommentView: View {
     let comment: Comment
     var indentationLevel: Int = 0
+    var onSingleTap: (() -> Void)? = nil
+    var onDoubleTap: (() -> Void)? = nil
     
     private let maxIndentationLevel = 3
     private let indentWidth: CGFloat = 16
@@ -48,6 +50,9 @@ struct CommentView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal)
         .padding(.vertical, 8)
+        .contentShape(Rectangle())
+        .onTapGesture(count: 2) { onDoubleTap?() }
+        .onTapGesture { onSingleTap?() }
     }
     
     @ViewBuilder private func guideLine(dashed: Bool) -> some View {

@@ -4,11 +4,18 @@ import DevPlaceSwiftSDK
 struct CommentsView: View {
     let comments: [Comment]
     var baseIndentationLevel: Int = 0
+    var onSingleTapComment: ((Comment) -> Void)? = nil
+    var onDoubleTapComment: ((Comment) -> Void)? = nil
     
     var body: some View {
         VStack(spacing: 0) {
             ForEach(comments.indented(startingAt: baseIndentationLevel)) { item in
-                CommentView(comment: item.comment, indentationLevel: item.level)
+                CommentView(
+                    comment: item.comment,
+                    indentationLevel: item.level,
+                    onSingleTap: onSingleTapComment.map { handler in { handler(item.comment) } },
+                    onDoubleTap: onDoubleTapComment.map { handler in { handler(item.comment) } },
+                )
             }
         }
     }

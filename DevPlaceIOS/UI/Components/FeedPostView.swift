@@ -11,7 +11,7 @@ struct FeedPostView: View {
                 .padding(.bottom, 8)
             
             VStack(alignment: .leading, spacing: 8) {
-                PostHeaderView(author: post.author, topic: post.data.topic, date: post.data.createdAt)
+                PostHeaderView(author: post.author, date: post.data.createdAt)
                 
                 postContentLink()
                 
@@ -47,12 +47,12 @@ struct FeedPostView: View {
             NavigationLink {
                 PostView(slug: slug)
             } label: {
-                PostContentView(title: post.data.title, content: post.data.content)
+                PostContentView(topic: post.data.topic, title: post.data.title, content: post.data.content)
                     .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
         } else {
-            PostContentView(title: post.data.title, content: post.data.content)
+            PostContentView(topic: post.data.topic, title: post.data.title, content: post.data.content)
         }
     }
 }

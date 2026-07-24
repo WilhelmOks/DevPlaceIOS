@@ -3,11 +3,16 @@ import MarkdownUI
 import DevPlaceSwiftSDK
 
 struct PostContentView: View {
+    let topic: String?
     let title: String?
     let content: String
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
+            if let topic {
+                CapsuleLabel(text: topic)
+            }
+            
             if let title {
                 let markdownTitle = LocalizedStringKey(title)
                 Text(markdownTitle)

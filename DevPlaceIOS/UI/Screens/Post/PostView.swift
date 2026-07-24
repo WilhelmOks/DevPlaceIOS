@@ -45,11 +45,10 @@ private struct PostViewContent: View {
         VStack(alignment: .leading, spacing: 8) {
             PostHeaderView(
                 author: detail.author,
-                topic: detail.post.topic,
                 date: detail.post.createdAt,
             )
             
-            PostContentView(title: detail.post.title, content: detail.post.content)
+            PostContentView(topic: detail.post.topic, title: detail.post.title, content: detail.post.content)
             
             if let poll = detail.poll {
                 PollView(poll: poll)

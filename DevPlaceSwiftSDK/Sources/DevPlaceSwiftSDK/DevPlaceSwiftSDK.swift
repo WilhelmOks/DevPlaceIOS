@@ -346,7 +346,14 @@ public extension DevPlaceRequest {
         try await request.requestJson(config: config, json: body, apiError: ApiError.self)
     }
 
-    // TODO: add submitPollChoice(pollId:optionId:token:) once the backend endpoint is defined
+    func submitPollChoice(pollId: String, optionId: String, token: AuthToken) async throws {
+        struct Body: Encodable {
+            let option_uid: String
+        }
+        let config = makeConfig(.post, path: "polls/\(pollId)/vote", contentType: .jsonBody, token: token)
+        let body = Body(option_uid: optionId)
+        try await request.requestJson(config: config, json: body, apiError: ApiError.self)
+    }
 
     func react(targetType: TargetType, targetId: String, emoji: String, token: AuthToken) async throws {
         struct Body: Encodable {

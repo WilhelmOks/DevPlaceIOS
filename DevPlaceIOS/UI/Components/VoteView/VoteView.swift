@@ -47,7 +47,7 @@ private struct VoteViewContent: View {
     @ViewBuilder private func content() -> some View {
         HStack(spacing: 10) {
             Button {
-                Task { await viewModel.tapDown() }
+                Task { await viewModel.voteDown() }
             } label: {
                 Image(systemName: viewModel.currentVote == .down ? "minus.circle.fill" : "minus.circle")
                     .font(.system(size: buttonSize * scale))
@@ -62,7 +62,7 @@ private struct VoteViewContent: View {
                 .monospacedDigit()
             
             Button {
-                Task { await viewModel.tapUp() }
+                Task { await viewModel.voteUp() }
             } label: {
                 Image(systemName: viewModel.currentVote == .up ? "plus.circle.fill" : "plus.circle")
                     .font(.system(size: buttonSize * scale))

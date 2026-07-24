@@ -33,13 +33,13 @@ extension VoteView {
             self.api = api
         }
         
-        func tapUp() async {
+        func voteUp() async {
             guard !isLoading else { return }
             let newVote: Vote = currentVote == .up ? .none : .up
             await apply(newVote: newVote)
         }
         
-        func tapDown() async {
+        func voteDown() async {
             guard !isLoading else { return }
             let newVote: Vote = currentVote == .down ? .none : .down
             await apply(newVote: newVote)

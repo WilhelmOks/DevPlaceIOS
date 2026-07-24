@@ -29,13 +29,13 @@ extension PollView {
             self.myChoice = poll.myChoice
         }
         
-        func tap(optionId: String) async {
+        func select(optionId: String) async {
             guard !isLoading, userCanVote else { return }
             let newChoice: String? = myChoice == optionId ? nil : optionId
-            await apply(newChoice: newChoice)
+            await apply(selectedOptionId: optionId, newChoice: newChoice)
         }
         
-        private func apply(newChoice: String?) async {
+        private func apply(selectedOptionId: String, newChoice: String?) async {
             isLoading = true
             defer { isLoading = false }
             
@@ -54,7 +54,7 @@ extension PollView {
             myChoice = newChoice
             
             do {
-                try await api.submitPollChoice(pollId: pollId, optionId: newChoice)
+                try await api.submitPollChoice(pollId: pollId, optionId: selectedOptionId)
             } catch {
                 options = previousOptions
                 total = previousTotal

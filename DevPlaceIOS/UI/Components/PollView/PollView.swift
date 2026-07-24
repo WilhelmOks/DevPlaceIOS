@@ -68,7 +68,7 @@ private struct PollViewContent: View {
     @ViewBuilder private func optionRow(option: PollOption) -> some View {
         let isSelected = viewModel.myChoice == option.id
         Button {
-            Task { await viewModel.tap(optionId: option.id) }
+            Task { await viewModel.select(optionId: option.id) }
         } label: {
             HStack(spacing: 8) {
                 Text(option.label)

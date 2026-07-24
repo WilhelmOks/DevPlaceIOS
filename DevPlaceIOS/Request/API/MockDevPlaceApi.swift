@@ -46,7 +46,7 @@ final class MockDevPlaceApi: DevPlaceApi {
         try await refreshTokenIfNeeded()
     }
     
-    func submitPollChoice(pollId: String, optionId: String?) async throws {
+    func submitPollChoice(pollId: String, optionId: String) async throws {
         await mockDelay(0.2)
         try await refreshTokenIfNeeded()
     }

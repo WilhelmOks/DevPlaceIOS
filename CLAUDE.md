@@ -42,6 +42,8 @@ The `devplace-model-from-json` skill encodes this convention — invoke it when 
 
 JSON dates use ISO8601 with optional fractional seconds (`JSONDecoder.devPlace` in `DevPlaceJSONCoder.swift`).
 
+When adding a new `DevPlaceRequest` call with a request body, prefer JSON body encoding (`contentType: .jsonBody` + `request.requestJson(config:json:)` with a nested `struct Body: Encodable`) over form/url-encoding — even when the backend docs show a `-d`/form-encoded example. The backend accepts JSON for these endpoints. Only fall back to url-encoded/string bodies if JSON turns out not to work for a specific endpoint.
+
 ### App: API protocol + Environment injection
 
 `DevPlaceApi` (`DevPlaceIOS/Request/API/DevPlaceApi.swift`) is the abstraction every screen sees. Two implementations:
@@ -99,6 +101,7 @@ Color tokens `Color.BG_1`, `Color.BG_2`, `Color.FG_1`, `Color.FG_2` are defined 
     ))
     ```
 - **User preferences / settings:** always add to `AppSettingsStore` (`DevPlaceIOS/AppSettingsStore.swift`) with a `didSet`-persisted `UserDefaults` key, following the existing `appearance` / `showFeedAttachments` pattern. Don't invent parallel storage.
+- **Naming interactions:** prefer "select"/"selected" over "tap"/"tapped" when naming interaction handlers, parameters, and state — users interact through means other than tapping (keyboard, VoiceOver, external input), so the more general term is more accurate. E.g. `select(optionId:)`, `selectedOptionId`, not `tap(optionId:)`, `tappedOptionId`.
 - **Tap / press interactions:** default to native interactive components (`Button`, `NavigationLink`, `Toggle`, `Link`, etc.). Do not reach for gesture recognizers (`.onTapGesture`, `TapGesture`, `LongPressGesture`, etc.) unless the user explicitly asks for one — gesture recognizers bypass the accessibility affordances that native components provide (traits, focus, VoiceOver actions, hit-testing).
 
 ## Code philosophy

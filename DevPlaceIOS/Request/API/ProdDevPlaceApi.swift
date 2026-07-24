@@ -43,9 +43,12 @@ final class ProdDevPlaceApi: DevPlaceApi {
         try await request.vote(targetType: targetType, targetId: targetId, vote: vote, token: token)
     }
     
-    func submitPollChoice(pollId: String, optionId: String?) async throws {
-        // TODO: call request.submitPollChoice(pollId:optionId:token:) once DevPlaceSwiftSDK exposes it
+    func submitPollChoice(pollId: String, optionId: String) async throws {
+        guard let token = AppState.shared.token else {
+            throw DevPlaceError.notLoggedIn
+        }
         try await refreshTokenIfNeeded()
+        try await request.submitPollChoice(pollId: pollId, optionId: optionId, token: token)
     }
     
     func profile(username: String?) async throws -> Profile {

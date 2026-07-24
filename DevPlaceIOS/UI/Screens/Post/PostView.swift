@@ -33,7 +33,11 @@ private struct PostViewContent: View {
     @ViewBuilder private func content() -> some View {
         if let postDetail = viewModel.postDetail {
             ScrollView {
-                postBody(postDetail)
+                VStack(spacing: 0) {
+                    postBody(postDetail)
+                    
+                    commentsSection(postDetail)
+                }
             }
         } else {
             ProgressView()
@@ -59,14 +63,27 @@ private struct PostViewContent: View {
             }
             
             PostFooterView(targetId: detail.post.id, starCount: detail.starCount, currentVote: detail.myVote)
-            
-            // TODO: show the post's comments below the content
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
         .foregroundStyle(Color.FG_1)
         .background {
             Color.BG_1
+        }
+    }
+    
+    @ViewBuilder private func commentsSection(_ detail: PostDetail) -> some View {
+        if !detail.comments.isEmpty {
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Comments")
+                    .font(.title3)
+                    .fontWeight(.semibold)
+                    .padding(.horizontal)
+                    .padding(.top)
+                
+                CommentsView(comments: detail.comments)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
     

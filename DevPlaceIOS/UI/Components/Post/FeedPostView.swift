@@ -27,6 +27,9 @@ struct FeedPostView: View {
             }
             .padding(.horizontal)
             
+            CommentsView(comments: post.recentComments)
+                .padding(.top, 8)
+            
             hLine()
                 .padding(.top, 8)
         }

@@ -67,8 +67,14 @@ extension VoteView {
         }
         
         private func syncToFeed() {
-            guard targetType == .post else { return }
-            AppState.shared.updatePostVoteInFeed(postId: targetId, vote: currentVote, count: count)
+            switch targetType {
+            case .post:
+                AppState.shared.updatePostVoteInFeed(postId: targetId, vote: currentVote, count: count)
+            case .comment:
+                AppState.shared.updateCommentVoteInFeed(commentId: targetId, vote: currentVote)
+            default:
+                break
+            }
         }
     }
 }

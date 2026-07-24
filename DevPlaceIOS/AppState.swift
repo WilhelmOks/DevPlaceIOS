@@ -84,7 +84,96 @@ final class AppState {
         )
     }
     
+    func updateCommentVoteInFeed(commentId: String, vote: Vote) {
+        guard let currentFeed = feed else { return }
+        let updatedPosts = currentFeed.posts.map { post in
+            post.replacingRecentComments(post.recentComments.updatingVote(commentId: commentId, vote: vote))
+        }
+        feed = currentFeed.replacingPosts(updatedPosts)
+    }
+    
     func clear() {
         feed = nil
+    }
+}
+
+private extension Feed {
+    func replacingPosts(_ newPosts: [Post]) -> Feed {
+        Feed(
+            posts: newPosts,
+            currentTab: currentTab,
+            currentTopic: currentTopic,
+            search: search,
+            nextCursor: nextCursor,
+            totalMembers: totalMembers,
+            postsToday: postsToday,
+            totalProjects: totalProjects,
+            totalGists: totalGists,
+            topAuthors: topAuthors,
+        )
+    }
+}
+
+private extension Post {
+    func replacingRecentComments(_ newComments: [Comment]) -> Post {
+        Post(
+            data: data,
+            author: author,
+            myVote: myVote,
+            commentCount: commentCount,
+            recentComments: newComments,
+            bookmarked: bookmarked,
+            attachments: attachments,
+            poll: poll,
+        )
+    }
+}
+
+private extension Array where Element == Comment {
+    func updatingVote(commentId: String, vote: Vote) -> [Comment] {
+        map { comment in
+            let updatedChildren = comment.children.updatingVote(commentId: commentId, vote: vote)
+            if comment.data.id == commentId {
+                return comment.applyingVote(vote, children: updatedChildren)
+            } else {
+                return comment.replacingChildren(updatedChildren)
+            }
+        }
+    }
+}
+
+private extension Comment {
+    func applyingVote(_ newVote: Vote, children: [Comment]) -> Comment {
+        var up = votes.up
+        var down = votes.down
+        switch myVote {
+        case .up: up -= 1
+        case .down: down -= 1
+        case .none: break
+        }
+        switch newVote {
+        case .up: up += 1
+        case .down: down += 1
+        case .none: break
+        }
+        return Comment(
+            data: data,
+            author: author,
+            myVote: newVote,
+            votes: Comment.Votes(up: up, down: down),
+            attachments: attachments,
+            children: children,
+        )
+    }
+    
+    func replacingChildren(_ newChildren: [Comment]) -> Comment {
+        Comment(
+            data: data,
+            author: author,
+            myVote: myVote,
+            votes: votes,
+            attachments: attachments,
+            children: newChildren,
+        )
     }
 }

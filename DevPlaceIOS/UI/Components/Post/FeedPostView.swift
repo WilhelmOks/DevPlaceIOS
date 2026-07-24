@@ -23,9 +23,7 @@ struct FeedPostView: View {
                     AttachmentViewer(attachment: attachment)
                 }
                 
-                Divider()
-                
-                VoteView(targetType: .post, targetId: post.data.id, count: post.data.stars, currentVote: post.myVote)
+                PostFooterView(targetId: post.data.id, starCount: post.data.stars, currentVote: post.myVote)
             }
             .padding(.horizontal)
             

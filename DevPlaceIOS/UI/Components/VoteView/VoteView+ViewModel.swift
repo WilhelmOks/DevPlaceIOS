@@ -54,14 +54,21 @@ extension VoteView {
             
             currentVote = newVote
             count = previousCount + newVote.value - previousVote.value
+            syncToFeed()
             
             do {
                 try await api.vote(targetType: targetType, targetId: targetId, vote: selectedVote)
             } catch {
                 currentVote = previousVote
                 count = previousCount
+                syncToFeed()
                 alertMessage = .presentedError(error)
             }
+        }
+        
+        private func syncToFeed() {
+            guard targetType == .post else { return }
+            AppState.shared.updatePostVoteInFeed(postId: targetId, vote: currentVote, count: count)
         }
     }
 }

@@ -43,6 +43,47 @@ final class AppState {
         )
     }
     
+    func updatePostVoteInFeed(postId: String, vote: Vote, count: Int) {
+        guard let currentFeed = feed else { return }
+        guard currentFeed.posts.contains(where: { $0.data.id == postId }) else { return }
+        let updatedPosts = currentFeed.posts.map { post -> Post in
+            guard post.data.id == postId else { return post }
+            return Post(
+                data: Post.Data(
+                    id: post.data.id,
+                    title: post.data.title,
+                    topic: post.data.topic,
+                    content: post.data.content,
+                    slug: post.data.slug,
+                    userId: post.data.userId,
+                    stars: count,
+                    image: post.data.image,
+                    createdAt: post.data.createdAt,
+                    updatedAt: post.data.updatedAt,
+                ),
+                author: post.author,
+                myVote: vote,
+                commentCount: post.commentCount,
+                recentComments: post.recentComments,
+                bookmarked: post.bookmarked,
+                attachments: post.attachments,
+                poll: post.poll,
+            )
+        }
+        feed = Feed(
+            posts: updatedPosts,
+            currentTab: currentFeed.currentTab,
+            currentTopic: currentFeed.currentTopic,
+            search: currentFeed.search,
+            nextCursor: currentFeed.nextCursor,
+            totalMembers: currentFeed.totalMembers,
+            postsToday: currentFeed.postsToday,
+            totalProjects: currentFeed.totalProjects,
+            totalGists: currentFeed.totalGists,
+            topAuthors: currentFeed.topAuthors,
+        )
+    }
+    
     func clear() {
         feed = nil
     }

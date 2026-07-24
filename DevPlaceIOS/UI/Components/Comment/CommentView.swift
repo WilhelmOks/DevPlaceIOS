@@ -38,8 +38,6 @@ struct CommentView: View {
                 AttachmentViewer(attachment: attachment)
             }
             
-            Divider()
-            
             VoteView(
                 targetType: .comment,
                 targetId: comment.data.id,

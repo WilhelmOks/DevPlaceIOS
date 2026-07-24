@@ -3,9 +3,11 @@ import SwiftUI
 struct RelativeTimeLabel: View {
     let date: Date
     
+    @ScaledMetric private var scale = 1.0
+    
     var body: some View {
         Text(date, format: .relative(presentation: .named, unitsStyle: .narrow))
-            .font(.subheadline)
+            .font(.system(size: 12 * scale))
             .foregroundStyle(Color.FG_2)
     }
 }

@@ -79,14 +79,21 @@ private struct SettingsViewContent: View {
             }
             .listRowBackground(Color.BG_1)
             
-            Section {
+            Section(header: Text("Feed")) {
                 Toggle(isOn: $appSettings.showFeedAttachments) {
                     Label {
-                        VStack(alignment: .leading, spacing: 3) {
-                            Text("Show one attachment per post in feed")
-                        }
+                        Text("Show one attachment per post")
                     } icon: {
                         Image(systemName: "photo")
+                    }
+                }
+                .tint(Color.accentColor)
+                
+                Toggle(isOn: $appSettings.showFeedComments) {
+                    Label {
+                        Text("Show recent comments")
+                    } icon: {
+                        Image(systemName: "text.bubble")
                     }
                 }
                 .tint(Color.accentColor)

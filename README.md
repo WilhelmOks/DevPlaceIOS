@@ -12,11 +12,19 @@ This will later be a separate project in a separte repository. But for now it li
 
 ## Status of development
 
-The development is at the very beginning.
-
 Done:
-* sign in
-* sign out
-* forgot password via redirect to browser
-* sign up via redirect to browser
-* listing posts in the feed (only the first page)
+* sign in, sign out
+* forgot password and sign up via redirect to browser
+* listing posts in the feed and loading more
+* viewing user profiles and own profile
+* viewing images and videos attached to posts
+* viewing and voting on polls
+* upvoting and downvoting posts
+
+TODO:
+* showing individual posts in fullscreen
+* showing comments
+* writing posts and comments
+* reacting on posts and comments
+* notifications
+* private messages

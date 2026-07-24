@@ -38,7 +38,14 @@ struct CommentView: View {
                 AttachmentViewer(attachment: attachment)
             }
             
-            CommentFooterView(votes: comment.votes, myVote: comment.myVote)
+            Divider()
+            
+            VoteView(
+                targetType: .comment,
+                targetId: comment.data.id,
+                count: comment.voteCount,
+                currentVote: comment.myVote,
+            )
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal)
@@ -60,50 +67,6 @@ private struct VerticalLine: Shape {
         path.move(to: CGPoint(x: rect.midX, y: rect.minY))
         path.addLine(to: CGPoint(x: rect.midX, y: rect.maxY))
         return path
-    }
-}
-
-private struct CommentFooterView: View {
-    let votes: Comment.Votes
-    let myVote: Int
-    
-    @ScaledMetric private var scale = 1.0
-    
-    private let buttonSize = 15.0
-    
-    private var score: Int {
-        votes.up - votes.down
-    }
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Divider()
-            
-            HStack(spacing: 10) {
-                Button {
-                    // TODO: submit a downvote for the comment once comment voting is wired up
-                } label: {
-                    Image(systemName: myVote == -1 ? "minus.circle.fill" : "minus.circle")
-                        .font(.system(size: buttonSize * scale))
-                }
-                .buttonStyle(.plain)
-                .foregroundStyle(myVote == -1 ? Color.accentColor : Color.FG_2)
-                
-                Text("\(score)")
-                    .font(.system(size: 14 * scale))
-                    .fontWeight(.semibold)
-                    .monospacedDigit()
-                
-                Button {
-                    // TODO: submit an upvote for the comment once comment voting is wired up
-                } label: {
-                    Image(systemName: myVote == 1 ? "plus.circle.fill" : "plus.circle")
-                        .font(.system(size: buttonSize * scale))
-                }
-                .buttonStyle(.plain)
-                .foregroundStyle(myVote == 1 ? Color.accentColor : Color.FG_2)
-            }
-        }
     }
 }
 

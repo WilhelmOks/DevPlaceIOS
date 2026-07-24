@@ -6,7 +6,7 @@ public struct GistDetail: Hashable, Sendable, Identifiable {
     public let author: User
     public let isOwner: Bool
     public let starCount: Int
-    public let myVote: Int
+    public let myVote: Vote
     //public let timeAgo: String // exists in API; format on demand from gist.createdAt
     public let comments: [Comment]
     public let attachments: [Attachment]
@@ -18,7 +18,7 @@ public struct GistDetail: Hashable, Sendable, Identifiable {
         author: User,
         isOwner: Bool,
         starCount: Int,
-        myVote: Int,
+        myVote: Vote,
         comments: [Comment],
         attachments: [Attachment],
         bookmarked: Bool,
@@ -56,7 +56,7 @@ extension GistDetail.CodingData {
             author: author.decoded,
             isOwner: is_owner,
             starCount: star_count,
-            myVote: my_vote,
+            myVote: Vote(value: my_vote),
             comments: comments.map(\.decoded),
             attachments: attachments.map(\.decoded),
             bookmarked: bookmarked,

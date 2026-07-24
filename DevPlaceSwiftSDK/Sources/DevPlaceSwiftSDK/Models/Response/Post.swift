@@ -104,15 +104,10 @@ extension Post.Data {
 
 extension Post.CodingData {
     var decoded: Post {
-        let myVote: Vote = switch my_vote {
-            case 1: .up
-            case -1: .down
-            default: .none
-        }
-        return .init(
+        .init(
             data: post.decoded,
             author: author.decoded,
-            myVote: myVote,
+            myVote: Vote(value: my_vote),
             commentCount: comment_count,
             recentComments: recent_comments.map(\.decoded),
             bookmarked: bookmarked,

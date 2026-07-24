@@ -42,13 +42,3 @@ extension PostView {
         }
     }
 }
-
-extension PostDetail {
-    var currentVote: Vote {
-        switch myVote {
-        case 1: .up
-        case -1: .down
-        default: .none
-        }
-    }
-}

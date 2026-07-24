@@ -5,16 +5,20 @@ public struct Comment: Hashable, Sendable, Identifiable {
     public let data: Data
     public let author: User
     //public let timeAgo: String // exists in API; format on demand from data.createdAt
-    public let myVote: Int
+    public let myVote: Vote
     public let votes: Votes
     public let attachments: [Attachment]
     public let children: [Comment]
     //public let reactions: ??? // empty in sample - type unknown
 
+    public var voteCount: Int {
+        votes.up - votes.down
+    }
+
     public init(
         data: Data,
         author: User,
-        myVote: Int,
+        myVote: Vote,
         votes: Votes,
         attachments: [Attachment],
         children: [Comment],
@@ -105,7 +109,7 @@ extension Comment.CodingData {
         .init(
             data: comment.decoded,
             author: author.decoded,
-            myVote: my_vote,
+            myVote: Vote(value: my_vote),
             votes: votes.decoded,
             attachments: attachments.map(\.decoded),
             children: children.map(\.decoded),

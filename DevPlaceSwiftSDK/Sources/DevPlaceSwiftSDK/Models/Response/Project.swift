@@ -4,13 +4,13 @@ public struct Project: Hashable, Sendable, Identifiable {
     public var id: String { "project:" + data.id }
     public let data: Data
     public let authorName: String
-    public let myVote: Int
+    public let myVote: Vote
     public let recentComments: [Comment]
 
     public init(
         data: Data,
         authorName: String,
-        myVote: Int,
+        myVote: Vote,
         recentComments: [Comment],
     ) {
         self.data = data
@@ -135,7 +135,7 @@ extension Project.CodingData {
                 updatedAt: updated_at,
             ),
             authorName: author_name,
-            myVote: my_vote,
+            myVote: Vote(value: my_vote),
             recentComments: recent_comments.map(\.decoded),
         )
     }

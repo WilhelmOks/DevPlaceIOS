@@ -5,14 +5,14 @@ public struct Gist: Hashable, Sendable, Identifiable {
     public let data: Data
     public let author: User?
     //public let timeAgo: String // exists in API; format on demand from data.createdAt
-    public let myVote: Int
+    public let myVote: Vote
     public let commentCount: Int
     public let recentComments: [Comment]
 
     public init(
         data: Data,
         author: User?,
-        myVote: Int,
+        myVote: Vote,
         commentCount: Int,
         recentComments: [Comment],
     ) {
@@ -94,7 +94,7 @@ extension Gist.CodingData {
         .init(
             data: gist.decoded,
             author: author?.decoded,
-            myVote: my_vote,
+            myVote: Vote(value: my_vote),
             commentCount: comment_count,
             recentComments: recent_comments.map(\.decoded),
         )

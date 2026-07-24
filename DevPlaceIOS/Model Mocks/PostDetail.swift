@@ -28,7 +28,7 @@ extension PostDetail {
             author: .mock,
             isOwner: false,
             starCount: 12,
-            myVote: 1,
+            myVote: .up,
             comments: .mock,
             attachments: [
                 .init(

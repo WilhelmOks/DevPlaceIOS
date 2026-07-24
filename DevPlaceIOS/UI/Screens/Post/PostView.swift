@@ -58,7 +58,7 @@ private struct PostViewContent: View {
                 AttachmentViewer(attachment: attachment)
             }
             
-            PostFooterView(targetId: detail.post.id, starCount: detail.starCount, currentVote: detail.currentVote)
+            PostFooterView(targetId: detail.post.id, starCount: detail.starCount, currentVote: detail.myVote)
             
             // TODO: show the post's comments below the content
         }

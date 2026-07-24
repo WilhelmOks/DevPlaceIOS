@@ -1,9 +1,12 @@
 import SwiftUI
 
 struct EmojiPicker: View {
+    var dismissOnPick: Bool = true
     let onPick: (String) -> Void
     
     @Bindable private var appSettings = AppSettingsStore.shared
+    
+    @Environment(\.dismiss) private var dismiss
     
     @State private var searchText = ""
     
@@ -152,6 +155,9 @@ struct EmojiPicker: View {
         Button {
             onPick(emoji)
             appSettings.recordEmojiPick(emoji)
+            if dismissOnPick {
+                dismiss()
+            }
         } label: {
             Text(emoji)
                 .font(.system(size: emojiSize))

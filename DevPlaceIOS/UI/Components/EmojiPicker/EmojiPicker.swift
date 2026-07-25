@@ -16,49 +16,33 @@ struct EmojiPicker: View {
     private let emojiSize: CGFloat = 30
     
     var body: some View {
-        VStack(spacing: 0) {
-            searchField()
+        GeometryReader { geometry in
+            let columns = columnCount(for: geometry.size.width)
             
-            GeometryReader { geometry in
-                let columns = columnCount(for: geometry.size.width)
-                
-                if searchText.isEmpty {
-                    categorizedList(columns: columns)
-                } else {
-                    searchResults(columns: columns)
-                }
+            if searchText.isEmpty {
+                categorizedList(columns: columns)
+            } else {
+                searchResults(columns: columns)
             }
         }
         .background(Color.BG_2)
+        .searchable(text: $searchText, prompt: "Search Emoji")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Button {
+                    dismiss()
+                } label: {
+                    Image(systemName: "xmark")
+                }
+                .accessibilityLabel("Close")
+            }
+        }
     }
     
     private func columnCount(for width: CGFloat) -> Int {
         let available = width - horizontalPadding * 2 + cellSpacing
         return max(1, Int(available / (cellSize + cellSpacing)))
-    }
-    
-    @ViewBuilder private func searchField() -> some View {
-        HStack(spacing: 8) {
-            Image(systemName: "magnifyingglass")
-                .foregroundStyle(Color.FG_2)
-            
-            TextField("Search Emoji", text: $searchText)
-                .textInputAutocapitalization(.never)
-                .autocorrectionDisabled()
-            
-            if !searchText.isEmpty {
-                Button {
-                    searchText = ""
-                } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .foregroundStyle(Color.FG_2)
-                }
-                .buttonStyle(.plain)
-            }
-        }
-        .padding(10)
-        .background(Color.BG_1, in: RoundedRectangle(cornerRadius: 10))
-        .padding()
     }
     
     @ViewBuilder private func categorizedList(columns: Int) -> some View {
@@ -168,7 +152,9 @@ struct EmojiPicker: View {
 }
 
 #Preview {
-    EmojiPicker { emoji in
-        dlog("Picked \(emoji)")
+    NavigationStack {
+        EmojiPicker { emoji in
+            dlog("Picked \(emoji)")
+        }
     }
 }

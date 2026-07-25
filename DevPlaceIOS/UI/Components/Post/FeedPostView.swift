@@ -91,6 +91,28 @@ struct FeedPostView: View {
             AppState.shared.updateCommentVoteInFeed(commentId: comment.data.id, vote: newVote)
         }
     }
+    
+    private func handleReactPost(emoji: String) async {
+        await AppState.shared.performReactionToggle(
+            targetType: .post,
+            targetId: post.data.id,
+            emoji: emoji,
+            api: api,
+        ) {
+            AppState.shared.updatePostReactionInFeed(postId: post.data.id, emoji: emoji)
+        }
+    }
+    
+    private func handleReactComment(_ comment: Comment, emoji: String) async {
+        await AppState.shared.performReactionToggle(
+            targetType: .comment,
+            targetId: comment.data.id,
+            emoji: emoji,
+            api: api,
+        ) {
+            AppState.shared.updateCommentReactionInFeed(commentId: comment.data.id, emoji: emoji)
+        }
+    }
 }
 
 #Preview {

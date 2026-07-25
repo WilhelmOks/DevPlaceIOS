@@ -75,5 +75,33 @@ extension PostView {
                 AppState.shared.updateCommentVoteInFeed(commentId: comment.data.id, vote: newVote)
             }
         }
+        
+        func reactToPost(emoji: String) async {
+            guard let detail = postDetail else { return }
+            await AppState.shared.performReactionToggle(
+                targetType: .post,
+                targetId: detail.post.id,
+                emoji: emoji,
+                api: api,
+            ) {
+                guard let current = postDetail else { return }
+                postDetail = current.with(reactions: current.reactions.toggling(emoji))
+                AppState.shared.updatePostReactionInFeed(postId: detail.post.id, emoji: emoji)
+            }
+        }
+        
+        func reactToComment(_ comment: Comment, emoji: String) async {
+            guard postDetail != nil else { return }
+            await AppState.shared.performReactionToggle(
+                targetType: .comment,
+                targetId: comment.data.id,
+                emoji: emoji,
+                api: api,
+            ) {
+                guard let current = postDetail else { return }
+                postDetail = current.with(comments: current.comments.updatingReaction(commentId: comment.data.id, emoji: emoji))
+                AppState.shared.updateCommentReactionInFeed(commentId: comment.data.id, emoji: emoji)
+            }
+        }
     }
 }

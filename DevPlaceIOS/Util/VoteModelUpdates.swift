@@ -35,7 +35,7 @@ extension Post {
 }
 
 extension PostDetail {
-    func with(myVote: Vote? = nil, starCount: Int? = nil, comments: [Comment]? = nil) -> PostDetail {
+    func with(myVote: Vote? = nil, starCount: Int? = nil, comments: [Comment]? = nil, reactions: Reactions? = nil) -> PostDetail {
         PostDetail(
             post: post,
             author: author,
@@ -49,7 +49,7 @@ extension PostDetail {
             commentCount: commentCount,
             relatedPosts: relatedPosts,
             topics: topics,
-            reactions: reactions,
+            reactions: reactions ?? self.reactions,
         )
     }
 }

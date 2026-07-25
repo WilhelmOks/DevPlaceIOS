@@ -10,7 +10,7 @@ public struct Post: Hashable, Sendable, Identifiable {
     public let bookmarked: Bool
     public let attachments: [Attachment]
     public let poll: Poll?
-    //public let reactions: ??? // empty in sample - type unknown
+    public let reactions: Reactions
 
     public init(
         data: Data,
@@ -21,6 +21,7 @@ public struct Post: Hashable, Sendable, Identifiable {
         bookmarked: Bool,
         attachments: [Attachment],
         poll: Poll?,
+        reactions: Reactions,
     ) {
         self.data = data
         self.author = author
@@ -30,6 +31,7 @@ public struct Post: Hashable, Sendable, Identifiable {
         self.bookmarked = bookmarked
         self.attachments = attachments
         self.poll = poll
+        self.reactions = reactions
     }
 }
 
@@ -83,7 +85,7 @@ extension Post {
         let bookmarked: Bool
         let attachments: [Attachment.CodingData]
         let poll: Poll.CodingData?
-        //let reactions: ??? // empty in sample - type unknown
+        let reactions: Reactions.CodingData
     }
 }
 
@@ -113,6 +115,7 @@ extension Post.CodingData {
             bookmarked: bookmarked,
             attachments: attachments.map(\.decoded),
             poll: poll?.decoded,
+            reactions: reactions.decoded,
         )
     }
 }

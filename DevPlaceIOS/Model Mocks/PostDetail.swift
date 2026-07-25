@@ -70,6 +70,7 @@ extension PostDetail {
             commentCount: 2,
             relatedPosts: [],
             topics: ["swift", "ios"],
+            reactions: .init(mine: ["🔥"], counts: ["🚀": 2, "🔥": 2]),
         )
     }
 }

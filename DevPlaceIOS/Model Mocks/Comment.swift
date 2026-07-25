@@ -79,14 +79,19 @@ extension Collection where Element == Comment {
                                                 votes: .init(up: 0, down: 1),
                                                 attachments: [],
                                                 children: [],
+                                                reactions: .init(mine: [], counts: [:]),
                                             ),
                                         ],
+                                        reactions: .init(mine: [], counts: [:]),
                                     ),
                                 ],
+                                reactions: .init(mine: [], counts: [:]),
                             ),
                         ],
+                        reactions: .init(mine: ["👍"], counts: ["👍": 1]),
                     ),
                 ],
+                reactions: .init(mine: ["🔥"], counts: ["🚀": 2, "🔥": 2]),
             ),
             .init(
                 data: .init(
@@ -103,6 +108,7 @@ extension Collection where Element == Comment {
                 votes: .init(up: 5, down: 0),
                 attachments: [],
                 children: [],
+                reactions: .init(mine: [], counts: [:]),
             ),
         ]
     }

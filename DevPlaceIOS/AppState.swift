@@ -74,6 +74,7 @@ final class AppState {
                 bookmarked: post.bookmarked,
                 attachments: post.attachments,
                 poll: post.poll,
+                reactions: post.reactions,
             )
         }
         feed = Feed(

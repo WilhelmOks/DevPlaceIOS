@@ -11,7 +11,7 @@ public struct GistDetail: Hashable, Sendable, Identifiable {
     public let comments: [Comment]
     public let attachments: [Attachment]
     public let bookmarked: Bool
-    //public let reactions: ??? // empty in sample - type unknown
+    public let reactions: Reactions
 
     public init(
         gist: Gist.Data,
@@ -22,6 +22,7 @@ public struct GistDetail: Hashable, Sendable, Identifiable {
         comments: [Comment],
         attachments: [Attachment],
         bookmarked: Bool,
+        reactions: Reactions,
     ) {
         self.gist = gist
         self.author = author
@@ -31,6 +32,7 @@ public struct GistDetail: Hashable, Sendable, Identifiable {
         self.comments = comments
         self.attachments = attachments
         self.bookmarked = bookmarked
+        self.reactions = reactions
     }
 }
 
@@ -45,7 +47,7 @@ extension GistDetail {
         let comments: [Comment.CodingData]
         let attachments: [Attachment.CodingData]
         let bookmarked: Bool
-        //let reactions: ??? // empty in sample - type unknown
+        let reactions: Reactions.CodingData
     }
 }
 
@@ -60,6 +62,7 @@ extension GistDetail.CodingData {
             comments: comments.map(\.decoded),
             attachments: attachments.map(\.decoded),
             bookmarked: bookmarked,
+            reactions: reactions.decoded,
         )
     }
 }

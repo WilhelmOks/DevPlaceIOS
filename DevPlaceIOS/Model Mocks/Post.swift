@@ -36,6 +36,7 @@ extension Collection where Element == Post {
                     ),
                 ],
                 poll: nil,
+                reactions: .init(mine: ["🔥"], counts: ["🚀": 2, "🔥": 2]),
             ),
             .init(
                 data: .init(
@@ -57,6 +58,7 @@ extension Collection where Element == Post {
                 bookmarked: false,
                 attachments: [],
                 poll: .mockLayoutContainer,
+                reactions: .init(mine: [], counts: [:]),
             ),
             .init(
                 data: .init(
@@ -90,6 +92,7 @@ extension Collection where Element == Post {
                     ),
                 ],
                 poll: .mockTestingFrameworkAlreadyVoted,
+                reactions: .init(mine: ["👍"], counts: ["👍": 4, "🎉": 1]),
             ),
             .init(
                 data: .init(
@@ -111,6 +114,7 @@ extension Collection where Element == Post {
                 bookmarked: false,
                 attachments: [],
                 poll: .mockConcurrency,
+                reactions: .init(mine: [], counts: [:]),
             ),
             .init(
                 data: .init(
@@ -160,6 +164,7 @@ extension Collection where Element == Post {
                     ),
                 ],
                 poll: nil,
+                reactions: .init(mine: [], counts: [:]),
             ),
         ]
     }

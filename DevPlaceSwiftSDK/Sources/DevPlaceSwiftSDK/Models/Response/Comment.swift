@@ -9,7 +9,7 @@ public struct Comment: Hashable, Sendable, Identifiable {
     public let votes: Votes
     public let attachments: [Attachment]
     public let children: [Comment]
-    //public let reactions: ??? // empty in sample - type unknown
+    public let reactions: Reactions
 
     public var voteCount: Int {
         votes.up - votes.down
@@ -22,6 +22,7 @@ public struct Comment: Hashable, Sendable, Identifiable {
         votes: Votes,
         attachments: [Attachment],
         children: [Comment],
+        reactions: Reactions,
     ) {
         self.data = data
         self.author = author
@@ -29,6 +30,7 @@ public struct Comment: Hashable, Sendable, Identifiable {
         self.votes = votes
         self.attachments = attachments
         self.children = children
+        self.reactions = reactions
     }
 }
 
@@ -81,7 +83,7 @@ extension Comment {
         let votes: Votes.CodingData
         let attachments: [Attachment.CodingData]
         let children: [Comment.CodingData]
-        //let reactions: ??? // empty in sample - type unknown
+        let reactions: Reactions.CodingData
     }
 }
 
@@ -113,6 +115,7 @@ extension Comment.CodingData {
             votes: votes.decoded,
             attachments: attachments.map(\.decoded),
             children: children.map(\.decoded),
+            reactions: reactions.decoded,
         )
     }
 }

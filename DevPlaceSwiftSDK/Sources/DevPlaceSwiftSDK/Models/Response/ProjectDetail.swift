@@ -17,7 +17,7 @@ public struct ProjectDetail: Hashable, Sendable, Identifiable {
     public let fileCount: Int
     //public let platforms: ??? // null in sample - type unknown
     //public let forkedFrom: ??? // empty object in sample - type unknown
-    //public let reactions: ??? // empty in sample - type unknown
+    public let reactions: Reactions
 
     public init(
         project: Project.Data,
@@ -32,6 +32,7 @@ public struct ProjectDetail: Hashable, Sendable, Identifiable {
         readOnly: Bool,
         forkCount: Int,
         fileCount: Int,
+        reactions: Reactions,
     ) {
         self.project = project
         self.author = author
@@ -45,6 +46,7 @@ public struct ProjectDetail: Hashable, Sendable, Identifiable {
         self.readOnly = readOnly
         self.forkCount = forkCount
         self.fileCount = fileCount
+        self.reactions = reactions
     }
 }
 
@@ -65,7 +67,7 @@ extension ProjectDetail {
         let file_count: Int
         //let platforms: ??? // null in sample - type unknown
         //let forked_from: ??? // empty object in sample - type unknown
-        //let reactions: ??? // empty in sample - type unknown
+        let reactions: Reactions.CodingData
     }
 }
 
@@ -84,6 +86,7 @@ extension ProjectDetail.CodingData {
             readOnly: read_only,
             forkCount: fork_count,
             fileCount: file_count,
+            reactions: reactions.decoded,
         )
     }
 }

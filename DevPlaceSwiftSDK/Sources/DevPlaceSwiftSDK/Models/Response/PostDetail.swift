@@ -15,7 +15,7 @@ public struct PostDetail: Hashable, Sendable, Identifiable {
     public let commentCount: Int
     public let relatedPosts: [Post]
     public let topics: [String]
-    //public let reactions: ??? // empty in sample - type unknown
+    public let reactions: Reactions
 
     public init(
         post: Post.Data,
@@ -30,6 +30,7 @@ public struct PostDetail: Hashable, Sendable, Identifiable {
         commentCount: Int,
         relatedPosts: [Post],
         topics: [String],
+        reactions: Reactions,
     ) {
         self.post = post
         self.author = author
@@ -43,6 +44,7 @@ public struct PostDetail: Hashable, Sendable, Identifiable {
         self.commentCount = commentCount
         self.relatedPosts = relatedPosts
         self.topics = topics
+        self.reactions = reactions
     }
 }
 
@@ -61,7 +63,7 @@ extension PostDetail {
         let comment_count: Int
         let related_posts: [Post.CodingData]
         let topics: [String]
-        //let reactions: ??? // empty in sample - type unknown
+        let reactions: Reactions.CodingData
     }
 }
 
@@ -80,6 +82,7 @@ extension PostDetail.CodingData {
             commentCount: comment_count,
             relatedPosts: related_posts.map(\.decoded),
             topics: topics,
+            reactions: reactions.decoded,
         )
     }
 }

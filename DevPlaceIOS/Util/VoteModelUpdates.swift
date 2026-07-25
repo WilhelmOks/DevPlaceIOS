@@ -29,6 +29,7 @@ extension Post {
             bookmarked: bookmarked,
             attachments: attachments,
             poll: poll,
+            reactions: reactions,
         )
     }
 }
@@ -48,6 +49,7 @@ extension PostDetail {
             commentCount: commentCount,
             relatedPosts: relatedPosts,
             topics: topics,
+            reactions: reactions,
         )
     }
 }
@@ -86,9 +88,10 @@ extension Comment {
             votes: Comment.Votes(up: up, down: down),
             attachments: attachments,
             children: children,
+            reactions: reactions,
         )
     }
-    
+
     func replacingChildren(_ newChildren: [Comment]) -> Comment {
         Comment(
             data: data,
@@ -97,6 +100,7 @@ extension Comment {
             votes: votes,
             attachments: attachments,
             children: newChildren,
+            reactions: reactions,
         )
     }
 }

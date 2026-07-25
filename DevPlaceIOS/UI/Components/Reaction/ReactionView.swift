@@ -7,9 +7,6 @@ struct ReactionView: View {
     
     @ScaledMetric private var scale = 1.0
     
-    private let mineFillOpacity: Double = 0.15
-    private let normalBorderOpacity: Double = 0.25
-    
     var body: some View {
         HStack(spacing: 4 * scale) {
             Text(emoji)
@@ -20,19 +17,7 @@ struct ReactionView: View {
                 .monospacedDigit()
                 .foregroundStyle(Color.FG_1)
         }
-        .padding(.horizontal, 10 * scale)
-        .padding(.vertical, 5 * scale)
-        .background {
-            Capsule()
-                .fill(isMine ? Color.accentColor.opacity(mineFillOpacity) : Color.BG_2)
-        }
-        .overlay {
-            Capsule()
-                .strokeBorder(
-                    isMine ? Color.accentColor : Color.FG_2.opacity(normalBorderOpacity),
-                    lineWidth: isMine ? 1.5 : 1,
-                )
-        }
+        .reactionChip(isMine: isMine)
     }
 }
 

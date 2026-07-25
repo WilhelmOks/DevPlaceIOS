@@ -26,7 +26,15 @@ struct FeedPostView: View {
                     AttachmentViewer(attachment: attachment)
                 }
                 
-                PostFooterView(targetId: post.data.id, starCount: post.data.stars, currentVote: post.myVote)
+                PostFooterView(
+                    targetId: post.data.id,
+                    starCount: post.data.stars,
+                    currentVote: post.myVote,
+                    reactions: post.reactions,
+                    onReact: { emoji in
+                        Task { await handleReactPost(emoji: emoji) }
+                    },
+                )
             }
             .padding(.horizontal)
             
@@ -36,6 +44,7 @@ struct FeedPostView: View {
                     baseIndentationLevel: 1,
                     onSingleTapComment: { _ in navigateToPost() },
                     onDoubleTapComment: { comment in Task { await handleDoubleTapComment(comment) } },
+                    onReactComment: { comment, emoji in Task { await handleReactComment(comment, emoji: emoji) } },
                 )
                 .padding(.top, 8)
             }

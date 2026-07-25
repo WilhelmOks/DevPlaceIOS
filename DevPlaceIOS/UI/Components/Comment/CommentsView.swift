@@ -6,6 +6,7 @@ struct CommentsView: View {
     var baseIndentationLevel: Int = 0
     var onSingleTapComment: ((Comment) -> Void)? = nil
     var onDoubleTapComment: ((Comment) -> Void)? = nil
+    var onReactComment: ((Comment, String) -> Void)? = nil
     
     var body: some View {
         VStack(spacing: 0) {
@@ -15,6 +16,7 @@ struct CommentsView: View {
                     indentationLevel: item.level,
                     onSingleTap: onSingleTapComment.map { handler in { handler(item.comment) } },
                     onDoubleTap: onDoubleTapComment.map { handler in { handler(item.comment) } },
+                    onReact: onReactComment.map { handler in { emoji in handler(item.comment, emoji) } },
                 )
             }
         }

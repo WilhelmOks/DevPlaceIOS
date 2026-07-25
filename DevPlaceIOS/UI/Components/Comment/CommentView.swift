@@ -6,6 +6,7 @@ struct CommentView: View {
     var indentationLevel: Int = 0
     var onSingleTap: (() -> Void)? = nil
     var onDoubleTap: (() -> Void)? = nil
+    var onReact: ((String) -> Void)? = nil
     
     private let maxIndentationLevel = 3
     private let indentWidth: CGFloat = 16
@@ -40,12 +41,18 @@ struct CommentView: View {
                 AttachmentViewer(attachment: attachment)
             }
             
-            VoteView(
-                targetType: .comment,
-                targetId: comment.data.id,
-                count: comment.voteCount,
-                currentVote: comment.myVote,
-            )
+            HStack(spacing: 12) {
+                VoteView(
+                    targetType: .comment,
+                    targetId: comment.data.id,
+                    count: comment.voteCount,
+                    currentVote: comment.myVote,
+                )
+                
+                ReactionsBar(reactions: comment.reactions, onReact: onReact ?? { _ in })
+                
+                Spacer(minLength: 0)
+            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal)

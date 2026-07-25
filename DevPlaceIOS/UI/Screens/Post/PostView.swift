@@ -62,7 +62,15 @@ private struct PostViewContent: View {
                 AttachmentViewer(attachment: attachment)
             }
             
-            PostFooterView(targetId: detail.post.id, starCount: detail.starCount, currentVote: detail.myVote)
+            PostFooterView(
+                targetId: detail.post.id,
+                starCount: detail.starCount,
+                currentVote: detail.myVote,
+                reactions: detail.reactions,
+                onReact: { emoji in
+                    Task { await viewModel.reactToPost(emoji: emoji) }
+                },
+            )
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
@@ -89,6 +97,9 @@ private struct PostViewContent: View {
                     comments: detail.comments,
                     onDoubleTapComment: { comment in
                         Task { await viewModel.doubleTapComment(comment) }
+                    },
+                    onReactComment: { comment, emoji in
+                        Task { await viewModel.reactToComment(comment, emoji: emoji) }
                     },
                 )
             }

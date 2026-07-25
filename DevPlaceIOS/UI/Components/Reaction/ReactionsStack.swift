@@ -10,8 +10,6 @@ struct ReactionsStack: View {
     @ScaledMetric private var scale = 1.0
     
     private let spacing: CGFloat = 6
-    private let fillOpacity: Double = 0.12
-    private let borderOpacity: Double = 0.25
     private let popoverWidth: CGFloat = 300
     
     private var items: [ReactionItem] {
@@ -90,14 +88,7 @@ struct ReactionsStack: View {
             .font(.system(size: 14 * scale, weight: .medium))
             .monospacedDigit()
             .foregroundStyle(Color.FG_1)
-            .padding(.horizontal, 10 * scale)
-            .padding(.vertical, 5 * scale)
-            .background {
-                Capsule().fill(Color.FG_2.opacity(fillOpacity))
-            }
-            .overlay {
-                Capsule().strokeBorder(Color.FG_2.opacity(borderOpacity), lineWidth: 1)
-            }
+            .reactionChip()
     }
 }
 

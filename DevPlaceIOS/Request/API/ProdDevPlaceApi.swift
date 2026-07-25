@@ -57,6 +57,14 @@ final class ProdDevPlaceApi: DevPlaceApi {
         try await request.submitPollChoice(pollId: pollId, optionId: optionId, token: token)
     }
     
+    func react(targetType: TargetType, targetId: String, emoji: String) async throws {
+        guard let token = AppState.shared.token else {
+            throw DevPlaceError.notLoggedIn
+        }
+        try await refreshTokenIfNeeded()
+        try await request.react(targetType: targetType, targetId: targetId, emoji: emoji, token: token)
+    }
+    
     func profile(username: String?) async throws -> Profile {
         try await refreshTokenIfNeeded()
         if let username {

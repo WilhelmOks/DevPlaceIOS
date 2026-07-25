@@ -9,6 +9,7 @@ protocol DevPlaceApi {
     func profile(username: String?) async throws -> Profile
     func vote(targetType: TargetType, targetId: String, vote: Vote) async throws
     func submitPollChoice(pollId: String, optionId: String) async throws
+    func react(targetType: TargetType, targetId: String, emoji: String) async throws
 }
 
 extension DevPlaceApi {

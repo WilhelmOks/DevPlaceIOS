@@ -57,4 +57,9 @@ final class MockDevPlaceApi: DevPlaceApi {
         await mockDelay(0.2)
         try await refreshTokenIfNeeded()
     }
+    
+    func react(targetType: TargetType, targetId: String, emoji: String) async throws {
+        await mockDelay(0.2)
+        try await refreshTokenIfNeeded()
+    }
 }

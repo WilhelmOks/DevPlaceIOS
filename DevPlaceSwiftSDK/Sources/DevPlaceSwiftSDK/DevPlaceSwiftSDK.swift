@@ -352,6 +352,11 @@ public extension DevPlaceRequest {
         try await request.requestJson(config: config, json: body, apiError: ApiError.self)
     }
 
+    /// Submits the user's choice for a poll.
+    ///
+    /// The endpoint toggles rather than sets: submitting the option the user already picked removes
+    /// their vote. Submitting a different option replaces the previous choice. A user can only hold
+    /// one choice per poll.
     func submitPollChoice(pollId: String, optionId: String, token: AuthToken) async throws {
         struct Body: Encodable {
             let option_uid: String
@@ -361,6 +366,11 @@ public extension DevPlaceRequest {
         try await request.requestJson(config: config, json: body, apiError: ApiError.self)
     }
 
+    /// Adds an emoji reaction to a target.
+    ///
+    /// The endpoint toggles rather than sets: submitting an emoji the user has already reacted with
+    /// removes that reaction, while a new emoji adds it. Unlike votes, the user can hold multiple
+    /// reactions on the same target at once.
     func react(targetType: TargetType, targetId: String, emoji: String, token: AuthToken) async throws {
         struct Body: Encodable {
             let emoji: String

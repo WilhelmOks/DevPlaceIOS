@@ -34,6 +34,7 @@ private struct CreatePostViewContent: View {
                     } label: {
                         Label("Create", systemImage: "paperplane.fill")
                     }
+                    .disabled(!viewModel.canSubmit)
                 }
             }
     }
@@ -41,18 +42,35 @@ private struct CreatePostViewContent: View {
     @ViewBuilder private func content() -> some View {
         ScrollView {
             VStack {
-                HStack {
-                    Text("Topic")
-                    
-                    Picker(selection: $viewModel.postTopic, label: Text("Topic")) {
-                        ForEach(PostTopic.allCases, id: \.self) { topic in
-                            Text(topic.name).tag(topic)
-                        }
-                    }
-                }
+                topicArea()
+                titleArea()
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding()
+        }
+    }
+    
+    @ViewBuilder private func topicArea() -> some View {
+        HStack {
+            Text("Topic")
+            
+            Picker(selection: $viewModel.postTopic, label: Text("Topic")) {
+                ForEach(PostTopic.allCases, id: \.self) { topic in
+                    Text(topic.name).tag(topic)
+                }
+            }
+            
+            Spacer()
+        }
+    }
+    
+    @ViewBuilder private func titleArea() -> some View {
+        VStack(alignment: .leading) {
+            TextField("Title (optional)", text: $viewModel.title)
+                .textFieldStyle(.devPlace)
+            
+            CharacterCounterView(text: viewModel.title, maxCount: viewModel.titleLimit)
+                .padding(.horizontal, 11)
         }
     }
 }

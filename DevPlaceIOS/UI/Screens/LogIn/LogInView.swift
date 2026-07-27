@@ -64,12 +64,7 @@ private struct LogInViewContent: View {
             }
             .textInputAutocapitalization(.never)
             .autocorrectionDisabled()
-            .padding(10)
-            .background {
-                RoundedRectangle(cornerRadius: 14)
-                    .stroke(.FG_2)
-                    .fill(.BG_1)
-            }
+            .textFieldStyle(.devPlace)
             .disabled(viewModel.isLoading)
         }
     }

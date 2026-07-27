@@ -50,6 +50,16 @@ private struct FeedViewContent: View {
             }
             .frame(maxWidth: .infinity)
         }
+        .overlay(alignment: .bottomTrailing) {
+            Button {
+                
+            } label: {
+                Label("New post", systemImage: "plus")
+                    .labelStyle(.iconOnly)
+            }
+            .buttonStyle(.accentGradient(shape: .circle))
+            .padding()
+        }
     }
 }
 

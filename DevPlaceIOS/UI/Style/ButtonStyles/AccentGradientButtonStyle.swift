@@ -1,13 +1,20 @@
 import SwiftUI
 
 struct AccentGradientButtonStyle: ButtonStyle {
+    enum Shape {
+        case roundedRectangle
+        case circle
+    }
+
+    var shape: Shape = .roundedRectangle
+
     func makeBody(configuration: Self.Configuration) -> some View {
         configuration.label
             .fontWeight(.semibold)
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
             .background(
-                RoundedRectangle(cornerRadius: 14.0)
+                background
                     .foregroundStyle(
                         LinearGradient(
                             gradient: Gradient(colors: [.agStart, .agEnd]),
@@ -21,16 +28,36 @@ struct AccentGradientButtonStyle: ButtonStyle {
             .foregroundColor(.AFG)
             .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
     }
+
+    @ViewBuilder
+    private var background: some View {
+        switch shape {
+        case .roundedRectangle:
+            RoundedRectangle(cornerRadius: 14.0)
+        case .circle:
+            Circle()
+        }
+    }
 }
 
 extension ButtonStyle where Self == AccentGradientButtonStyle {
     static var accentGradient: Self { Self() }
+
+    static func accentGradient(shape: AccentGradientButtonStyle.Shape) -> Self {
+        Self(shape: shape)
+    }
 }
 
 #Preview {
-    Button("Hello, World!") {
+    VStack {
+        Button("Hello, World!") {
+            
+        }
+        .buttonStyle(.accentGradient)
         
+        Button("+") {
+            
+        }
+        .buttonStyle(.accentGradient(shape: .circle))
     }
-    .buttonStyle(.accentGradient)
 }
-

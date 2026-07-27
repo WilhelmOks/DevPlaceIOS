@@ -1,9 +1,12 @@
 import Foundation
 import Observation
+import DevPlaceSwiftSDK
 
-extension TemplateView {
+extension CreatePostView {
     @Observable final class ViewModel {
         let api: DevPlaceApi
+        
+        var postTopic: PostTopic = .random
         
         init(api: DevPlaceApi) {
             self.api = api

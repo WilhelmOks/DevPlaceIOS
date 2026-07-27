@@ -1,9 +1,13 @@
-public enum PostTopic: String, Hashable, Sendable {
-    case rant = "rant"
-    case devlog = "devlog"
+public enum PostTopic: String, CaseIterable, Hashable, Sendable {
     case random = "random"
-    case fun = "fun"
+    case devlog = "devlog"
     case showcase = "showcase"
     case question = "question"
+    case rant = "rant"
+    case fun = "fun"
     case politics = "politics"
+    
+    public var name: String {
+        rawValue.capitalized
+    }
 }

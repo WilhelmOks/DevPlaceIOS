@@ -15,6 +15,14 @@ private struct FeedViewContent: View {
     
     @State private var selectedPostSlug: String?
     
+    enum SheetItem: Identifiable {
+        case createPost
+        
+        var id: Self { self }
+    }
+    
+    @State private var sheetItem: SheetItem?
+    
     var body: some View {
         content()
             .screenStyle(bgColor: .BG_2)
@@ -25,6 +33,14 @@ private struct FeedViewContent: View {
             }
             .navigationDestination(item: $selectedPostSlug) { slug in
                 PostView(slug: slug)
+            }
+            .fullScreenCover(item: $sheetItem) { item in
+                switch item {
+                case .createPost:
+                    NavigationStack {
+                        CreatePostView()
+                    }
+                }
             }
     }
     
@@ -52,7 +68,7 @@ private struct FeedViewContent: View {
         }
         .overlay(alignment: .bottomTrailing) {
             Button {
-                
+                sheetItem = .createPost
             } label: {
                 Label("New post", systemImage: "plus")
                     .labelStyle(.iconOnly)

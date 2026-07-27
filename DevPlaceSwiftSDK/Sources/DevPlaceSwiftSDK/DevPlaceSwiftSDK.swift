@@ -150,7 +150,7 @@ public extension DevPlaceRequest {
         return response.decoded
     }
 
-    func createPost(title: String?, topic: String?, content: String, token: AuthToken) async throws {
+    func createPost(title: String?, topic: PostTopic?, content: String, token: AuthToken) async throws {
         struct Body: Encodable {
             let title: String?
             let topic: String?
@@ -158,7 +158,7 @@ public extension DevPlaceRequest {
         }
 
         let config = makeConfig(.post, path: "posts/create", contentType: .jsonBody, token: token)
-        let body = Body(title: title, topic: topic, content: content)
+        let body = Body(title: title, topic: topic?.rawValue, content: content)
         try await request.requestJson(config: config, json: body, apiError: ApiError.self)
     }
 

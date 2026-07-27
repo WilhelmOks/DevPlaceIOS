@@ -35,6 +35,7 @@ extension Profile {
             followingCount: 0,
             viewerIsAdmin: false,
             media: [],
+            xpProgressPercent: 42,
         )
     }
 }

@@ -48,6 +48,7 @@ private struct ProfileViewContent: View {
                             UserBadgeView(badge: badge)
                         }
                     }
+                    .padding(.top, 10)
                 }
             }
             .frame(maxWidth: .infinity)
@@ -71,7 +72,7 @@ private struct ProfileViewContent: View {
     
     @ViewBuilder private func levelProgressArea(_ profile: Profile) -> some View {
         VStack(spacing: 4) {
-            let progressValue = 0.32 //TODO: get the real number from the API (currently not exposed via the API)
+            let progressValue = Double(profile.xpProgressPercent) / 100.0
             
             HStack {
                 Text("Progress to next level")
@@ -92,21 +93,21 @@ private struct ProfileViewContent: View {
             sectionTitle("Bio")
                 .frame(maxWidth: .infinity, alignment: .leading)
             
-            Markdown(profile.user.bio ?? "")
+            Markdown(profile.user.bio)
                 .multilineTextAlignment(.leading)
                 .frame(maxWidth: .infinity, alignment: .leading)
             
             Divider()
             
-            infoRow(title: "Location", text: profile.user.location ?? "")
+            infoRow(title: "Location", text: profile.user.location)
             
             Divider()
             
-            infoRow(title: "Git Link", link: profile.user.gitLink ?? "")
+            infoRow(title: "Git Link", link: profile.user.gitLink)
             
             Divider()
             
-            infoRow(title: "Website", link: profile.user.website ?? "")
+            infoRow(title: "Website", link: profile.user.website)
         }
     }
     

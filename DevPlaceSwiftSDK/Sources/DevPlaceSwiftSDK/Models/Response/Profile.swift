@@ -33,6 +33,7 @@ public struct Profile: Hashable, Sendable, Identifiable {
     public let followingCount: Int
     public let viewerIsAdmin: Bool
     public let media: [Media]
+    public let xpProgressPercent: Int
     //public let achievements: [???] // array of empty objects in sample - type unknown
     //public let aiQuota: ??? // empty object in sample - type unknown
     //public let correctionUsage: ??? // empty object in sample - type unknown
@@ -78,6 +79,7 @@ public struct Profile: Hashable, Sendable, Identifiable {
         followingCount: Int,
         viewerIsAdmin: Bool,
         media: [Media],
+        xpProgressPercent: Int,
     ) {
         self.user = user
         self.posts = posts
@@ -110,6 +112,7 @@ public struct Profile: Hashable, Sendable, Identifiable {
         self.followingCount = followingCount
         self.viewerIsAdmin = viewerIsAdmin
         self.media = media
+        self.xpProgressPercent = xpProgressPercent
     }
 }
 
@@ -141,6 +144,7 @@ extension Profile {
         let can_manage_customization: Bool
         let cust_disable_global: Bool
         let cust_disable_pagetype: Bool
+        let xp_progress_pct: Int?
         let rank: Int?
         let followers_count: Int
         let following_count: Int
@@ -195,6 +199,7 @@ extension Profile.CodingData {
             followingCount: following_count,
             viewerIsAdmin: viewer_is_admin,
             media: media.map(\.decoded),
+            xpProgressPercent: xp_progress_pct ?? 0
         )
     }
 }

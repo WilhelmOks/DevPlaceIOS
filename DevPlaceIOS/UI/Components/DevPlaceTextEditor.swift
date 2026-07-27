@@ -16,8 +16,16 @@ struct DevPlaceTextEditor: View {
     @State private var didInitializeHeight = false
     @State private var dragStartHeight: CGFloat?
 
+    private let resizeSpaceName = "devPlaceTextEditorResize"
+    private let resizeGrabHeight: CGFloat = 24
+
     var body: some View {
         sizedEditor()
+            .coordinateSpace(.named(resizeSpaceName))
+            .simultaneousGesture(
+                resizeGesture,
+                including: sizeMode == .resizable ? .all : .subviews,
+            )
             .background {
                 RoundedRectangle(cornerRadius: 14)
                     .stroke(.FG_2.opacity(0.5))
@@ -28,7 +36,7 @@ struct DevPlaceTextEditor: View {
             }
             .overlay(alignment: .bottomTrailing) {
                 if sizeMode == .resizable {
-                    resizeHandle()
+                    resizeGripIndicator()
                 }
             }
             .onPreferenceChange(ContentHeightKey.self) { value in
@@ -77,23 +85,28 @@ struct DevPlaceTextEditor: View {
         .padding(.vertical, 2)
     }
 
-    @ViewBuilder private func resizeHandle() -> some View {
+    @ViewBuilder private func resizeGripIndicator() -> some View {
         ResizeGrip()
             .stroke(.FG_2.opacity(0.7), style: .init(lineWidth: 1.5, lineCap: .round))
             .frame(width: 10, height: 10)
             .padding(8)
-            .contentShape(Rectangle())
-            .gesture(
-                DragGesture(coordinateSpace: .global)
-                    .onChanged { value in
-                        let start = dragStartHeight ?? max(singleLineHeight, height)
-                        dragStartHeight = start
-                        height = max(singleLineHeight, start + value.translation.height)
-                    }
-                    .onEnded { _ in
-                        dragStartHeight = nil
-                    }
-            )
+            .allowsHitTesting(false)
+    }
+
+    private var resizeGesture: some Gesture {
+        DragGesture(coordinateSpace: .named(resizeSpaceName))
+            .onChanged { value in
+                let currentHeight = max(singleLineHeight, height)
+                if dragStartHeight == nil {
+                    guard value.startLocation.y >= currentHeight - resizeGrabHeight else { return }
+                    dragStartHeight = currentHeight
+                }
+                guard let start = dragStartHeight else { return }
+                height = max(singleLineHeight, start + value.translation.height)
+            }
+            .onEnded { _ in
+                dragStartHeight = nil
+            }
     }
 
     private var initialMeasurementString: String {

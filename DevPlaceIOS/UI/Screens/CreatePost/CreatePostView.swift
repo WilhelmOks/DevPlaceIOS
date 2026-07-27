@@ -73,6 +73,10 @@ private struct CreatePostViewContent: View {
                 .padding(.horizontal, 11)
         }
     }
+    
+    @ViewBuilder private func messageArea() -> some View {
+        
+    }
 }
 
 #Preview {

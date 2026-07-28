@@ -73,6 +73,7 @@ final class MockDevPlaceApi: DevPlaceApi {
             size: data.count,
             isImage: mimeType.hasPrefix("image"),
             isVideo: mimeType.hasPrefix("video"),
+            isAudio: mimeType.hasPrefix("audio"),
             mimeType: mimeType,
         )
     }
@@ -88,6 +89,7 @@ final class MockDevPlaceApi: DevPlaceApi {
             size: 0,
             isImage: false,
             isVideo: false,
+            isAudio: false,
             mimeType: "application/octet-stream",
         )
     }

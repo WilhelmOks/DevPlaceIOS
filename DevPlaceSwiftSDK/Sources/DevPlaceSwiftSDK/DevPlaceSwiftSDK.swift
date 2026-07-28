@@ -155,11 +155,11 @@ public extension DevPlaceRequest {
             let title: String?
             let topic: String?
             let content: String
-            let attachment_uids: String?
+            let attachment_uids: [String]
         }
 
         let config = makeConfig(.post, path: "posts/create", contentType: .jsonBody, token: token)
-        let body = Body(title: title, topic: topic?.rawValue, content: content, attachment_uids: attachments.encodedIds)
+        let body = Body(title: title, topic: topic?.rawValue, content: content, attachment_uids: attachments.map(\.id))
         try await request.requestJson(config: config, json: body, apiError: ApiError.self)
     }
 
@@ -473,12 +473,5 @@ public extension DevPlaceRequest {
     func deleteAttachment(uid: String, token: AuthToken) async throws {
         let config = makeConfig(.delete, path: "uploads/delete/\(uid)", token: token)
         try await request.requestJson(config: config, apiError: ApiError.self)
-    }
-}
-
-private extension [UploadResponse] {
-    var encodedIds: String? {
-        guard !isEmpty else { return nil }
-        return map(\.id).joined(separator: ",")
     }
 }

@@ -94,7 +94,7 @@ private struct AttachmentUploaderViewContent: View {
             Image(systemName: iconName(for: attachment))
                 .foregroundStyle(Color.FG_2)
             
-            Text(attachment.filename)
+            Text(attachment.filename ?? "file")
                 .lineLimit(1)
                 .truncationMode(.middle)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -175,6 +175,7 @@ private struct AttachmentUploaderViewContent: View {
                     size: 1024,
                     isImage: true,
                     isVideo: false,
+                    isAudio: false,
                     mimeType: "image/png",
                 ),
                 UploadResponse(
@@ -184,6 +185,7 @@ private struct AttachmentUploaderViewContent: View {
                     size: 2048,
                     isImage: false,
                     isVideo: true,
+                    isAudio: false,
                     mimeType: "video/mp4",
                 ),
             ],

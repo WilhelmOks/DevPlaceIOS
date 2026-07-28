@@ -8,8 +8,10 @@ extension CreatePostView {
         
         var postTopic: PostTopic = .random
         var title = ""
+        var message = ""
         
         let titleLimit = 500
+        let messageLimit = 125_000
         
         init(api: DevPlaceApi) {
             self.api = api
@@ -17,7 +19,8 @@ extension CreatePostView {
         
         var canSubmit: Bool {
             let titleOk = TextCharacterCounter.numberOfCharacters(title) <= titleLimit
-            return titleOk
+            let messageOk = TextCharacterCounter.numberOfCharacters(message) <= messageLimit && !message.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            return titleOk && messageOk
         }
     }
 }

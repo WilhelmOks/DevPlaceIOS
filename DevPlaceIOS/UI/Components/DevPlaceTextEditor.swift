@@ -8,7 +8,7 @@ struct DevPlaceTextEditor: View {
 
     @Binding var text: String
     var placeholder: String = ""
-    var sizeMode: SizeMode = .fill
+    var sizeMode: SizeMode = .resizable
     var initialLineCount: Int?
 
     @State private var height: CGFloat = 0

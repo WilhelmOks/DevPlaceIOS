@@ -14,9 +14,21 @@ private struct CreatePostViewContent: View {
     
     @Environment(\.dismiss) private var dismiss
     
+    enum FocusableItem: Identifiable {
+        case title
+        case message
+        
+        var id: Self { self }
+    }
+    
+    @FocusState private var focusedField: FocusableItem?
+    
     var body: some View {
         content()
             .screenStyle(bgColor: .BG_2)
+            .onTapGesture {
+                focusedField = nil
+            }
             .navigationTitle(Text("Create New Post"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -41,9 +53,10 @@ private struct CreatePostViewContent: View {
     
     @ViewBuilder private func content() -> some View {
         ScrollView {
-            VStack {
+            VStack(spacing: 14) {
                 topicArea()
                 titleArea()
+                messageArea()
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding()
@@ -66,8 +79,18 @@ private struct CreatePostViewContent: View {
     
     @ViewBuilder private func titleArea() -> some View {
         VStack(alignment: .leading) {
-            TextField("Title (optional)", text: $viewModel.title)
-                .textFieldStyle(.devPlace)
+            TextField(
+                text: $viewModel.title,
+                label: {
+                    Text("Title (optional)")
+                        .foregroundStyle(.FG_2.opacity(0.5))
+                }
+            )
+            .textFieldStyle(.devPlace)
+            .focused($focusedField, equals: .title)
+            .onSubmit {
+                focusedField = .message
+            }
             
             CharacterCounterView(text: viewModel.title, maxCount: viewModel.titleLimit)
                 .padding(.horizontal, 11)
@@ -75,7 +98,17 @@ private struct CreatePostViewContent: View {
     }
     
     @ViewBuilder private func messageArea() -> some View {
-        
+        VStack(alignment: .leading) {
+            DevPlaceTextEditor(
+                text: $viewModel.message,
+                placeholder: "What's on your mind?",
+                initialLineCount: 7
+            )
+            .focused($focusedField, equals: .message)
+            
+            CharacterCounterView(text: viewModel.message, maxCount: viewModel.messageLimit)
+                .padding(.horizontal, 11)
+        }
     }
 }
 

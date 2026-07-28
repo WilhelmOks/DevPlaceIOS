@@ -68,6 +68,17 @@ extension AttachmentUploaderView {
             }
         }
         
+        func uploadFile(providingData loadData: () async throws -> (data: Data, filename: String, mimeType: String)?) async {
+            guard canAddMore else { return }
+            
+            await upload {
+                guard let file = try await loadData() else {
+                    throw CancellationError()
+                }
+                return try await self.api.uploadFile(data: file.data, filename: file.filename, mimeType: file.mimeType)
+            }
+        }
+        
         func delete(attachment: UploadResponse) async {
             guard !isBusy else { return }
             isBusy = true

@@ -1,4 +1,5 @@
 import SwiftUI
+import PhotosUI
 import UniformTypeIdentifiers
 import DevPlaceSwiftSDK
 
@@ -22,6 +23,8 @@ private struct AttachmentUploaderViewContent: View {
     
     @State private var isShowingAddChoice = false
     @State private var isShowingUrlPrompt = false
+    @State private var isShowingPhotoPicker = false
+    @State private var selectedPhoto: PhotosPickerItem?
     @State private var urlText = ""
     
     var body: some View {
@@ -33,6 +36,18 @@ private struct AttachmentUploaderViewContent: View {
             ) { result in
                 Task {
                     await viewModel.uploadPickedFile(result: result)
+                }
+            }
+            .photosPicker(
+                isPresented: $isShowingPhotoPicker,
+                selection: $selectedPhoto,
+                matching: .any(of: [.images, .videos]),
+            )
+            .onChange(of: selectedPhoto) { _, newItem in
+                guard let newItem else { return }
+                Task {
+                    await uploadPhoto(newItem)
+                    selectedPhoto = nil
                 }
             }
             .alert("Add from URL", isPresented: $isShowingUrlPrompt) {
@@ -105,13 +120,29 @@ private struct AttachmentUploaderViewContent: View {
         }
         .disabled(viewModel.isBusy)
         .confirmationDialog("Add Attachment", isPresented: $isShowingAddChoice, titleVisibility: .visible) {
-            Button("Upload from Device") {
+            Button("Photo Library") {
+                isShowingPhotoPicker = true
+            }
+            Button("Files") {
                 viewModel.isShowingFileImporter = true
             }
-            Button("Add from URL") {
+            Button("From URL") {
                 isShowingUrlPrompt = true
             }
             Button("Cancel", role: .cancel) {}
+        }
+    }
+    
+    private func uploadPhoto(_ item: PhotosPickerItem) async {
+        await viewModel.uploadFile {
+            guard let data = try await item.loadTransferable(type: Data.self) else {
+                return nil
+            }
+            let contentType = item.supportedContentTypes.first
+            let mimeType = contentType?.preferredMIMEType ?? "application/octet-stream"
+            let fileExtension = contentType?.preferredFilenameExtension
+            let filename = fileExtension.map { "attachment.\($0)" } ?? "attachment"
+            return (data, filename, mimeType)
         }
     }
     

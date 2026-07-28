@@ -26,8 +26,13 @@ private struct CreatePostViewContent: View {
     var body: some View {
         content()
             .screenStyle(bgColor: .BG_2)
+            .alert($viewModel.alertMessage)
+            .disabled(viewModel.isLoading)
             .onTapGesture {
                 focusedField = nil
+            }
+            .onReceive(viewModel.dismiss) {
+                dismiss()
             }
             .navigationTitle(Text("Create New Post"))
             .navigationBarTitleDisplayMode(.inline)
@@ -41,12 +46,18 @@ private struct CreatePostViewContent: View {
                 }
                 
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        //dismiss()
-                    } label: {
-                        Label("Create", systemImage: "paperplane.fill")
+                    if viewModel.isLoading {
+                        ProgressView()
+                    } else {
+                        Button {
+                            Task {
+                                await viewModel.submit()
+                            }
+                        } label: {
+                            Label("Create", systemImage: "paperplane.fill")
+                        }
+                        .disabled(!viewModel.canSubmit)
                     }
-                    .disabled(!viewModel.canSubmit)
                 }
             }
     }
@@ -92,8 +103,11 @@ private struct CreatePostViewContent: View {
                 focusedField = .message
             }
             
-            CharacterCounterView(text: viewModel.title, maxCount: viewModel.titleLimit)
-                .padding(.horizontal, 11)
+            CharacterCounterView(
+                text: viewModel.title,
+                maxCount: DevPlaceConstants.maxPostTitleLength,
+            )
+            .padding(.horizontal, 11)
         }
     }
     
@@ -106,8 +120,12 @@ private struct CreatePostViewContent: View {
             )
             .focused($focusedField, equals: .message)
             
-            CharacterCounterView(text: viewModel.message, maxCount: viewModel.messageLimit)
-                .padding(.horizontal, 11)
+            CharacterCounterView(
+                text: viewModel.message,
+                minCount: DevPlaceConstants.minPostContentLength,
+                maxCount: DevPlaceConstants.maxPostContentLength,
+            )
+            .padding(.horizontal, 11)
         }
     }
 }
@@ -116,4 +134,5 @@ private struct CreatePostViewContent: View {
     NavigationStack {
         CreatePostView()
     }
+    .environment(\.api, .mock)
 }

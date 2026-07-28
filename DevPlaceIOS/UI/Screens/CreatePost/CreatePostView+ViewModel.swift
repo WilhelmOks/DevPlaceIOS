@@ -1,5 +1,6 @@
 import Foundation
 import Observation
+import Combine
 import DevPlaceSwiftSDK
 
 extension CreatePostView {
@@ -21,8 +22,10 @@ extension CreatePostView {
             }
         }
         
-        let titleLimit = 500
-        let messageLimit = 125_000
+        var alertMessage: AlertMessage = .none()
+        var isLoading = false
+        
+        let dismiss = PassthroughSubject<Void, Never>()
         
         init(api: DevPlaceApi) {
             self.api = api
@@ -31,9 +34,35 @@ extension CreatePostView {
         }
         
         var canSubmit: Bool {
-            let titleOk = TextCharacterCounter.numberOfCharacters(title) <= titleLimit
-            let messageOk = TextCharacterCounter.numberOfCharacters(message) <= messageLimit && !message.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            let titleLength = TextCharacterCounter.numberOfCharacters(title)
+            let messageLength = TextCharacterCounter.numberOfCharacters(message)
+            
+            let titleOk = titleLength <= DevPlaceConstants.maxPostTitleLength
+            let messageOk = messageLength <= DevPlaceConstants.maxPostContentLength && messageLength >= DevPlaceConstants.minPostContentLength
             return titleOk && messageOk
+        }
+        
+        func submit() async {
+            isLoading = true
+            defer { isLoading = false }
+            
+            do {
+                var cleanTitle: String? = self.title.trimmingCharacters(in: .whitespacesAndNewlines)
+                if cleanTitle?.isEmpty == true {
+                    cleanTitle = nil
+                }
+                
+                try await api.createPost(title: cleanTitle, topic: postTopic, content: message)
+                
+                try? await AppState.shared.loadFeed(api: api)
+                
+                title = ""
+                message = ""
+                
+                dismiss.send()
+            } catch {
+                alertMessage = .presentedError(error)
+            }
         }
     }
 }

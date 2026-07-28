@@ -20,11 +20,17 @@ Done:
 * viewing images and videos attached to posts
 * viewing and voting on polls
 * upvoting and downvoting posts
-
-TODO:
 * showing individual posts in fullscreen
 * showing comments
-* writing posts and comments
 * reacting on posts and comments
+
+TODO:
+
+* creating posts
+  * attachments
+  * polls
+  * links to projects 
+* creating comments
+* editing posts and comments
 * notifications
 * private messages

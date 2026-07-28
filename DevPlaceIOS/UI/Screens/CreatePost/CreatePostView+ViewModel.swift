@@ -22,6 +22,8 @@ extension CreatePostView {
             }
         }
         
+        var attachments: [UploadResponse] = []
+        
         var alertMessage: AlertMessage = .none()
         var isLoading = false
         
@@ -52,12 +54,13 @@ extension CreatePostView {
                     cleanTitle = nil
                 }
                 
-                try await api.createPost(title: cleanTitle, topic: postTopic, content: message)
+                try await api.createPost(title: cleanTitle, topic: postTopic, content: message, attachments: attachments)
                 
                 try? await AppState.shared.loadFeed(api: api)
                 
                 title = ""
                 message = ""
+                attachments = []
                 
                 dismiss.send()
             } catch {

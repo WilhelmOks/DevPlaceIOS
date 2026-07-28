@@ -37,7 +37,7 @@ final class MockDevPlaceApi: DevPlaceApi {
         return .mock
     }
     
-    func createPost(title: String?, topic: PostTopic?, content: String) async throws {
+    func createPost(title: String?, topic: PostTopic?, content: String, attachments: [UploadResponse]) async throws {
         await mockDelay()
         try await refreshTokenIfNeeded()
     }

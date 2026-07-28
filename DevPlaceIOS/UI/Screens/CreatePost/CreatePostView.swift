@@ -64,10 +64,11 @@ private struct CreatePostViewContent: View {
     
     @ViewBuilder private func content() -> some View {
         ScrollView {
-            VStack(spacing: 14) {
+            VStack(alignment: .leading, spacing: 14) {
                 topicArea()
                 titleArea()
                 messageArea()
+                attachmentsArea()
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding()
@@ -126,6 +127,12 @@ private struct CreatePostViewContent: View {
                 maxCount: DevPlaceConstants.maxPostContentLength,
             )
             .padding(.horizontal, 11)
+        }
+    }
+    
+    @ViewBuilder private func attachmentsArea() -> some View {
+        AttachmentUploaderView { attachments in
+            viewModel.attachments = attachments
         }
     }
 }

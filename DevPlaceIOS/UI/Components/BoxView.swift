@@ -8,21 +8,23 @@ struct BoxView<Content: View>: View {
 
         var value: CGFloat {
             switch self {
-            case .small: 8
+            case .small: 10
             case .normal: 12
-            case .big: 16
+            case .big: 14
             }
         }
     }
 
     enum PaddingSize {
+        case none
         case small
         case normal
         case big
 
         var value: CGFloat {
             switch self {
-            case .small: 8
+            case .none: 0
+            case .small: 10
             case .normal: 12
             case .big: 16
             }
@@ -31,11 +33,12 @@ struct BoxView<Content: View>: View {
 
     var backgroundColor: Color = .BG_2
     var foregroundColor: Color = .FG_1
+    var borderColor: Color = .FG_2
+    var borderOpacity: Double = 0.25
+    var borderWidth: CGFloat = 1
     var cornerSize: CornerSize = .normal
     var paddingSize: PaddingSize = .normal
     @ViewBuilder let content: () -> Content
-
-    private let borderOpacity: Double = 0.25
 
     var body: some View {
         content()
@@ -43,7 +46,7 @@ struct BoxView<Content: View>: View {
             .padding(paddingSize.value)
             .overlay {
                 RoundedRectangle(cornerRadius: cornerSize.value)
-                    .strokeBorder(Color.FG_2.opacity(borderOpacity), lineWidth: 1)
+                    .strokeBorder(borderColor.opacity(borderOpacity), lineWidth: borderWidth)
             }
             .background {
                 RoundedRectangle(cornerRadius: cornerSize.value)
@@ -57,22 +60,23 @@ struct BoxView<Content: View>: View {
         VStack(alignment: .leading, spacing: 6) {
             Text("Boxed content")
                 .font(.headline)
-            Text("Styled like the PollView outer box.")
+            Text("This is some additional text.")
                 .font(.footnote)
+                .foregroundStyle(.FG_2)
         }
     }
     .padding()
     .background(Color.BG_1)
 }
 
-#Preview("Custom") {
+#Preview("Input style") {
     BoxView(
         backgroundColor: .BG_1,
-        foregroundColor: .FG_2,
-        cornerSize: .small,
-        paddingSize: .big,
+        borderOpacity: 0.5,
+        cornerSize: .big,
+        paddingSize: .small,
     ) {
-        Text("Custom colors and sizes")
+        Text("Text inside the box")
     }
     .padding()
     .background(Color.BG_2)

@@ -20,25 +20,27 @@ struct DevPlaceTextEditor: View {
     private let resizeGrabHeight: CGFloat = 24
 
     var body: some View {
-        sizedEditor()
-            .coordinateSpace(.named(resizeSpaceName))
-            .simultaneousGesture(
-                resizeGesture,
-                including: sizeMode == .resizable ? .all : .subviews,
-            )
-            .background {
-                RoundedRectangle(cornerRadius: 14)
-                    .stroke(.FG_2.opacity(0.5))
-                    .fill(.BG_1)
-            }
-            .overlay {
-                heightMeasurement()
-            }
-            .overlay(alignment: .bottomTrailing) {
-                if sizeMode == .resizable {
-                    resizeGripIndicator()
+        BoxView(
+            backgroundColor: .BG_1,
+            borderOpacity: 0.5,
+            cornerSize: .big,
+            paddingSize: .none,
+        ) {
+            sizedEditor()
+                .coordinateSpace(.named(resizeSpaceName))
+                .simultaneousGesture(
+                    resizeGesture,
+                    including: sizeMode == .resizable ? .all : .subviews,
+                )
+                .overlay {
+                    heightMeasurement()
                 }
-            }
+                .overlay(alignment: .bottomTrailing) {
+                    if sizeMode == .resizable {
+                        resizeGripIndicator()
+                    }
+                }
+        }
             .onPreferenceChange(ContentHeightKey.self) { value in
                 guard value > 0, !didInitializeHeight else { return }
                 height = value

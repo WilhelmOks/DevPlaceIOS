@@ -10,6 +10,9 @@ protocol DevPlaceApi {
     func vote(targetType: TargetType, targetId: String, vote: Vote) async throws
     func submitPollChoice(pollId: String, optionId: String) async throws
     func react(targetType: TargetType, targetId: String, emoji: String) async throws
+    func uploadFile(data: Data, filename: String, mimeType: String) async throws -> UploadResponse
+    func uploadFromUrl(url: String, filename: String?) async throws -> UploadResponse
+    func deleteAttachment(uid: String) async throws
 }
 
 extension DevPlaceApi {

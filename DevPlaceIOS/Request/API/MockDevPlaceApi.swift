@@ -62,4 +62,38 @@ final class MockDevPlaceApi: DevPlaceApi {
         await mockDelay(0.2)
         try await refreshTokenIfNeeded()
     }
+    
+    func uploadFile(data: Data, filename: String, mimeType: String) async throws -> UploadResponse {
+        await mockDelay()
+        try await refreshTokenIfNeeded()
+        return UploadResponse(
+            id: UUID().uuidString,
+            filename: filename,
+            url: "https://example.com/\(filename)",
+            size: data.count,
+            isImage: mimeType.hasPrefix("image"),
+            isVideo: mimeType.hasPrefix("video"),
+            mimeType: mimeType,
+        )
+    }
+    
+    func uploadFromUrl(url: String, filename: String?) async throws -> UploadResponse {
+        await mockDelay()
+        try await refreshTokenIfNeeded()
+        let resolvedFilename = filename ?? (URL(string: url)?.lastPathComponent ?? "attachment")
+        return UploadResponse(
+            id: UUID().uuidString,
+            filename: resolvedFilename,
+            url: url,
+            size: 0,
+            isImage: false,
+            isVideo: false,
+            mimeType: "application/octet-stream",
+        )
+    }
+    
+    func deleteAttachment(uid: String) async throws {
+        await mockDelay(0.2)
+        try await refreshTokenIfNeeded()
+    }
 }

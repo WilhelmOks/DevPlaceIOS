@@ -65,6 +65,30 @@ final class ProdDevPlaceApi: DevPlaceApi {
         try await request.react(targetType: targetType, targetId: targetId, emoji: emoji, token: token)
     }
     
+    func uploadFile(data: Data, filename: String, mimeType: String) async throws -> UploadResponse {
+        guard let token = AppState.shared.token else {
+            throw DevPlaceError.notLoggedIn
+        }
+        try await refreshTokenIfNeeded()
+        return try await request.uploadFile(data: data, filename: filename, mimeType: mimeType, token: token)
+    }
+    
+    func uploadFromUrl(url: String, filename: String?) async throws -> UploadResponse {
+        guard let token = AppState.shared.token else {
+            throw DevPlaceError.notLoggedIn
+        }
+        try await refreshTokenIfNeeded()
+        return try await request.uploadFromUrl(url: url, filename: filename, token: token)
+    }
+    
+    func deleteAttachment(uid: String) async throws {
+        guard let token = AppState.shared.token else {
+            throw DevPlaceError.notLoggedIn
+        }
+        try await refreshTokenIfNeeded()
+        try await request.deleteAttachment(uid: uid, token: token)
+    }
+    
     func profile(username: String?) async throws -> Profile {
         try await refreshTokenIfNeeded()
         if let username {

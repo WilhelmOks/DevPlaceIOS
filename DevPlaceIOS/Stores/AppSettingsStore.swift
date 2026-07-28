@@ -11,6 +11,8 @@ final class AppSettingsStore {
     private let showFeedAttachmentsKey = "showFeedAttachments"
     private let showFeedCommentsKey = "showFeedComments"
     private let recentEmojisKey = "recentEmojis"
+    private let draftPostTitleKey = "draftPostTitle"
+    private let draftPostMessageKey = "draftPostMessage"
     
     private let maxRecentEmojis = 30
     
@@ -38,12 +40,26 @@ final class AppSettingsStore {
         }
     }
     
+    var draftPostTitle: String {
+        didSet {
+            userDefaults.set(draftPostTitle, forKey: draftPostTitleKey)
+        }
+    }
+    
+    var draftPostMessage: String {
+        didSet {
+            userDefaults.set(draftPostMessage, forKey: draftPostMessageKey)
+        }
+    }
+    
     private init() {
         let raw = UserDefaults.standard.string(forKey: appearanceKey)
         self.appearance = raw.flatMap(AppearanceMode.init(rawValue:)) ?? .dark
         self.showFeedAttachments = (userDefaults.object(forKey: showFeedAttachmentsKey) as? Bool) ?? true
         self.showFeedComments = (userDefaults.object(forKey: showFeedCommentsKey) as? Bool) ?? true
         self.recentEmojis = (userDefaults.array(forKey: recentEmojisKey) as? [String]) ?? []
+        self.draftPostTitle = userDefaults.string(forKey: draftPostTitleKey) ?? ""
+        self.draftPostMessage = userDefaults.string(forKey: draftPostMessageKey) ?? ""
     }
     
     func recordEmojiPick(_ emoji: String) {

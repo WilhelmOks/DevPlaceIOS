@@ -3,15 +3,15 @@ import UniformTypeIdentifiers
 import DevPlaceSwiftSDK
 
 struct AttachmentUploaderView: View {
-    @Binding var attachments: [UploadResponse]
+    var onAttachmentsChange: ([UploadResponse]) -> Void = { _ in }
     
     @Environment(\.api) var api
     
     var body: some View {
         AttachmentUploaderViewContent(
             viewModel: .init(
-                attachments: $attachments,
                 api: api,
+                onAttachmentsChange: onAttachmentsChange,
             )
         )
     }
@@ -127,54 +127,38 @@ private struct AttachmentUploaderViewContent: View {
 }
 
 #Preview("Empty") {
-    StatefulPreviewWrapper([UploadResponse]()) { attachments in
-        AttachmentUploaderView(attachments: attachments)
-            .padding()
-            .background(Color.BG_1)
-    }
-    .environment(\.api, .mock)
+    AttachmentUploaderView()
+        .padding()
+        .background(Color.BG_1)
+        .environment(\.api, .mock)
 }
 
 #Preview("With attachments") {
-    StatefulPreviewWrapper(
-        [
-            UploadResponse(
-                id: "1",
-                filename: "screenshot.png",
-                url: "https://example.com/screenshot.png",
-                size: 1024,
-                isImage: true,
-                isVideo: false,
-                mimeType: "image/png",
-            ),
-            UploadResponse(
-                id: "2",
-                filename: "demo.mp4",
-                url: "https://example.com/demo.mp4",
-                size: 2048,
-                isImage: false,
-                isVideo: true,
-                mimeType: "video/mp4",
-            ),
-        ]
-    ) { attachments in
-        AttachmentUploaderView(attachments: attachments)
-            .padding()
-            .background(Color.BG_1)
-    }
-    .environment(\.api, .mock)
-}
-
-private struct StatefulPreviewWrapper<Value, Content: View>: View {
-    @State private var value: Value
-    private let content: (Binding<Value>) -> Content
-    
-    init(_ initialValue: Value, @ViewBuilder content: @escaping (Binding<Value>) -> Content) {
-        _value = State(initialValue: initialValue)
-        self.content = content
-    }
-    
-    var body: some View {
-        content($value)
-    }
+    AttachmentUploaderViewContent(
+        viewModel: .init(
+            attachments: [
+                UploadResponse(
+                    id: "1",
+                    filename: "screenshot.png",
+                    url: "https://example.com/screenshot.png",
+                    size: 1024,
+                    isImage: true,
+                    isVideo: false,
+                    mimeType: "image/png",
+                ),
+                UploadResponse(
+                    id: "2",
+                    filename: "demo.mp4",
+                    url: "https://example.com/demo.mp4",
+                    size: 2048,
+                    isImage: false,
+                    isVideo: true,
+                    mimeType: "video/mp4",
+                ),
+            ],
+            api: .mock,
+        )
+    )
+    .padding()
+    .background(Color.BG_1)
 }

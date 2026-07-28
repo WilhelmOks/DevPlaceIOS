@@ -1,6 +1,5 @@
 import Foundation
 import Observation
-import SwiftUI
 import UniformTypeIdentifiers
 import DevPlaceSwiftSDK
 
@@ -8,11 +7,11 @@ extension AttachmentUploaderView {
     @Observable final class ViewModel {
         let api: DevPlaceApi
         
-        @ObservationIgnored private let externalAttachments: Binding<[UploadResponse]>
+        @ObservationIgnored private let onAttachmentsChange: ([UploadResponse]) -> Void
         
         var attachments: [UploadResponse] {
             didSet {
-                externalAttachments.wrappedValue = attachments
+                onAttachmentsChange(attachments)
             }
         }
         
@@ -20,10 +19,14 @@ extension AttachmentUploaderView {
         var isShowingFileImporter = false
         var alertMessage: AlertMessage = .none()
         
-        init(attachments: Binding<[UploadResponse]>, api: DevPlaceApi) {
-            self.externalAttachments = attachments
-            self.attachments = attachments.wrappedValue
+        init(
+            attachments: [UploadResponse] = [],
+            api: DevPlaceApi,
+            onAttachmentsChange: @escaping ([UploadResponse]) -> Void = { _ in },
+        ) {
+            self.attachments = attachments
             self.api = api
+            self.onAttachmentsChange = onAttachmentsChange
         }
         
         var canAddMore: Bool {

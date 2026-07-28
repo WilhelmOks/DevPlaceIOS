@@ -61,6 +61,8 @@ The `TemplateView` pair under `DevPlaceIOS/UI/Template/` is the canonical shape:
 - `private struct <Name>ViewContent: View` — holds `@State var viewModel`, builds the UI in `content()`.
 - `extension <Name>View { @Observable final class ViewModel { ... } }` in `<Name>View+ViewModel.swift` — holds `let api: DevPlaceApi`, mutable `@Observable` state, async methods that call the API.
 
+ViewModels must **not** `import SwiftUI` (nor depend on SwiftUI types like `Binding`). Keep them UI-framework-agnostic — `Foundation` / `Observation` only. When a component needs to surface state changes to its parent, pass a plain closure (e.g. `onAttachmentsChange: ([UploadResponse]) -> Void`) rather than a `Binding`; the `View` owns the SwiftUI glue and the ViewModel owns the state.
+
 Use the `devplace-swiftui-scaffold` skill to generate new screens conforming to this pattern.
 
 ### App-wide state

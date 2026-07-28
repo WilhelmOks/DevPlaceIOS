@@ -18,8 +18,6 @@ private struct PollViewContent: View {
     let poll: Poll
     @State var viewModel: PollView.ViewModel
     
-    private let outerCornerRadius: CGFloat = 12
-    private let outerPadding: CGFloat = 12
     private let optionCornerRadius: CGFloat = 10
     private let optionHorizontalPadding: CGFloat = 12
     private let optionVerticalPadding: CGFloat = 10
@@ -38,30 +36,23 @@ private struct PollViewContent: View {
     }
     
     @ViewBuilder private func content() -> some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text(viewModel.question)
-                .font(.headline)
-                .foregroundStyle(Color.FG_1)
-            
-            VStack(spacing: 6) {
-                ForEach(viewModel.options, id: \.id) { option in
-                    optionRow(option: option)
+        BoxView {
+            VStack(alignment: .leading, spacing: 10) {
+                Text(viewModel.question)
+                    .font(.headline)
+                    .foregroundStyle(Color.FG_1)
+                
+                VStack(spacing: 6) {
+                    ForEach(viewModel.options, id: \.id) { option in
+                        optionRow(option: option)
+                    }
                 }
+                
+                Text("\(viewModel.total) \(viewModel.total == 1 ? "vote" : "votes")")
+                    .font(.footnote)
+                    .foregroundStyle(Color.FG_2)
+                    .padding(.horizontal, 4)
             }
-            
-            Text("\(viewModel.total) \(viewModel.total == 1 ? "vote" : "votes")")
-                .font(.footnote)
-                .foregroundStyle(Color.FG_2)
-                .padding(.horizontal, 4)
-        }
-        .padding(outerPadding)
-        .overlay {
-            RoundedRectangle(cornerRadius: outerCornerRadius)
-                .strokeBorder(Color.FG_2.opacity(subtleBorderOpacity), lineWidth: 1)
-        }
-        .background {
-            RoundedRectangle(cornerRadius: outerCornerRadius)
-                .foregroundStyle(.BG_2)
         }
     }
     

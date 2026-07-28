@@ -17,15 +17,16 @@ Done:
 * forgot password and sign up via redirect to browser
 * listing posts in the feed and loading more
 * viewing user profiles and own profile
-* viewing images and videos attached to posts
-* viewing and voting on polls
-* upvoting and downvoting posts
 * showing individual posts in fullscreen
 * showing comments
+* viewing images and videos attached to posts
+* viewing and voting on polls
+* upvoting and downvoting posts and comments
 * reacting on posts and comments
 
 TODO:
 
+* viewing images and videos attached to comments
 * creating posts
   * attachments
   * polls

@@ -34,6 +34,11 @@ private struct CreatePostViewContent: View {
             .onReceive(viewModel.dismiss) {
                 dismiss()
             }
+            .onDisappear {
+                Task {
+                    await viewModel.deleteUnsubmittedAttachments()
+                }
+            }
             .navigationTitle(Text("Create New Post"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

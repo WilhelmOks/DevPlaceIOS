@@ -67,5 +67,18 @@ extension CreatePostView {
                 alertMessage = .presentedError(error)
             }
         }
+        
+        func deleteUnsubmittedAttachments() async {
+            let unsubmitted = attachments
+            attachments = []
+            
+            for attachment in unsubmitted {
+                do {
+                    try await api.deleteAttachment(uid: attachment.id)
+                } catch {
+                    dlog("Failed to delete unsubmitted attachment \(attachment.id): \(error)")
+                }
+            }
+        }
     }
 }

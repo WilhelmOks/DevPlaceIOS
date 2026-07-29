@@ -6,6 +6,7 @@ protocol DevPlaceApi {
     func feed(before: Date?) async throws -> Feed
     func postDetail(slug: String) async throws -> PostDetail
     func createPost(title: String?, topic: PostTopic?, content: String, attachments: [UploadResponse], pollQuestion: String?, pollOptions: [String], projectLink: String?) async throws
+    func deletePost(slug: String) async throws
     func profile(username: String?) async throws -> Profile
     func vote(targetType: TargetType, targetId: String, vote: Vote) async throws
     func submitPollChoice(pollId: String, optionId: String) async throws

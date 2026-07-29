@@ -41,6 +41,17 @@ extension PostView {
             }
         }
         
+        func deletePost() async -> Bool {
+            do {
+                try await api.deletePost(slug: slug)
+                try await AppState.shared.loadFeed(api: api)
+                return true
+            } catch {
+                alertMessage = .presentedError(error)
+                return false
+            }
+        }
+        
         func doubleTapPost() async {
             guard let detail = postDetail else { return }
             guard !AppState.shared.isCurrentUser(id: detail.post.userId) else {

@@ -14,6 +14,8 @@ struct PostView: View {
 private struct PostViewContent: View {
     @State var viewModel: PostView.ViewModel
     
+    @Environment(\.dismiss) private var dismiss
+    
     var body: some View {
         content()
             .screenStyle(bgColor: .BG_1)
@@ -70,6 +72,15 @@ private struct PostViewContent: View {
                 onReact: { emoji in
                     Task { await viewModel.reactToPost(emoji: emoji) }
                 },
+                onDelete: AppState.shared.isCurrentUser(id: detail.post.userId)
+                    ? {
+                        Task {
+                            if await viewModel.deletePost() {
+                                dismiss()
+                            }
+                        }
+                    }
+                    : nil,
             )
         }
         .frame(maxWidth: .infinity, alignment: .leading)

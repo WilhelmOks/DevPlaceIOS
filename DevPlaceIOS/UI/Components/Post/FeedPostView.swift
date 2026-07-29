@@ -34,6 +34,9 @@ struct FeedPostView: View {
                     onReact: { emoji in
                         Task { await handleReactPost(emoji: emoji) }
                     },
+                    onDelete: AppState.shared.isCurrentUser(id: post.data.userId)
+                        ? { Task { await handleDeletePost() } }
+                        : nil,
                 )
             }
             .padding(.horizontal)
@@ -98,6 +101,16 @@ struct FeedPostView: View {
             api: api,
         ) { newVote in
             AppState.shared.updateCommentVoteInFeed(commentId: comment.data.id, vote: newVote)
+        }
+    }
+    
+    private func handleDeletePost() async {
+        guard let slug = post.data.slug else { return }
+        do {
+            try await api.deletePost(slug: slug)
+            try await AppState.shared.loadFeed(api: api)
+        } catch {
+            dlog("Delete post failed: \(error)")
         }
     }
     

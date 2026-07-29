@@ -7,6 +7,9 @@ struct PostFooterView: View {
     let currentVote: Vote
     let reactions: Reactions
     let onReact: (String) -> Void
+    var onDelete: (() -> Void)? = nil
+    
+    @State private var isConfirmingDelete = false
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -18,7 +21,31 @@ struct PostFooterView: View {
                 ReactionsBar(reactions: reactions, onReact: onReact)
                 
                 Spacer(minLength: 0)
+                
+                if onDelete != nil {
+                    deleteButton()
+                }
             }
+        }
+    }
+    
+    @ViewBuilder private func deleteButton() -> some View {
+        Button {
+            isConfirmingDelete = true
+        } label: {
+            Image(systemName: "trash")
+        }
+        .buttonStyle(.plain)
+        .foregroundStyle(Color.FG_1)
+        .confirmationDialog(
+            "Delete this post?",
+            isPresented: $isConfirmingDelete,
+            titleVisibility: .visible,
+        ) {
+            Button("Delete", role: .destructive) {
+                onDelete?()
+            }
+            Button("Cancel", role: .cancel) {}
         }
     }
 }

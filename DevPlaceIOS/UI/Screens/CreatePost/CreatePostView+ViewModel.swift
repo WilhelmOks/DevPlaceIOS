@@ -24,6 +24,10 @@ extension CreatePostView {
         
         var attachments: [UploadResponse] = []
         
+        var isPollAdded = false
+        var pollQuestion = ""
+        var pollOptions: [String] = []
+        
         var alertMessage: AlertMessage = .none()
         var isLoading = false
         
@@ -33,6 +37,19 @@ extension CreatePostView {
             self.api = api
             self.title = settingsStore.draftPostTitle
             self.message = settingsStore.draftPostMessage
+        }
+        
+        private let minPollOptionsCount = 2
+        
+        func addPoll() {
+            while pollOptions.count < minPollOptionsCount {
+                pollOptions.append("")
+            }
+            isPollAdded = true
+        }
+        
+        func removePoll() {
+            isPollAdded = false
         }
         
         var canSubmit: Bool {
@@ -54,13 +71,23 @@ extension CreatePostView {
                     cleanTitle = nil
                 }
                 
-                try await api.createPost(title: cleanTitle, topic: postTopic, content: message, attachments: attachments)
+                try await api.createPost(
+                    title: cleanTitle,
+                    topic: postTopic,
+                    content: message,
+                    attachments: attachments,
+                    pollQuestion: isPollAdded ? pollQuestion : nil,
+                    pollOptions: isPollAdded ? pollOptions : [],
+                )
                 
                 try? await AppState.shared.loadFeed(api: api)
                 
                 title = ""
                 message = ""
                 attachments = []
+                isPollAdded = false
+                pollQuestion = ""
+                pollOptions = []
                 
                 dismiss.send()
             } catch {

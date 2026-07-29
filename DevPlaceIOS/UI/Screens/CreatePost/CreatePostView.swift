@@ -74,6 +74,7 @@ private struct CreatePostViewContent: View {
                 titleArea()
                 messageArea()
                 attachmentsArea()
+                pollArea()
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding()
@@ -139,6 +140,34 @@ private struct CreatePostViewContent: View {
         AttachmentUploaderView { attachments in
             viewModel.attachments = attachments
         }
+    }
+    
+    @ViewBuilder private func pollArea() -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Button {
+                if viewModel.isPollAdded {
+                    viewModel.removePoll()
+                } else {
+                    viewModel.addPoll()
+                }
+            } label: {
+                BoxView {
+                    if viewModel.isPollAdded {
+                        Label("Remove poll", systemImage: "chart.bar.yaxis")
+                    } else {
+                        Label("Add poll", systemImage: "chart.bar.yaxis")
+                    }
+                }
+            }
+            
+            if viewModel.isPollAdded {
+                CreatePollView(
+                    question: $viewModel.pollQuestion,
+                    options: $viewModel.pollOptions,
+                )
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 

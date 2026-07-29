@@ -38,7 +38,7 @@ private struct FeedViewContent: View {
                 switch item {
                 case .createPost:
                     NavigationStack {
-                        CreatePostView()
+                        CreatePostView(mode: .create)
                     }
                 }
             }

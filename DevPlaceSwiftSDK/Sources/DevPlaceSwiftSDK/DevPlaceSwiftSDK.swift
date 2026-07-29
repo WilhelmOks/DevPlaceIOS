@@ -185,29 +185,29 @@ public extension DevPlaceRequest {
 
     func editPost(
         slug: String,
-        title: String?,
-        topic: PostTopic?,
+        title: String,
+        topic: PostTopic,
         content: String,
-        attachments: [UploadResponse] = [],
-        pollQuestion: String? = nil,
-        pollOptions: [String] = [],
-        projectLink: String? = nil,
+        attachments: [UploadResponse],
+        pollQuestion: String,
+        pollOptions: [String],
+        projectLink: String,
         token: AuthToken
     ) async throws {
         struct Body: Encodable {
-            let title: String?
-            let topic: String?
+            let title: String
+            let topic: String
             let content: String
             let attachment_uids: [String]
-            let poll_question: String?
+            let poll_question: String
             let poll_options: [String]
-            let project_uid: String?
+            let project_uid: String
         }
 
         let config = makeConfig(.post, path: "posts/edit/\(slug)", contentType: .jsonBody, token: token)
         let body = Body(
             title: title,
-            topic: topic?.rawValue,
+            topic: topic.rawValue,
             content: content,
             attachment_uids: attachments.map(\.id),
             poll_question: pollQuestion,

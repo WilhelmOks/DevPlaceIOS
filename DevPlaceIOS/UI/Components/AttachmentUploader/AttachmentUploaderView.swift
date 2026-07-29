@@ -4,6 +4,7 @@ import UniformTypeIdentifiers
 import DevPlaceSwiftSDK
 
 struct AttachmentUploaderView: View {
+    var attachments: [UploadResponse] = []
     var onAttachmentsChange: ([UploadResponse]) -> Void = { _ in }
     
     @Environment(\.api) var api
@@ -11,6 +12,7 @@ struct AttachmentUploaderView: View {
     var body: some View {
         AttachmentUploaderViewContent(
             viewModel: .init(
+                attachments: attachments,
                 api: api,
                 onAttachmentsChange: onAttachmentsChange,
             )

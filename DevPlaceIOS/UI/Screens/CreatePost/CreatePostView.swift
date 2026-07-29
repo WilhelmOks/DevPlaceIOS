@@ -2,10 +2,12 @@ import SwiftUI
 import DevPlaceSwiftSDK
 
 struct CreatePostView: View {
+    let mode: Mode
+    
     @Environment(\.api) var api
     
     var body: some View {
-        CreatePostViewContent(viewModel: .init(api: api))
+        CreatePostViewContent(viewModel: .init(api: api, mode: mode))
     }
 }
 
@@ -42,7 +44,7 @@ private struct CreatePostViewContent: View {
             .task {
                 await viewModel.loadProjects()
             }
-            .navigationTitle(Text("Create New Post"))
+            .navigationTitle(Text(viewModel.isEditing ? "Edit Post" : "Create New Post"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
@@ -62,7 +64,11 @@ private struct CreatePostViewContent: View {
                                 await viewModel.submit()
                             }
                         } label: {
-                            Label("Create", systemImage: "paperplane.fill")
+                            if viewModel.isEditing {
+                                Label("Save", systemImage: "checkmark")
+                            } else {
+                                Label("Create", systemImage: "paperplane.fill")
+                            }
                         }
                         .disabled(!viewModel.canSubmit)
                     }
@@ -141,7 +147,7 @@ private struct CreatePostViewContent: View {
     }
     
     @ViewBuilder private func attachmentsArea() -> some View {
-        AttachmentUploaderView { attachments in
+        AttachmentUploaderView(attachments: viewModel.attachments) { attachments in
             viewModel.attachments = attachments
         }
     }
@@ -193,9 +199,16 @@ private struct CreatePostViewContent: View {
     }
 }
 
-#Preview {
+#Preview("Create") {
     NavigationStack {
-        CreatePostView()
+        CreatePostView(mode: .create)
+    }
+    .environment(\.api, .mock)
+}
+
+#Preview("Edit") {
+    NavigationStack {
+        CreatePostView(mode: .edit([Post].mock[0]))
     }
     .environment(\.api, .mock)
 }

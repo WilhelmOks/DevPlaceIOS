@@ -4,29 +4,41 @@ import Combine
 import DevPlaceSwiftSDK
 
 extension CreatePostView {
+    enum Mode {
+        case create
+        case edit(Post)
+    }
+    
     @Observable final class ViewModel {
         let api: DevPlaceApi
+        let mode: Mode
         private let settingsStore = AppSettingsStore.shared
         
-        var postTopic: PostTopic = .random
+        private let originalAttachmentIds: Set<String>
+        
+        var postTopic: PostTopic
         
         var title: String {
             didSet {
-                settingsStore.draftPostTitle = title
+                if !isEditing {
+                    settingsStore.draftPostTitle = title
+                }
             }
         }
         
         var message: String {
             didSet {
-                settingsStore.draftPostMessage = message
+                if !isEditing {
+                    settingsStore.draftPostMessage = message
+                }
             }
         }
         
-        var attachments: [UploadResponse] = []
+        var attachments: [UploadResponse]
         
-        var isPollAdded = false
-        var pollQuestion = ""
-        var pollOptions: [String] = []
+        var isPollAdded: Bool
+        var pollQuestion: String
+        var pollOptions: [String]
         
         var projects: [Project.Data] = []
         var selectedProjectId: String?
@@ -36,10 +48,58 @@ extension CreatePostView {
         
         let dismiss = PassthroughSubject<Void, Never>()
         
-        init(api: DevPlaceApi) {
+        var isEditing: Bool {
+            if case .edit = mode {
+                return true
+            }
+            return false
+        }
+        
+        init(api: DevPlaceApi, mode: Mode) {
             self.api = api
-            self.title = settingsStore.draftPostTitle
-            self.message = settingsStore.draftPostMessage
+            self.mode = mode
+            
+            switch mode {
+            case .create:
+                self.postTopic = .random
+                self.title = settingsStore.draftPostTitle
+                self.message = settingsStore.draftPostMessage
+                self.attachments = []
+                self.originalAttachmentIds = []
+                self.isPollAdded = false
+                self.pollQuestion = ""
+                self.pollOptions = []
+                
+            case .edit(let post):
+                self.postTopic = PostTopic(rawValue: post.data.topic ?? "") ?? .random
+                self.title = post.data.title ?? ""
+                self.message = post.data.content
+                
+                let existingAttachments = post.attachments.map { attachment in
+                    UploadResponse(
+                        id: attachment.id,
+                        filename: attachment.filename,
+                        url: attachment.url,
+                        size: attachment.size,
+                        isImage: attachment.isImage,
+                        isVideo: attachment.isVideo,
+                        isAudio: attachment.mimeType.hasPrefix("audio"),
+                        mimeType: attachment.mimeType,
+                    )
+                }
+                self.attachments = existingAttachments
+                self.originalAttachmentIds = Set(existingAttachments.map(\.id))
+                
+                if let poll = post.poll {
+                    self.isPollAdded = true
+                    self.pollQuestion = poll.question
+                    self.pollOptions = poll.options.map(\.label)
+                } else {
+                    self.isPollAdded = false
+                    self.pollQuestion = ""
+                    self.pollOptions = []
+                }
+            }
         }
         
         private let minPollOptionsCount = 2
@@ -82,15 +142,33 @@ extension CreatePostView {
                     cleanTitle = nil
                 }
                 
-                try await api.createPost(
-                    title: cleanTitle,
-                    topic: postTopic,
-                    content: message,
-                    attachments: attachments,
-                    pollQuestion: isPollAdded ? pollQuestion : nil,
-                    pollOptions: isPollAdded ? pollOptions : [],
-                    projectLink: selectedProjectId,
-                )
+                switch mode {
+                case .create:
+                    try await api.createPost(
+                        title: cleanTitle,
+                        topic: postTopic,
+                        content: message,
+                        attachments: attachments,
+                        pollQuestion: isPollAdded ? pollQuestion : nil,
+                        pollOptions: isPollAdded ? pollOptions : [],
+                        projectLink: selectedProjectId,
+                    )
+                    
+                case .edit(let post):
+                    guard let slug = post.data.slug else {
+                        throw DevPlaceError.postNotEditable
+                    }
+                    try await api.editPost(
+                        slug: slug,
+                        title: cleanTitle ?? "",
+                        topic: postTopic,
+                        content: message,
+                        attachments: attachments,
+                        pollQuestion: isPollAdded ? pollQuestion : "",
+                        pollOptions: isPollAdded ? pollOptions : [],
+                        projectLink: selectedProjectId ?? "",
+                    )
+                }
                 
                 try? await AppState.shared.loadFeed(api: api)
                 
@@ -109,7 +187,7 @@ extension CreatePostView {
         }
         
         func deleteUnsubmittedAttachments() async {
-            let unsubmitted = attachments
+            let unsubmitted = attachments.filter { !originalAttachmentIds.contains($0.id) }
             attachments = []
             
             for attachment in unsubmitted {

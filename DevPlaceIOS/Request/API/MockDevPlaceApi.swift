@@ -42,7 +42,7 @@ final class MockDevPlaceApi: DevPlaceApi {
         try await refreshTokenIfNeeded()
     }
     
-    func editPost(slug: String, title: String, topic: PostTopic, content: String, attachments: [UploadResponse], pollQuestion: String, pollOptions: [String], projectLink: String) async throws {
+    func editPost(slug: String, title: String, topic: PostTopic, content: String, projectLink: String) async throws {
         await mockDelay()
         try await refreshTokenIfNeeded()
     }

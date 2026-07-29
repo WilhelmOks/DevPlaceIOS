@@ -85,8 +85,10 @@ private struct CreatePostViewContent: View {
                 topicArea()
                 titleArea()
                 messageArea()
-                attachmentsArea()
-                pollArea()
+                if !viewModel.isEditing {
+                    attachmentsArea()
+                    pollArea()
+                }
                 projectArea()
             }
             .frame(maxWidth: .infinity, alignment: .leading)

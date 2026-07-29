@@ -41,12 +41,12 @@ final class ProdDevPlaceApi: DevPlaceApi {
         try await request.createPost(title: title, topic: topic, content: content, attachments: attachments, pollQuestion: pollQuestion, pollOptions: pollOptions, projectLink: projectLink, token: token)
     }
     
-    func editPost(slug: String, title: String, topic: PostTopic, content: String, attachments: [UploadResponse], pollQuestion: String, pollOptions: [String], projectLink: String) async throws {
+    func editPost(slug: String, title: String, topic: PostTopic, content: String, projectLink: String) async throws {
         guard let token = AppState.shared.token else {
             throw DevPlaceError.notLoggedIn
         }
         try await refreshTokenIfNeeded()
-        try await request.editPost(slug: slug, title: title, topic: topic, content: content, attachments: attachments, pollQuestion: pollQuestion, pollOptions: pollOptions, projectLink: projectLink, token: token)
+        try await request.editPost(slug: slug, title: title, topic: topic, content: content, projectLink: projectLink, token: token)
     }
     
     func deletePost(slug: String) async throws {

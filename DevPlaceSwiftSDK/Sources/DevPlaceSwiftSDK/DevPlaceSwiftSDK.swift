@@ -188,9 +188,6 @@ public extension DevPlaceRequest {
         title: String,
         topic: PostTopic,
         content: String,
-        attachments: [UploadResponse],
-        pollQuestion: String,
-        pollOptions: [String],
         projectLink: String,
         token: AuthToken
     ) async throws {
@@ -198,9 +195,6 @@ public extension DevPlaceRequest {
             let title: String
             let topic: String
             let content: String
-            let attachment_uids: [String]
-            let poll_question: String
-            let poll_options: [String]
             let project_uid: String
         }
 
@@ -209,9 +203,6 @@ public extension DevPlaceRequest {
             title: title,
             topic: topic.rawValue,
             content: content,
-            attachment_uids: attachments.map(\.id),
-            poll_question: pollQuestion,
-            poll_options: pollOptions,
             project_uid: projectLink,
         )
         try await request.requestJson(config: config, json: body, apiError: ApiError.self)

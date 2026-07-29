@@ -14,8 +14,6 @@ extension CreatePostView {
         let mode: Mode
         private let settingsStore = AppSettingsStore.shared
         
-        private let originalAttachmentIds: Set<String>
-        
         var postTopic: PostTopic
         
         var title: String {
@@ -65,7 +63,6 @@ extension CreatePostView {
                 self.title = settingsStore.draftPostTitle
                 self.message = settingsStore.draftPostMessage
                 self.attachments = []
-                self.originalAttachmentIds = []
                 self.isPollAdded = false
                 self.pollQuestion = ""
                 self.pollOptions = []
@@ -74,33 +71,12 @@ extension CreatePostView {
                 self.postTopic = PostTopic(rawValue: post.data.topic ?? "") ?? .random
                 self.title = post.data.title ?? ""
                 self.message = post.data.content
-                
-                let existingAttachments = post.attachments.map { attachment in
-                    UploadResponse(
-                        id: attachment.id,
-                        filename: attachment.filename,
-                        url: attachment.url,
-                        size: attachment.size,
-                        isImage: attachment.isImage,
-                        isVideo: attachment.isVideo,
-                        isAudio: attachment.mimeType.hasPrefix("audio"),
-                        mimeType: attachment.mimeType,
-                    )
-                }
-                self.attachments = existingAttachments
-                self.originalAttachmentIds = Set(existingAttachments.map(\.id))
+                self.attachments = []
+                self.isPollAdded = false
+                self.pollQuestion = ""
+                self.pollOptions = []
                 
                 // TODO: seed selectedProjectId from the post once the backend exposes the linked project on Post.
-                
-                if let poll = post.poll {
-                    self.isPollAdded = true
-                    self.pollQuestion = poll.question
-                    self.pollOptions = poll.options.map(\.label)
-                } else {
-                    self.isPollAdded = false
-                    self.pollQuestion = ""
-                    self.pollOptions = []
-                }
             }
         }
         
@@ -165,9 +141,6 @@ extension CreatePostView {
                         title: cleanTitle ?? "",
                         topic: postTopic,
                         content: message,
-                        attachments: attachments,
-                        pollQuestion: isPollAdded ? pollQuestion : "",
-                        pollOptions: isPollAdded ? pollOptions : [],
                         projectLink: selectedProjectId ?? "",
                     )
                 }
@@ -189,7 +162,7 @@ extension CreatePostView {
         }
         
         func deleteUnsubmittedAttachments() async {
-            let unsubmitted = attachments.filter { !originalAttachmentIds.contains($0.id) }
+            let unsubmitted = attachments
             attachments = []
             
             for attachment in unsubmitted {

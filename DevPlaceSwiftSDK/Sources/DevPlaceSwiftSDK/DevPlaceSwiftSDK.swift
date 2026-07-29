@@ -157,6 +157,7 @@ public extension DevPlaceRequest {
         attachments: [UploadResponse] = [],
         pollQuestion: String? = nil,
         pollOptions: [String] = [],
+        projectLink: String? = nil,
         token: AuthToken
     ) async throws {
         struct Body: Encodable {
@@ -166,6 +167,7 @@ public extension DevPlaceRequest {
             let attachment_uids: [String]
             let poll_question: String?
             let poll_options: [String]
+            let project_uid: String?
         }
 
         let config = makeConfig(.post, path: "posts/create", contentType: .jsonBody, token: token)
@@ -176,6 +178,7 @@ public extension DevPlaceRequest {
             attachment_uids: attachments.map(\.id),
             poll_question: pollQuestion,
             poll_options: pollOptions,
+            project_uid: projectLink,
         )
         try await request.requestJson(config: config, json: body, apiError: ApiError.self)
     }

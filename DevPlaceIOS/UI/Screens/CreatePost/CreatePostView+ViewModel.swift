@@ -90,6 +90,8 @@ extension CreatePostView {
                 self.attachments = existingAttachments
                 self.originalAttachmentIds = Set(existingAttachments.map(\.id))
                 
+                // TODO: seed selectedProjectId from the post once the backend exposes the linked project on Post.
+                
                 if let poll = post.poll {
                     self.isPollAdded = true
                     self.pollQuestion = poll.question

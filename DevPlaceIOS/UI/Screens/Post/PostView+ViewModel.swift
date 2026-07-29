@@ -22,6 +22,21 @@ extension PostView {
             postDetail?.post.title ?? "Post"
         }
         
+        var editablePost: Post? {
+            guard let detail = postDetail else { return nil }
+            return Post(
+                data: detail.post,
+                author: detail.author,
+                myVote: detail.myVote,
+                commentCount: detail.commentCount,
+                recentComments: detail.comments,
+                bookmarked: detail.bookmarked,
+                attachments: detail.attachments,
+                poll: detail.poll,
+                reactions: detail.reactions,
+            )
+        }
+        
         func load() async {
             do {
                 postDetail = try await api.postDetail(slug: slug)

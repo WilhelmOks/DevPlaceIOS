@@ -3,16 +3,18 @@ import DevPlaceSwiftSDK
 
 struct CreatePostView: View {
     let mode: Mode
+    var onComplete: () -> Void = {}
     
     @Environment(\.api) var api
     
     var body: some View {
-        CreatePostViewContent(viewModel: .init(api: api, mode: mode))
+        CreatePostViewContent(viewModel: .init(api: api, mode: mode), onComplete: onComplete)
     }
 }
 
 private struct CreatePostViewContent: View {
     @State var viewModel: CreatePostView.ViewModel
+    var onComplete: () -> Void = {}
     
     @Environment(\.dismiss) private var dismiss
     
@@ -34,6 +36,7 @@ private struct CreatePostViewContent: View {
                 focusedField = nil
             }
             .onReceive(viewModel.dismiss) {
+                onComplete()
                 dismiss()
             }
             .onDisappear {

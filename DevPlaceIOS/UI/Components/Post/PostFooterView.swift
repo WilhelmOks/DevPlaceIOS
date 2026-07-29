@@ -7,6 +7,7 @@ struct PostFooterView: View {
     let currentVote: Vote
     let reactions: Reactions
     let onReact: (String) -> Void
+    var onEdit: (() -> Void)? = nil
     var onDelete: (() -> Void)? = nil
     
     @State private var isConfirmingDelete = false
@@ -22,11 +23,26 @@ struct PostFooterView: View {
                 
                 Spacer(minLength: 0)
                 
+                if let onEdit {
+                    editButton(onEdit: onEdit)
+                }
+                
                 if onDelete != nil {
                     deleteButton()
                 }
             }
         }
+    }
+    
+    @ViewBuilder private func editButton(onEdit: @escaping () -> Void) -> some View {
+        Button {
+            onEdit()
+        } label: {
+            Label("Edit post", systemImage: "pencil")
+                .labelStyle(.iconOnly)
+        }
+        .buttonStyle(.plain)
+        .foregroundStyle(Color.FG_1)
     }
     
     @ViewBuilder private func deleteButton() -> some View {

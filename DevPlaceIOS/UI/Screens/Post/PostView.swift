@@ -14,6 +14,8 @@ struct PostView: View {
 private struct PostViewContent: View {
     @State var viewModel: PostView.ViewModel
     
+    @State private var isEditingPost = false
+    
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
@@ -25,6 +27,15 @@ private struct PostViewContent: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     reloadToolbarItem()
+                }
+            }
+            .fullScreenCover(isPresented: $isEditingPost) {
+                if let post = viewModel.editablePost {
+                    NavigationStack {
+                        CreatePostView(mode: .edit(post)) {
+                            Task { await viewModel.reload() }
+                        }
+                    }
                 }
             }
             .task {
@@ -72,6 +83,9 @@ private struct PostViewContent: View {
                 onReact: { emoji in
                     Task { await viewModel.reactToPost(emoji: emoji) }
                 },
+                onEdit: AppState.shared.isCurrentUser(id: detail.post.userId)
+                    ? { isEditingPost = true }
+                    : nil,
                 onDelete: AppState.shared.isCurrentUser(id: detail.post.userId)
                     ? {
                         Task {

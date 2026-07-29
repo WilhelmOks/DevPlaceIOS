@@ -150,16 +150,33 @@ public extension DevPlaceRequest {
         return response.decoded
     }
 
-    func createPost(title: String?, topic: PostTopic?, content: String, attachments: [UploadResponse] = [], token: AuthToken) async throws {
+    func createPost(
+        title: String?,
+        topic: PostTopic?,
+        content: String,
+        attachments: [UploadResponse] = [],
+        pollQuestion: String? = nil,
+        pollOptions: [String] = [],
+        token: AuthToken
+    ) async throws {
         struct Body: Encodable {
             let title: String?
             let topic: String?
             let content: String
             let attachment_uids: [String]
+            let poll_question: String?
+            let poll_options: [String]
         }
 
         let config = makeConfig(.post, path: "posts/create", contentType: .jsonBody, token: token)
-        let body = Body(title: title, topic: topic?.rawValue, content: content, attachment_uids: attachments.map(\.id))
+        let body = Body(
+            title: title,
+            topic: topic?.rawValue,
+            content: content,
+            attachment_uids: attachments.map(\.id),
+            poll_question: pollQuestion,
+            poll_options: pollOptions,
+        )
         try await request.requestJson(config: config, json: body, apiError: ApiError.self)
     }
 

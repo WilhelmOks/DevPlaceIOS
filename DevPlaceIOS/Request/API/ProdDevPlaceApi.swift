@@ -33,12 +33,12 @@ final class ProdDevPlaceApi: DevPlaceApi {
         return try await request.getPost(slug: slug, token: AppState.shared.token)
     }
     
-    func createPost(title: String?, topic: PostTopic?, content: String, attachments: [UploadResponse], pollQuestion: String?, pollOptions: [String]) async throws {
+    func createPost(title: String?, topic: PostTopic?, content: String, attachments: [UploadResponse], pollQuestion: String?, pollOptions: [String], projectLink: String?) async throws {
         guard let token = AppState.shared.token else {
             throw DevPlaceError.notLoggedIn
         }
         try await refreshTokenIfNeeded()
-        try await request.createPost(title: title, topic: topic, content: content, attachments: attachments, pollQuestion: pollQuestion, pollOptions: pollOptions, token: token)
+        try await request.createPost(title: title, topic: topic, content: content, attachments: attachments, pollQuestion: pollQuestion, pollOptions: pollOptions, projectLink: projectLink, token: token)
     }
     
     func vote(targetType: TargetType, targetId: String, vote: Vote) async throws {

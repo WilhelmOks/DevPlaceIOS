@@ -39,6 +39,9 @@ private struct CreatePostViewContent: View {
                     await viewModel.deleteUnsubmittedAttachments()
                 }
             }
+            .task {
+                await viewModel.loadProjects()
+            }
             .navigationTitle(Text("Create New Post"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -75,6 +78,7 @@ private struct CreatePostViewContent: View {
                 messageArea()
                 attachmentsArea()
                 pollArea()
+                projectArea()
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding()
@@ -153,9 +157,9 @@ private struct CreatePostViewContent: View {
             } label: {
                 BoxView {
                     if viewModel.isPollAdded {
-                        Label("Remove poll", systemImage: "chart.bar.yaxis")
+                        Label("Remove Poll", systemImage: "chart.bar.yaxis")
                     } else {
-                        Label("Add poll", systemImage: "chart.bar.yaxis")
+                        Label("Add Poll", systemImage: "chart.bar.yaxis")
                     }
                 }
             }
@@ -168,6 +172,24 @@ private struct CreatePostViewContent: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+    
+    @ViewBuilder private func projectArea() -> some View {
+        if !viewModel.projects.isEmpty {
+            HStack {
+                let title = "Link to Project"
+                
+                Text(title)
+                
+                Picker(selection: $viewModel.selectedProjectId, label: Text(title)) {
+                    Text("None").tag(String?.none)
+                    
+                    ForEach(viewModel.projects) { project in
+                        Text(project.title).tag(String?.some(project.id))
+                    }
+                }
+            }
+        }
     }
 }
 

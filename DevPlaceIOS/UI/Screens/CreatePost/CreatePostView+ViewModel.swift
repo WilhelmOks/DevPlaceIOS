@@ -28,6 +28,9 @@ extension CreatePostView {
         var pollQuestion = ""
         var pollOptions: [String] = []
         
+        var projects: [Project.Data] = []
+        var selectedProjectId: String?
+        
         var alertMessage: AlertMessage = .none()
         var isLoading = false
         
@@ -50,6 +53,14 @@ extension CreatePostView {
         
         func removePoll() {
             isPollAdded = false
+        }
+        
+        func loadProjects() async {
+            do {
+                projects = try await api.profile(username: nil).projects
+            } catch {
+                dlog("Failed to load projects: \(error)")
+            }
         }
         
         var canSubmit: Bool {
@@ -78,6 +89,7 @@ extension CreatePostView {
                     attachments: attachments,
                     pollQuestion: isPollAdded ? pollQuestion : nil,
                     pollOptions: isPollAdded ? pollOptions : [],
+                    projectLink: selectedProjectId,
                 )
                 
                 try? await AppState.shared.loadFeed(api: api)
@@ -88,6 +100,7 @@ extension CreatePostView {
                 isPollAdded = false
                 pollQuestion = ""
                 pollOptions = []
+                selectedProjectId = nil
                 
                 dismiss.send()
             } catch {

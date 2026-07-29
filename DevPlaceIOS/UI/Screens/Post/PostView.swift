@@ -105,7 +105,11 @@ private struct PostViewContent: View {
         }
         .contentShape(Rectangle())
         .onTapGesture(count: 2) {
-            Task { await viewModel.doubleTapPost() }
+            if AppState.shared.isCurrentUser(id: detail.post.userId) {
+                isEditingPost = true
+            } else {
+                Task { await viewModel.upvoteForeignPost() }
+            }
         }
     }
     

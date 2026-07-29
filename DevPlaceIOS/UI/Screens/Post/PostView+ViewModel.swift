@@ -67,10 +67,9 @@ extension PostView {
             }
         }
         
-        func doubleTapPost() async {
+        func upvoteForeignPost() async {
             guard let detail = postDetail else { return }
             guard !AppState.shared.isCurrentUser(id: detail.post.userId) else {
-                // TODO: edit the post (editing own posts is not implemented yet)
                 return
             }
             await AppState.shared.performVoteToggle(

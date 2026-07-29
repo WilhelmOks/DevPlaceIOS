@@ -1,0 +1,76 @@
+import SwiftUI
+import DevPlaceSwiftSDK
+
+struct CreatePollView: View {
+    @Binding var question: String
+    @Binding var options: [String]
+
+    private let minOptionsCount = 2
+
+    private var canAddOption: Bool {
+        options.count < DevPlaceConstants.maxPollOptionsCount
+    }
+
+    private var canRemoveOption: Bool {
+        options.count > minOptionsCount
+    }
+
+    var body: some View {
+        BoxView {
+            VStack(alignment: .leading, spacing: 10) {
+                TextField("Poll question", text: $question)
+                    .textFieldStyle(.devPlace)
+
+                Divider()
+                    .overlay(Color.FG_2.opacity(0.25))
+
+                ForEach(options.indices, id: \.self) { index in
+                    optionRow(index: index)
+                }
+
+                if canAddOption {
+                    addOptionButton()
+                }
+            }
+        }
+    }
+
+    @ViewBuilder private func optionRow(index: Int) -> some View {
+        HStack(spacing: 10) {
+            TextField("Option \(index + 1)", text: $options[index])
+                .textFieldStyle(.devPlace)
+
+            if canRemoveOption {
+                Button {
+                    removeOption(at: index)
+                } label: {
+                    Image(systemName: "trash")
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(.red)
+            }
+        }
+    }
+
+    @ViewBuilder private func addOptionButton() -> some View {
+        Button {
+            options.append("")
+        } label: {
+            Label("Add option", systemImage: "plus")
+        }
+    }
+
+    private func removeOption(at index: Int) {
+        guard canRemoveOption else { return }
+        options.remove(at: index)
+    }
+}
+
+#Preview {
+    @Previewable @State var question = ""
+    @Previewable @State var options = ["", "", "", "", ""]
+
+    CreatePollView(question: $question, options: $options)
+        .padding()
+        .background(Color.BG_1)
+}

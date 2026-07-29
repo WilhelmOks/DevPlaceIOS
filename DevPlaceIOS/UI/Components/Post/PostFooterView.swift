@@ -33,7 +33,8 @@ struct PostFooterView: View {
         Button {
             isConfirmingDelete = true
         } label: {
-            Image(systemName: "trash")
+            Label("Delete post", systemImage: "trash")
+                .labelStyle(.iconOnly)
         }
         .buttonStyle(.plain)
         .foregroundStyle(Color.FG_1)

@@ -105,6 +105,7 @@ Color tokens `Color.BG_1`, `Color.BG_2`, `Color.FG_1`, `Color.FG_2` are defined 
 - **User preferences / settings:** always add to `AppSettingsStore` (`DevPlaceIOS/AppSettingsStore.swift`) with a `didSet`-persisted `UserDefaults` key, following the existing `appearance` / `showFeedAttachments` pattern. Don't invent parallel storage.
 - **Naming interactions:** prefer "select"/"selected" over "tap"/"tapped" when naming interaction handlers, parameters, and state — users interact through means other than tapping (keyboard, VoiceOver, external input), so the more general term is more accurate. E.g. `select(optionId:)`, `selectedOptionId`, not `tap(optionId:)`, `tappedOptionId`.
 - **Tap / press interactions:** default to native interactive components (`Button`, `NavigationLink`, `Toggle`, `Link`, etc.). Do not reach for gesture recognizers (`.onTapGesture`, `TapGesture`, `LongPressGesture`, etc.) unless the user explicitly asks for one — gesture recognizers bypass the accessibility affordances that native components provide (traits, focus, VoiceOver actions, hit-testing).
+- **Icon-only buttons:** for a button (or toolbar item) whose label is just an SF Symbol, use `Label("accessibility text", systemImage: "icon").labelStyle(.iconOnly)` rather than a bare `Image(systemName: "icon")` — the `Label` exposes an accessible name to VoiceOver that a bare `Image` lacks. See the "New post" button in `FeedView`.
 
 ## Code philosophy
 

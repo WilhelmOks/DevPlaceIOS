@@ -125,7 +125,8 @@ private struct PostViewContent: View {
             Button {
                 Task { await viewModel.reload() }
             } label: {
-                Image(systemName: "arrow.clockwise")
+                Label("Reload", systemImage: "arrow.clockwise")
+                    .labelStyle(.iconOnly)
             }
         }
     }

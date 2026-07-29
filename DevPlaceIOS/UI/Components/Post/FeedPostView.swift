@@ -3,7 +3,7 @@ import DevPlaceSwiftSDK
 
 struct FeedPostView: View {
     let post: Post
-    var onSelect: ((String) -> Void)? = nil
+    var onSelect: ((String, String?) -> Void)? = nil
     
     let appSettings = AppSettingsStore.shared
     @Environment(\.api) var api
@@ -45,7 +45,7 @@ struct FeedPostView: View {
                 CommentsView(
                     comments: post.recentComments,
                     baseIndentationLevel: 1,
-                    onSingleTapComment: { _ in navigateToPost() },
+                    onSingleTapComment: { comment in navigateToPost(scrollToCommentId: comment.id) },
                     onDoubleTapComment: { comment in Task { await handleDoubleTapComment(comment) } },
                     onReactComment: { comment, emoji in Task { await handleReactComment(comment, emoji: emoji) } },
                 )
@@ -68,9 +68,9 @@ struct FeedPostView: View {
         Color.FG_2.frame(height: 1).opacity(0.3)
     }
     
-    private func navigateToPost() {
+    private func navigateToPost(scrollToCommentId: String? = nil) {
         guard let slug = post.data.slug else { return }
-        onSelect?(slug)
+        onSelect?(slug, scrollToCommentId)
     }
     
     private func handleDoubleTapPost() async {

@@ -3,16 +3,18 @@ import DevPlaceSwiftSDK
 
 struct PostView: View {
     let slug: String
+    var scrollToCommentId: String? = nil
     
     @Environment(\.api) var api
     
     var body: some View {
-        PostViewContent(viewModel: .init(slug: slug, api: api))
+        PostViewContent(viewModel: .init(slug: slug, api: api), scrollToCommentId: scrollToCommentId)
     }
 }
 
 private struct PostViewContent: View {
     @State var viewModel: PostView.ViewModel
+    var scrollToCommentId: String? = nil
     
     @State private var isEditingPost = false
     
@@ -45,16 +47,31 @@ private struct PostViewContent: View {
     
     @ViewBuilder private func content() -> some View {
         if let postDetail = viewModel.postDetail {
-            ScrollView {
-                VStack(spacing: 0) {
-                    postBody(postDetail)
-                    
-                    commentsSection(postDetail)
+            ScrollViewReader { proxy in
+                ScrollView {
+                    VStack(spacing: 0) {
+                        postBody(postDetail)
+                        
+                        commentsSection(postDetail)
+                    }
+                }
+                .onAppear {
+                    scrollToTargetComment(using: proxy)
                 }
             }
         } else {
             ProgressView()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+    }
+    
+    private func scrollToTargetComment(using proxy: ScrollViewProxy) {
+        guard let scrollToCommentId else { return }
+        Task {
+            try? await Task.sleep(for: .milliseconds(50))
+            withAnimation {
+                proxy.scrollTo(scrollToCommentId, anchor: .top)
+            }
         }
     }
     

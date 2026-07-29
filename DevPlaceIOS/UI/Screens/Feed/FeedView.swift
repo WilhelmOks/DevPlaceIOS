@@ -13,7 +13,14 @@ private struct FeedViewContent: View {
     @State var viewModel: FeedView.ViewModel
     let appState = AppState.shared
     
-    @State private var selectedPostSlug: String?
+    @State private var selectedPost: PostDestination?
+    
+    struct PostDestination: Hashable, Identifiable {
+        let slug: String
+        let scrollToCommentId: String?
+        
+        var id: Self { self }
+    }
     
     enum SheetItem: Identifiable {
         case createPost
@@ -31,8 +38,8 @@ private struct FeedViewContent: View {
             .refreshable {
                 await viewModel.refresh()
             }
-            .navigationDestination(item: $selectedPostSlug) { slug in
-                PostView(slug: slug)
+            .navigationDestination(item: $selectedPost) { destination in
+                PostView(slug: destination.slug, scrollToCommentId: destination.scrollToCommentId)
             }
             .fullScreenCover(item: $sheetItem) { item in
                 switch item {
@@ -49,8 +56,8 @@ private struct FeedViewContent: View {
             LazyVStack {
                 let posts = appState.feed?.posts ?? []
                 ForEach(posts, id: \.id) { post in
-                    FeedPostView(post: post) { slug in
-                        selectedPostSlug = slug
+                    FeedPostView(post: post) { slug, scrollToCommentId in
+                        selectedPost = PostDestination(slug: slug, scrollToCommentId: scrollToCommentId)
                     }
                 }
                 if appState.feed?.nextCursor != nil {

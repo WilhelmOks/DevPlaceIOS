@@ -183,15 +183,37 @@ public extension DevPlaceRequest {
         try await request.requestJson(config: config, json: body, apiError: ApiError.self)
     }
 
-    func editPost(slug: String, title: String?, topic: String?, content: String, token: AuthToken) async throws {
+    func editPost(
+        slug: String,
+        title: String?,
+        topic: PostTopic?,
+        content: String,
+        attachments: [UploadResponse] = [],
+        pollQuestion: String? = nil,
+        pollOptions: [String] = [],
+        projectLink: String? = nil,
+        token: AuthToken
+    ) async throws {
         struct Body: Encodable {
             let title: String?
             let topic: String?
             let content: String
+            let attachment_uids: [String]
+            let poll_question: String?
+            let poll_options: [String]
+            let project_uid: String?
         }
 
         let config = makeConfig(.post, path: "posts/edit/\(slug)", contentType: .jsonBody, token: token)
-        let body = Body(title: title, topic: topic, content: content)
+        let body = Body(
+            title: title,
+            topic: topic?.rawValue,
+            content: content,
+            attachment_uids: attachments.map(\.id),
+            poll_question: pollQuestion,
+            poll_options: pollOptions,
+            project_uid: projectLink,
+        )
         try await request.requestJson(config: config, json: body, apiError: ApiError.self)
     }
 

@@ -23,15 +23,16 @@ Done:
 * viewing and voting on polls
 * upvoting and downvoting posts and comments
 * reacting on posts and comments
+* creating posts
+  * attachments
+  * polls
+  * links to projects
+* editing posts
 
 TODO:
 
 * viewing images and videos attached to comments
-* creating posts
-  * attachments
-  * polls
-  * links to projects 
 * creating comments
-* editing posts and comments
+* editing comments
 * notifications
 * private messages

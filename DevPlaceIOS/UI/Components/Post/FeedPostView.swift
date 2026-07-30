@@ -48,6 +48,7 @@ struct FeedPostView: View {
                     onSingleTapComment: { comment in navigateToPost(scrollToCommentId: comment.id) },
                     onDoubleTapComment: { comment in Task { await handleDoubleTapComment(comment) } },
                     onReactComment: { comment, emoji in Task { await handleReactComment(comment, emoji: emoji) } },
+                    onDeleteComment: { comment in Task { await handleDeleteComment(comment) } },
                 )
                 .padding(.top, 8)
             }
@@ -114,6 +115,15 @@ struct FeedPostView: View {
         }
     }
     
+    private func handleDeleteComment(_ comment: Comment) async {
+        do {
+            try await api.deleteComment(uid: comment.data.id)
+            try await AppState.shared.loadFeed(api: api)
+        } catch {
+            dlog("Delete comment failed: \(error)")
+        }
+    }
+
     private func handleReactPost(emoji: String) async {
         await AppState.shared.performReactionToggle(
             targetType: .post,

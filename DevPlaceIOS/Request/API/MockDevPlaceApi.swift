@@ -51,7 +51,12 @@ final class MockDevPlaceApi: DevPlaceApi {
         await mockDelay(0.2)
         try await refreshTokenIfNeeded()
     }
-    
+
+    func deleteComment(uid: String) async throws {
+        await mockDelay(0.2)
+        try await refreshTokenIfNeeded()
+    }
+
     func profile(username: String?) async throws -> Profile {
         await mockDelay(0.1)
         try await refreshTokenIfNeeded()

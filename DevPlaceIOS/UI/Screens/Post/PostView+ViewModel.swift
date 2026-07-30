@@ -67,6 +67,16 @@ extension PostView {
             }
         }
         
+        func deleteComment(_ comment: Comment) async {
+            do {
+                try await api.deleteComment(uid: comment.data.id)
+                postDetail = try await api.postDetail(slug: slug)
+                try await AppState.shared.loadFeed(api: api)
+            } catch {
+                alertMessage = .presentedError(error)
+            }
+        }
+
         func upvoteForeignPost() async {
             guard let detail = postDetail else { return }
             guard !AppState.shared.isCurrentUser(id: detail.post.userId) else {

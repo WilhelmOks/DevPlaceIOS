@@ -7,7 +7,8 @@ struct CommentsView: View {
     var onSingleTapComment: ((Comment) -> Void)? = nil
     var onDoubleTapComment: ((Comment) -> Void)? = nil
     var onReactComment: ((Comment, String) -> Void)? = nil
-    
+    var onDeleteComment: ((Comment) -> Void)? = nil
+
     var body: some View {
         VStack(spacing: 0) {
             ForEach(comments.indented(startingAt: baseIndentationLevel)) { item in
@@ -17,9 +18,17 @@ struct CommentsView: View {
                     onSingleTap: onSingleTapComment.map { handler in { handler(item.comment) } },
                     onDoubleTap: onDoubleTapComment.map { handler in { handler(item.comment) } },
                     onReact: onReactComment.map { handler in { emoji in handler(item.comment, emoji) } },
+                    onDelete: deleteAction(for: item.comment),
                 )
             }
         }
+    }
+
+    private func deleteAction(for comment: Comment) -> (() -> Void)? {
+        guard let onDeleteComment, AppState.shared.isCurrentUser(id: comment.data.userId) else {
+            return nil
+        }
+        return { onDeleteComment(comment) }
     }
 }
 

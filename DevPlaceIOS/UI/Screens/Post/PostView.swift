@@ -147,6 +147,9 @@ private struct PostViewContent: View {
                     onReactComment: { comment, emoji in
                         Task { await viewModel.reactToComment(comment, emoji: emoji) }
                     },
+                    onDeleteComment: { comment in
+                        Task { await viewModel.deleteComment(comment) }
+                    },
                 )
             }
             .frame(maxWidth: .infinity, alignment: .leading)

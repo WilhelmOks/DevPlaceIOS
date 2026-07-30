@@ -7,7 +7,10 @@ struct CommentView: View {
     var onSingleTap: (() -> Void)? = nil
     var onDoubleTap: (() -> Void)? = nil
     var onReact: ((String) -> Void)? = nil
-    
+    var onDelete: (() -> Void)? = nil
+
+    @State private var isConfirmingDelete = false
+
     private let maxIndentationLevel = 3
     private let indentWidth: CGFloat = 16
     private let lineOpacity: Double = 0.3
@@ -50,8 +53,12 @@ struct CommentView: View {
                 )
                 
                 ReactionsBar(reactions: comment.reactions, onReact: onReact ?? { _ in })
-                
+
                 Spacer(minLength: 0)
+
+                if onDelete != nil {
+                    deleteButton()
+                }
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -62,6 +69,27 @@ struct CommentView: View {
         .onTapGesture { onSingleTap?() }
     }
     
+    @ViewBuilder private func deleteButton() -> some View {
+        Button {
+            isConfirmingDelete = true
+        } label: {
+            Label("Delete comment", systemImage: "trash")
+                .labelStyle(.iconOnly)
+        }
+        .buttonStyle(.plain)
+        .foregroundStyle(Color.FG_1)
+        .confirmationDialog(
+            "Delete this comment?",
+            isPresented: $isConfirmingDelete,
+            titleVisibility: .visible,
+        ) {
+            Button("Delete", role: .destructive) {
+                onDelete?()
+            }
+            Button("Cancel", role: .cancel) {}
+        }
+    }
+
     @ViewBuilder private func guideLine(dashed: Bool) -> some View {
         VerticalLine()
             .stroke(

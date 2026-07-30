@@ -63,12 +63,16 @@ struct CommentView: View {
 
                 Spacer(minLength: 0)
 
-                if onSubmitEdit != nil, !isEditing {
-                    editButton()
-                }
+                if !isEditing {
+                    HStack(spacing: 24) {
+                        if canEdit {
+                            editButton()
+                        }
 
-                if onDelete != nil {
-                    deleteButton()
+                        if onDelete != nil {
+                            deleteButton()
+                        }
+                    }
                 }
             }
         }
@@ -76,8 +80,17 @@ struct CommentView: View {
         .padding(.horizontal)
         .padding(.vertical, 8)
         .contentShape(Rectangle())
-        .onTapGesture(count: 2) { if !isEditing { onDoubleTap?() } }
+        .onTapGesture(count: 2) { handleDoubleTap() }
         .onTapGesture { if !isEditing { onSingleTap?() } }
+    }
+
+    private func handleDoubleTap() {
+        guard !isEditing else { return }
+        if canEdit {
+            beginEditing()
+        } else {
+            onDoubleTap?()
+        }
     }
 
     @ViewBuilder private func editor() -> some View {
@@ -87,29 +100,38 @@ struct CommentView: View {
                 placeholder: "Edit your comment…",
             )
 
-            CharacterCounterView(
-                text: editedText,
-                minCount: DevPlaceConstants.minCommentContentLength,
-                maxCount: DevPlaceConstants.maxCommentContentLength,
-            )
-            .padding(.horizontal, 11)
+            HStack(alignment: .top, spacing: 12) {
+                CharacterCounterView(
+                    text: editedText,
+                    minCount: DevPlaceConstants.minCommentContentLength,
+                    maxCount: DevPlaceConstants.maxCommentContentLength,
+                )
+                .padding(.horizontal, 11)
 
-            HStack(spacing: 12) {
                 Spacer(minLength: 0)
 
-                Button("Cancel") {
-                    isEditing = false
-                }
-                .buttonStyle(.plain)
-                .foregroundStyle(Color.FG_2)
+                HStack(spacing: 24) {
+                    Button {
+                        isEditing = false
+                    } label: {
+                        Label("Cancel", systemImage: "xmark")
+                            .labelStyle(.iconOnly)
+                    }
+                    .buttonStyle(.plain)
+                    .foregroundStyle(Color.FG_2)
 
-                Button {
-                    onSubmitEdit?(editedText)
-                    isEditing = false
-                } label: {
-                    Label("Submit", systemImage: "checkmark")
+                    Button {
+                        onSubmitEdit?(editedText)
+                        isEditing = false
+                    } label: {
+                        Label("Submit", systemImage: "checkmark")
+                            .labelStyle(.iconOnly)
+                    }
+                    .buttonStyle(.plain)
+                    .foregroundStyle(Color.accentColor)
+                    .disabled(!canSubmitEdit)
                 }
-                .disabled(!canSubmitEdit)
+                .padding(.horizontal, 11)
             }
         }
     }
@@ -122,14 +144,22 @@ struct CommentView: View {
 
     @ViewBuilder private func editButton() -> some View {
         Button {
-            editedText = comment.data.content
-            isEditing = true
+            beginEditing()
         } label: {
             Label("Edit comment", systemImage: "pencil")
                 .labelStyle(.iconOnly)
         }
         .buttonStyle(.plain)
         .foregroundStyle(Color.FG_1)
+    }
+
+    private var canEdit: Bool {
+        onSubmitEdit != nil
+    }
+
+    private func beginEditing() {
+        editedText = comment.data.content
+        isEditing = true
     }
 
     @ViewBuilder private func deleteButton() -> some View {

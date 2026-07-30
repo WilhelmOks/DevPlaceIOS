@@ -107,7 +107,7 @@ extension PostView {
         func doubleTapComment(_ comment: Comment) async {
             guard let detail = postDetail else { return }
             guard !AppState.shared.isCurrentUser(id: comment.data.userId) else {
-                // TODO: edit the comment (editing own comments is not implemented yet)
+                // A double tap on your own comment begins inline editing in CommentView, so this only votes on others' comments.
                 return
             }
             await AppState.shared.performVoteToggle(

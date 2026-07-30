@@ -93,7 +93,7 @@ struct FeedPostView: View {
     
     private func handleDoubleTapComment(_ comment: Comment) async {
         guard !AppState.shared.isCurrentUser(id: comment.data.userId) else {
-            // Editing isn't possible from the feed, so a double tap on your own comment does nothing.
+            // A double tap on your own comment begins inline editing in CommentView, so this only votes on others' comments.
             return
         }
         await AppState.shared.performVoteToggle(

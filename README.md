@@ -18,8 +18,8 @@ Done:
 * listing posts in the feed and loading more
 * viewing user profiles and own profile
 * showing individual posts in fullscreen
-* showing comments
-* viewing images and videos attached to posts
+* showing comments in a tree structure
+* viewing images and videos attached to posts and comments
 * viewing and voting on polls
 * upvoting and downvoting posts and comments
 * reacting on posts and comments
@@ -29,11 +29,9 @@ Done:
   * links to projects
 * editing posts
 * creating comments
+*   * attachments
 * editing comments
 
 TODO:
-
-* viewing images and videos attached to comments
-* adding attachments to comments
 * notifications
 * private messages

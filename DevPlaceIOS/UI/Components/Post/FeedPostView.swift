@@ -4,9 +4,11 @@ import DevPlaceSwiftSDK
 struct FeedPostView: View {
     let post: Post
     var onSelect: ((String, String?) -> Void)? = nil
-    
+
     let appSettings = AppSettingsStore.shared
     @Environment(\.api) var api
+
+    @State private var isEditingPost = false
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -34,6 +36,9 @@ struct FeedPostView: View {
                     onReact: { emoji in
                         Task { await handleReactPost(emoji: emoji) }
                     },
+                    onEdit: AppState.shared.isCurrentUser(id: post.data.userId)
+                        ? { isEditingPost = true }
+                        : nil,
                     onDelete: AppState.shared.isCurrentUser(id: post.data.userId)
                         ? { Task { await handleDeletePost() } }
                         : nil,
@@ -64,6 +69,13 @@ struct FeedPostView: View {
         .contentShape(Rectangle())
         .onTapGesture(count: 2) { Task { await handleDoubleTapPost() } }
         .onTapGesture { navigateToPost() }
+        .fullScreenCover(isPresented: $isEditingPost) {
+            NavigationStack {
+                CreatePostView(mode: .edit(post)) {
+                    Task { await handleReloadFeed() }
+                }
+            }
+        }
     }
     
     @ViewBuilder private func hLine() -> some View {
@@ -77,7 +89,7 @@ struct FeedPostView: View {
     
     private func handleDoubleTapPost() async {
         guard !AppState.shared.isCurrentUser(id: post.data.userId) else {
-            // Editing isn't possible from the feed, so a double tap on your own post does nothing.
+            isEditingPost = true
             return
         }
         await AppState.shared.performVoteToggle(
@@ -113,6 +125,14 @@ struct FeedPostView: View {
             try await AppState.shared.loadFeed(api: api)
         } catch {
             dlog("Delete post failed: \(error)")
+        }
+    }
+
+    private func handleReloadFeed() async {
+        do {
+            try await AppState.shared.loadFeed(api: api)
+        } catch {
+            dlog("Reload feed failed: \(error)")
         }
     }
     

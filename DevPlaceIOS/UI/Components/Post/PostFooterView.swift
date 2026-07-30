@@ -22,13 +22,15 @@ struct PostFooterView: View {
                 ReactionsBar(reactions: reactions, onReact: onReact)
                 
                 Spacer(minLength: 0)
-                
-                if let onEdit {
-                    editButton(onEdit: onEdit)
-                }
-                
-                if onDelete != nil {
-                    deleteButton()
+
+                HStack(spacing: 24) {
+                    if let onEdit {
+                        editButton(onEdit: onEdit)
+                    }
+
+                    if onDelete != nil {
+                        deleteButton()
+                    }
                 }
             }
         }

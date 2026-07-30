@@ -95,8 +95,10 @@ struct CommentView: View {
             }
 
             if isReplying && !isEditing {
-                ReplyEditorView(
+                CommentEditorView(
                     text: replyText,
+                    initialLineCount: 3,
+                    focusOnAppear: true,
                     onCancel: { onCancelReply?() },
                     onSubmit: { content in onSubmitReply?(content) },
                 )
@@ -123,54 +125,18 @@ struct CommentView: View {
     }
 
     @ViewBuilder private func editor() -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            DevPlaceTextEditor(
-                text: $editedText,
-                placeholder: "Edit your comment…",
-                animatesHeightChanges: true,
-                initialHeight: contentHeight > 0 ? contentHeight : nil,
-            )
-
-            HStack(alignment: .top, spacing: 12) {
-                CharacterCounterView(
-                    text: editedText,
-                    minCount: DevPlaceConstants.minCommentContentLength,
-                    maxCount: DevPlaceConstants.maxCommentContentLength,
-                )
-                .padding(.horizontal, 11)
-
-                Spacer(minLength: 0)
-
-                HStack(spacing: 24) {
-                    Button {
-                        withAnimation(Self.editModeAnimation) { isEditing = false }
-                    } label: {
-                        Label("Cancel", systemImage: "xmark")
-                            .labelStyle(.iconOnly)
-                    }
-                    .buttonStyle(.plain)
-                    .foregroundStyle(Color.FG_2)
-
-                    Button {
-                        onSubmitEdit?(editedText)
-                        withAnimation(Self.editModeAnimation) { isEditing = false }
-                    } label: {
-                        Label("Submit", systemImage: "checkmark")
-                            .labelStyle(.iconOnly)
-                    }
-                    .buttonStyle(.plain)
-                    .foregroundStyle(Color.accentColor)
-                    .disabled(!canSubmitEdit)
-                }
-                .padding(.horizontal, 11)
-            }
-        }
-    }
-
-    private var canSubmitEdit: Bool {
-        let count = TextCharacterCounter.numberOfCharacters(editedText)
-        return count >= DevPlaceConstants.minCommentContentLength
-            && count <= DevPlaceConstants.maxCommentContentLength
+        CommentEditorView(
+            text: $editedText,
+            placeholder: "Edit your comment…",
+            initialHeight: contentHeight > 0 ? contentHeight : nil,
+            onCancel: {
+                withAnimation(Self.editModeAnimation) { isEditing = false }
+            },
+            onSubmit: { content in
+                onSubmitEdit?(content)
+                withAnimation(Self.editModeAnimation) { isEditing = false }
+            },
+        )
     }
 
     @ViewBuilder private func replyButton(onReply: @escaping () -> Void) -> some View {

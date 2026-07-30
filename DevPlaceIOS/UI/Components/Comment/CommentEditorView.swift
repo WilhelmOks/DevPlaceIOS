@@ -1,9 +1,12 @@
 import SwiftUI
 import DevPlaceSwiftSDK
 
-struct ReplyEditorView: View {
+struct CommentEditorView: View {
     @Binding var text: String
     var placeholder: String = "Write a reply…"
+    var initialLineCount: Int? = nil
+    var initialHeight: CGFloat? = nil
+    var focusOnAppear: Bool = false
     let onCancel: () -> Void
     let onSubmit: (String) -> Void
 
@@ -14,7 +17,9 @@ struct ReplyEditorView: View {
             DevPlaceTextEditor(
                 text: $text,
                 placeholder: placeholder,
-                initialLineCount: 3,
+                initialLineCount: initialLineCount,
+                animatesHeightChanges: true,
+                initialHeight: initialHeight,
             )
             .focused($isFocused)
 
@@ -52,6 +57,7 @@ struct ReplyEditorView: View {
             }
         }
         .onAppear {
+            guard focusOnAppear else { return }
             Task {
                 try? await Task.sleep(for: .milliseconds(50))
                 isFocused = true
@@ -69,8 +75,14 @@ struct ReplyEditorView: View {
 #Preview {
     @Previewable @State var text = ""
     ScrollView {
-        ReplyEditorView(text: $text, onCancel: {}, onSubmit: { _ in })
-            .padding()
+        CommentEditorView(
+            text: $text,
+            initialLineCount: 3,
+            focusOnAppear: true,
+            onCancel: {},
+            onSubmit: { _ in },
+        )
+        .padding()
     }
     .background {
         Color.BG_1.ignoresSafeArea()

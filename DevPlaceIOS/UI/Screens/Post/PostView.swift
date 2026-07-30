@@ -179,8 +179,10 @@ private struct PostViewContent: View {
             )
             
             if activeReply == .post {
-                ReplyEditorView(
+                CommentEditorView(
                     text: replyDraft,
+                    initialLineCount: 3,
+                    focusOnAppear: true,
                     onCancel: { cancelReply() },
                     onSubmit: { content in submitReplyToPost(detail, content: content) },
                 )
@@ -240,9 +242,11 @@ private struct PostViewContent: View {
     @ViewBuilder private func bottomCommentSection(_ detail: PostDetail) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             if activeReply == .bottom {
-                ReplyEditorView(
+                CommentEditorView(
                     text: replyDraft,
                     placeholder: "Write a comment…",
+                    initialLineCount: 3,
+                    focusOnAppear: true,
                     onCancel: { cancelReply() },
                     onSubmit: { content in submitReplyToPost(detail, content: content) },
                 )

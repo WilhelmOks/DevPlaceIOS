@@ -10,11 +10,15 @@ struct DevPlaceTextEditor: View {
     var placeholder: String = ""
     var sizeMode: SizeMode = .resizable
     var initialLineCount: Int?
+    var animatesHeightChanges: Bool = false
+    var initialHeight: CGFloat?
 
     @State private var height: CGFloat = 0
     @State private var singleLineHeight: CGFloat = 0
     @State private var didInitializeHeight = false
     @State private var dragStartHeight: CGFloat?
+
+    @ScaledMetric(relativeTo: .body) private var estimatedLineHeight: CGFloat = 21
 
     private let resizeSpaceName = "devPlaceTextEditorResize"
     private let resizeGrabHeight: CGFloat = 24
@@ -66,8 +70,34 @@ struct DevPlaceTextEditor: View {
                     maxWidth: .infinity,
                     alignment: .topLeading,
                 )
-                .frame(height: max(singleLineHeight, height))
+                .frame(height: resolvedHeight)
+                .animation(heightAnimation, value: resolvedHeight)
         }
+    }
+
+    private var resolvedHeight: CGFloat {
+        if !didInitializeHeight {
+            if let initialHeight {
+                return initialHeight
+            }
+            if animatesHeightChanges {
+                return estimatedContentHeight
+            }
+        }
+        return max(singleLineHeight, height)
+    }
+
+    private var estimatedContentHeight: CGFloat {
+        let lineCount = text.reduce(into: 1) { count, character in
+            if character == "\n" { count += 1 }
+        }
+        let verticalPadding: CGFloat = 20
+        return CGFloat(lineCount) * estimatedLineHeight + verticalPadding
+    }
+
+    private var heightAnimation: Animation? {
+        guard animatesHeightChanges, dragStartHeight == nil else { return nil }
+        return .smooth(duration: 0.25)
     }
 
     @ViewBuilder private func editorContent() -> some View {

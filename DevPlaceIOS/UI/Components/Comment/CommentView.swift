@@ -13,6 +13,7 @@ struct CommentView: View {
     @State private var isConfirmingDelete = false
     @State private var isEditing = false
     @State private var editedText = ""
+    @State private var contentHeight: CGFloat = 0
 
     private let maxIndentationLevel = 3
     private let indentWidth: CGFloat = 16
@@ -43,8 +44,15 @@ struct CommentView: View {
 
             if isEditing {
                 editor()
+                    .transition(.opacity)
             } else {
                 PostContentView(topic: nil, title: nil, content: comment.data.content)
+                    .onGeometryChange(for: CGFloat.self) { proxy in
+                        proxy.size.height
+                    } action: { newHeight in
+                        contentHeight = newHeight
+                    }
+                    .transition(.opacity)
             }
 
             ForEach(comment.attachments, id: \.id) { attachment in
@@ -73,6 +81,7 @@ struct CommentView: View {
                             deleteButton()
                         }
                     }
+                    .transition(.opacity)
                 }
             }
         }
@@ -83,6 +92,8 @@ struct CommentView: View {
         .onTapGesture(count: 2) { handleDoubleTap() }
         .onTapGesture { if !isEditing { onSingleTap?() } }
     }
+
+    private static let editModeAnimation: Animation = .smooth(duration: 0.28)
 
     private func handleDoubleTap() {
         guard !isEditing else { return }
@@ -98,6 +109,8 @@ struct CommentView: View {
             DevPlaceTextEditor(
                 text: $editedText,
                 placeholder: "Edit your comment…",
+                animatesHeightChanges: true,
+                initialHeight: contentHeight > 0 ? contentHeight : nil,
             )
 
             HStack(alignment: .top, spacing: 12) {
@@ -112,7 +125,7 @@ struct CommentView: View {
 
                 HStack(spacing: 24) {
                     Button {
-                        isEditing = false
+                        withAnimation(Self.editModeAnimation) { isEditing = false }
                     } label: {
                         Label("Cancel", systemImage: "xmark")
                             .labelStyle(.iconOnly)
@@ -122,7 +135,7 @@ struct CommentView: View {
 
                     Button {
                         onSubmitEdit?(editedText)
-                        isEditing = false
+                        withAnimation(Self.editModeAnimation) { isEditing = false }
                     } label: {
                         Label("Submit", systemImage: "checkmark")
                             .labelStyle(.iconOnly)
@@ -159,7 +172,7 @@ struct CommentView: View {
 
     private func beginEditing() {
         editedText = comment.data.content
-        isEditing = true
+        withAnimation(Self.editModeAnimation) { isEditing = true }
     }
 
     @ViewBuilder private func deleteButton() -> some View {

@@ -28,11 +28,12 @@ Done:
   * polls
   * links to projects
 * editing posts
+* creating comments
+* editing comments
 
 TODO:
 
 * viewing images and videos attached to comments
-* creating comments
-* editing comments
+* adding attachments to comments
 * notifications
 * private messages

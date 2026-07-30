@@ -13,6 +13,8 @@ struct CommentsView: View {
     var replyingCommentId: String? = nil
     var onReplyComment: ((Comment) -> Void)? = nil
     var replyText: Binding<String> = .constant("")
+    var replyAttachments: [UploadResponse] = []
+    var onReplyAttachmentsChange: (([UploadResponse]) -> Void)? = nil
     var onSubmitReply: ((Comment, String) -> Void)? = nil
     var onCancelReply: (() -> Void)? = nil
     var editingCommentId: Binding<String?> = .constant(nil)
@@ -32,6 +34,8 @@ struct CommentsView: View {
                     onReply: onReplyComment.map { handler in { handler(item.comment) } },
                     isReplying: replyingCommentId == item.comment.id,
                     replyText: replyText,
+                    replyAttachments: replyAttachments,
+                    onReplyAttachmentsChange: onReplyAttachmentsChange,
                     onSubmitReply: onSubmitReply.map { handler in { content in handler(item.comment, content) } },
                     onCancelReply: onCancelReply,
                     editingCommentId: editingCommentId,

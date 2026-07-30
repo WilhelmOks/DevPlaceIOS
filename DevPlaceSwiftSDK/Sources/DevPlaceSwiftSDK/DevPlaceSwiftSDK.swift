@@ -215,16 +215,23 @@ public extension DevPlaceRequest {
 
     // MARK: - Comments
 
-    func createComment(targetType: TargetType, targetId: String, content: String, parentId: String?, token: AuthToken) async throws {
+    func createComment(targetType: TargetType, targetId: String, content: String, parentId: String?, attachments: [UploadResponse] = [], token: AuthToken) async throws {
         struct Body: Encodable {
             let target_type: String
             let target_uid: String
             let content: String
             let parent_uid: String?
+            let attachment_uids: [String]
         }
 
         let config = makeConfig(.post, path: "comments/create", contentType: .jsonBody, token: token)
-        let body = Body(target_type: targetType.rawValue, target_uid: targetId, content: content, parent_uid: parentId)
+        let body = Body(
+            target_type: targetType.rawValue,
+            target_uid: targetId,
+            content: content,
+            parent_uid: parentId,
+            attachment_uids: attachments.map(\.id),
+        )
         try await request.requestJson(config: config, json: body, apiError: ApiError.self)
     }
 

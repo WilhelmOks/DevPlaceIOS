@@ -13,6 +13,8 @@ struct CommentView: View {
     var onReply: (() -> Void)? = nil
     var isReplying: Bool = false
     var replyText: Binding<String> = .constant("")
+    var replyAttachments: [UploadResponse] = []
+    var onReplyAttachmentsChange: (([UploadResponse]) -> Void)? = nil
     var onSubmitReply: ((String) -> Void)? = nil
     var onCancelReply: (() -> Void)? = nil
     var editingCommentId: Binding<String?> = .constant(nil)
@@ -106,6 +108,8 @@ struct CommentView: View {
                     text: replyText,
                     initialLineCount: 3,
                     focusOnAppear: true,
+                    attachments: replyAttachments,
+                    onAttachmentsChange: onReplyAttachmentsChange,
                     onCancel: { onCancelReply?() },
                     onSubmit: { content in onSubmitReply?(content) },
                 )

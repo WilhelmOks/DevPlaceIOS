@@ -62,7 +62,7 @@ final class MockDevPlaceApi: DevPlaceApi {
         try await refreshTokenIfNeeded()
     }
 
-    func createComment(targetType: TargetType, targetId: String, content: String, parentId: String?) async throws {
+    func createComment(targetType: TargetType, targetId: String, content: String, parentId: String?, attachments: [UploadResponse]) async throws {
         await mockDelay(0.2)
         try await refreshTokenIfNeeded()
     }

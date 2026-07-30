@@ -12,6 +12,7 @@ struct FeedPostView: View {
     @Binding var editingCommentId: String?
     
     @State private var isEditingPost = false
+    @State private var replyAttachments: [UploadResponse] = []
     
     private static let replyAnimation: Animation = .smooth(duration: 0.28)
     
@@ -67,6 +68,8 @@ struct FeedPostView: View {
                         text: replyDraft,
                         initialLineCount: 3,
                         focusOnAppear: true,
+                        attachments: replyAttachments,
+                        onAttachmentsChange: { replyAttachments = $0 },
                         onCancel: { cancelReply() },
                         onSubmit: { content in submitReplyToPost(content: content) },
                     )
@@ -88,6 +91,8 @@ struct FeedPostView: View {
                     replyingCommentId: activeReplyTargetId,
                     onReplyComment: { comment in beginReplyToComment(comment) },
                     replyText: replyDraft,
+                    replyAttachments: replyAttachments,
+                    onReplyAttachmentsChange: { replyAttachments = $0 },
                     onSubmitReply: { comment, content in submitReplyToComment(comment, content: content) },
                     onCancelReply: { cancelReply() },
                     editingCommentId: $editingCommentId,
@@ -124,49 +129,71 @@ struct FeedPostView: View {
     }
     
     private func beginReplyToPost() {
+        discardReplyAttachments()
         withAnimation(Self.replyAnimation) {
             activeReplyTargetId = post.data.id
         }
     }
     
     private func beginReplyToComment(_ comment: Comment) {
+        discardReplyAttachments()
         withAnimation(Self.replyAnimation) {
             activeReplyTargetId = comment.id
         }
     }
     
     private func cancelReply() {
+        discardReplyAttachments()
         withAnimation(Self.replyAnimation) {
             activeReplyTargetId = nil
         }
     }
     
+    private func discardReplyAttachments() {
+        let unsubmitted = replyAttachments
+        replyAttachments = []
+        guard !unsubmitted.isEmpty else { return }
+        Task {
+            for attachment in unsubmitted {
+                do {
+                    try await api.deleteAttachment(uid: attachment.id)
+                } catch {
+                    dlog("Failed to delete unsubmitted comment attachment \(attachment.id): \(error)")
+                }
+            }
+        }
+    }
+    
     private func submitReplyToPost(content: String) {
+        let attachments = replyAttachments
+        replyAttachments = []
         withAnimation(Self.replyAnimation) {
             activeReplyTargetId = nil
         }
         Task {
-            if await createComment(targetType: .post, targetId: post.data.id, parentId: nil, content: content) {
+            if await createComment(targetType: .post, targetId: post.data.id, parentId: nil, content: content, attachments: attachments) {
                 appSettings.draftReplyMessage = ""
             }
         }
     }
     
     private func submitReplyToComment(_ comment: Comment, content: String) {
+        let attachments = replyAttachments
+        replyAttachments = []
         withAnimation(Self.replyAnimation) {
             activeReplyTargetId = nil
         }
         Task {
             let targetType = TargetType(rawValue: comment.data.targetType) ?? .post
-            if await createComment(targetType: targetType, targetId: comment.data.targetId, parentId: comment.data.id, content: content) {
+            if await createComment(targetType: targetType, targetId: comment.data.targetId, parentId: comment.data.id, content: content, attachments: attachments) {
                 appSettings.draftReplyMessage = ""
             }
         }
     }
     
-    private func createComment(targetType: TargetType, targetId: String, parentId: String?, content: String) async -> Bool {
+    private func createComment(targetType: TargetType, targetId: String, parentId: String?, content: String, attachments: [UploadResponse]) async -> Bool {
         do {
-            try await api.createComment(targetType: targetType, targetId: targetId, content: content, parentId: parentId)
+            try await api.createComment(targetType: targetType, targetId: targetId, content: content, parentId: parentId, attachments: attachments)
             try await AppState.shared.loadFeed(api: api)
             return true
         } catch {

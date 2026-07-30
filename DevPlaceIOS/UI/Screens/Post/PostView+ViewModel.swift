@@ -87,15 +87,25 @@ extension PostView {
             }
         }
 
-        func submitComment(targetType: TargetType, targetId: String, parentId: String?, content: String) async -> Bool {
+        func submitComment(targetType: TargetType, targetId: String, parentId: String?, content: String, attachments: [UploadResponse]) async -> Bool {
             do {
-                try await api.createComment(targetType: targetType, targetId: targetId, content: content, parentId: parentId)
+                try await api.createComment(targetType: targetType, targetId: targetId, content: content, parentId: parentId, attachments: attachments)
                 postDetail = try await api.postDetail(slug: slug)
                 try await AppState.shared.loadFeed(api: api)
                 return true
             } catch {
                 alertMessage = .presentedError(error)
                 return false
+            }
+        }
+
+        func deleteUnsubmittedAttachments(_ attachments: [UploadResponse]) async {
+            for attachment in attachments {
+                do {
+                    try await api.deleteAttachment(uid: attachment.id)
+                } catch {
+                    dlog("Failed to delete unsubmitted comment attachment \(attachment.id): \(error)")
+                }
             }
         }
 

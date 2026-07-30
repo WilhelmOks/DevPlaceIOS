@@ -18,6 +18,7 @@ private struct PostViewContent: View {
     
     @State private var isEditingPost = false
     @State private var activeReply: ReplyAnchor?
+    @State private var replyAttachments: [UploadResponse] = []
     
     private let appSettings = AppSettingsStore.shared
     
@@ -61,6 +62,9 @@ private struct PostViewContent: View {
             .task {
                 await viewModel.load()
             }
+            .onDisappear {
+                discardReplyAttachments()
+            }
     }
     
     @ViewBuilder private func content() -> some View {
@@ -96,35 +100,50 @@ private struct PostViewContent: View {
     }
     
     private func beginReply(_ anchor: ReplyAnchor) {
+        discardReplyAttachments()
         withAnimation(Self.replyAnimation) {
             activeReply = anchor
         }
     }
     
     private func cancelReply() {
+        discardReplyAttachments()
         withAnimation(Self.replyAnimation) {
             activeReply = nil
         }
     }
     
+    private func discardReplyAttachments() {
+        let unsubmitted = replyAttachments
+        replyAttachments = []
+        guard !unsubmitted.isEmpty else { return }
+        Task {
+            await viewModel.deleteUnsubmittedAttachments(unsubmitted)
+        }
+    }
+    
     private func submitReplyToPost(_ detail: PostDetail, content: String) {
+        let attachments = replyAttachments
+        replyAttachments = []
         withAnimation(Self.replyAnimation) {
             activeReply = nil
         }
         Task {
-            if await viewModel.submitComment(targetType: .post, targetId: detail.post.id, parentId: nil, content: content) {
+            if await viewModel.submitComment(targetType: .post, targetId: detail.post.id, parentId: nil, content: content, attachments: attachments) {
                 appSettings.draftReplyMessage = ""
             }
         }
     }
     
     private func submitReplyToComment(_ comment: Comment, content: String) {
+        let attachments = replyAttachments
+        replyAttachments = []
         withAnimation(Self.replyAnimation) {
             activeReply = nil
         }
         Task {
             let targetType = TargetType(rawValue: comment.data.targetType) ?? .post
-            if await viewModel.submitComment(targetType: targetType, targetId: comment.data.targetId, parentId: comment.data.id, content: content) {
+            if await viewModel.submitComment(targetType: targetType, targetId: comment.data.targetId, parentId: comment.data.id, content: content, attachments: attachments) {
                 appSettings.draftReplyMessage = ""
             }
         }
@@ -183,6 +202,8 @@ private struct PostViewContent: View {
                     text: replyDraft,
                     initialLineCount: 3,
                     focusOnAppear: true,
+                    attachments: replyAttachments,
+                    onAttachmentsChange: { replyAttachments = $0 },
                     onCancel: { cancelReply() },
                     onSubmit: { content in submitReplyToPost(detail, content: content) },
                 )
@@ -231,6 +252,8 @@ private struct PostViewContent: View {
                     replyingCommentId: replyingCommentId,
                     onReplyComment: { comment in beginReply(.comment(comment.id)) },
                     replyText: replyDraft,
+                    replyAttachments: replyAttachments,
+                    onReplyAttachmentsChange: { replyAttachments = $0 },
                     onSubmitReply: { comment, content in submitReplyToComment(comment, content: content) },
                     onCancelReply: { cancelReply() },
                 )
@@ -247,6 +270,8 @@ private struct PostViewContent: View {
                     placeholder: "Write a comment…",
                     initialLineCount: 3,
                     focusOnAppear: true,
+                    attachments: replyAttachments,
+                    onAttachmentsChange: { replyAttachments = $0 },
                     onCancel: { cancelReply() },
                     onSubmit: { content in submitReplyToPost(detail, content: content) },
                 )

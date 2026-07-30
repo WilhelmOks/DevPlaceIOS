@@ -7,6 +7,8 @@ struct CommentEditorView: View {
     var initialLineCount: Int? = nil
     var initialHeight: CGFloat? = nil
     var focusOnAppear: Bool = false
+    var attachments: [UploadResponse] = []
+    var onAttachmentsChange: (([UploadResponse]) -> Void)? = nil
     let onCancel: () -> Void
     let onSubmit: (String) -> Void
 
@@ -22,6 +24,10 @@ struct CommentEditorView: View {
                 initialHeight: initialHeight,
             )
             .focused($isFocused)
+
+            if let onAttachmentsChange {
+                AttachmentUploaderView(attachments: attachments, onAttachmentsChange: onAttachmentsChange)
+            }
 
             HStack(alignment: .top, spacing: 12) {
                 CharacterCounterView(

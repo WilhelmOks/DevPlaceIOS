@@ -30,6 +30,11 @@ private struct FeedViewContent: View {
     
     @State private var sheetItem: SheetItem?
     @State private var activeReplyTargetId: String?
+    @State private var editingCommentId: String?
+    
+    private var isComposing: Bool {
+        activeReplyTargetId != nil || editingCommentId != nil
+    }
     
     var body: some View {
         content()
@@ -63,6 +68,7 @@ private struct FeedViewContent: View {
                             selectedPost = PostDestination(slug: slug, scrollToCommentId: scrollToCommentId)
                         },
                         activeReplyTargetId: $activeReplyTargetId,
+                        editingCommentId: $editingCommentId,
                     )
                 }
                 if appState.feed?.nextCursor != nil {
@@ -79,14 +85,17 @@ private struct FeedViewContent: View {
             .frame(maxWidth: .infinity)
         }
         .overlay(alignment: .bottomTrailing) {
-            Button {
-                sheetItem = .createPost
-            } label: {
-                Label("New post", systemImage: "plus")
-                    .labelStyle(.iconOnly)
+            if !isComposing {
+                Button {
+                    sheetItem = .createPost
+                } label: {
+                    Label("New post", systemImage: "plus")
+                        .labelStyle(.iconOnly)
+                }
+                .buttonStyle(.accentGradient(shape: .circle))
+                .padding()
+                .transition(.scale.combined(with: .opacity))
             }
-            .buttonStyle(.accentGradient(shape: .circle))
-            .padding()
         }
     }
 }

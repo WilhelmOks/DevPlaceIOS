@@ -9,6 +9,7 @@ struct FeedPostView: View {
     @Environment(\.api) var api
 
     @Binding var activeReplyTargetId: String?
+    @Binding var editingCommentId: String?
     
     @State private var isEditingPost = false
     
@@ -88,6 +89,7 @@ struct FeedPostView: View {
                     replyText: replyDraft,
                     onSubmitReply: { comment, content in submitReplyToComment(comment, content: content) },
                     onCancelReply: { cancelReply() },
+                    editingCommentId: $editingCommentId,
                 )
                 .padding(.top, 8)
             }
@@ -264,11 +266,16 @@ struct FeedPostView: View {
 
 #Preview {
     @Previewable @State var activeReplyTargetId: String?
+    @Previewable @State var editingCommentId: String?
     ScrollView {
         LazyVStack(spacing: 16) {
             let posts = [Post].mock
             ForEach(posts, id: \.id) { post in
-                FeedPostView(post: post, activeReplyTargetId: $activeReplyTargetId)
+                FeedPostView(
+                    post: post,
+                    activeReplyTargetId: $activeReplyTargetId,
+                    editingCommentId: $editingCommentId,
+                )
             }
         }
         .frame(maxWidth: .infinity)

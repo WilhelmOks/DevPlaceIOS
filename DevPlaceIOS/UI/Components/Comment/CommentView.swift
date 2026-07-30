@@ -14,6 +14,7 @@ struct CommentView: View {
     var replyText: Binding<String> = .constant("")
     var onSubmitReply: ((String) -> Void)? = nil
     var onCancelReply: (() -> Void)? = nil
+    var editingCommentId: Binding<String?> = .constant(nil)
 
     @State private var isConfirmingDelete = false
     @State private var isEditing = false
@@ -130,11 +131,11 @@ struct CommentView: View {
             placeholder: "Edit your comment…",
             initialHeight: contentHeight > 0 ? contentHeight : nil,
             onCancel: {
-                withAnimation(Self.editModeAnimation) { isEditing = false }
+                endEditing()
             },
             onSubmit: { content in
                 onSubmitEdit?(content)
-                withAnimation(Self.editModeAnimation) { isEditing = false }
+                endEditing()
             },
         )
     }
@@ -167,7 +168,19 @@ struct CommentView: View {
 
     private func beginEditing() {
         editedText = comment.data.content
-        withAnimation(Self.editModeAnimation) { isEditing = true }
+        withAnimation(Self.editModeAnimation) {
+            isEditing = true
+            editingCommentId.wrappedValue = comment.id
+        }
+    }
+
+    private func endEditing() {
+        withAnimation(Self.editModeAnimation) {
+            isEditing = false
+            if editingCommentId.wrappedValue == comment.id {
+                editingCommentId.wrappedValue = nil
+            }
+        }
     }
 
     @ViewBuilder private func deleteButton() -> some View {

@@ -14,6 +14,7 @@ struct CommentsView: View {
     var replyText: Binding<String> = .constant("")
     var onSubmitReply: ((Comment, String) -> Void)? = nil
     var onCancelReply: (() -> Void)? = nil
+    var editingCommentId: Binding<String?> = .constant(nil)
 
     var body: some View {
         VStack(spacing: 0) {
@@ -31,6 +32,7 @@ struct CommentsView: View {
                     replyText: replyText,
                     onSubmitReply: onSubmitReply.map { handler in { content in handler(item.comment, content) } },
                     onCancelReply: onCancelReply,
+                    editingCommentId: editingCommentId,
                 )
             }
         }

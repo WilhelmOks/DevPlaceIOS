@@ -4,6 +4,7 @@ import DevPlaceSwiftSDK
 struct CommentView: View {
     let comment: Comment
     var indentationLevel: Int = 0
+    var maxAttachments: Int? = nil
     var onSingleTap: (() -> Void)? = nil
     var onDoubleTap: (() -> Void)? = nil
     var onReact: ((String) -> Void)? = nil
@@ -27,6 +28,11 @@ struct CommentView: View {
     
     private var effectiveLevel: Int {
         min(indentationLevel, maxIndentationLevel)
+    }
+
+    private var displayedAttachments: [Attachment] {
+        guard let maxAttachments else { return comment.attachments }
+        return Array(comment.attachments.prefix(maxAttachments))
     }
     
     var body: some View {
@@ -61,7 +67,7 @@ struct CommentView: View {
                     .transition(.opacity)
             }
 
-            ForEach(comment.attachments, id: \.id) { attachment in
+            ForEach(displayedAttachments, id: \.id) { attachment in
                 AttachmentViewer(attachment: attachment)
             }
 

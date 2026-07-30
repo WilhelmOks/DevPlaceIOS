@@ -79,6 +79,7 @@ struct FeedPostView: View {
                 CommentsView(
                     comments: post.recentComments,
                     baseIndentationLevel: 1,
+                    maxAttachments: appSettings.showFeedAttachments ? 1 : 0,
                     onSingleTapComment: { comment in navigateToPost(scrollToCommentId: comment.id) },
                     onDoubleTapComment: { comment in Task { await handleDoubleTapComment(comment) } },
                     onReactComment: { comment, emoji in Task { await handleReactComment(comment, emoji: emoji) } },

@@ -29,7 +29,7 @@ Done:
   * links to projects
 * editing posts
 * creating comments
-*   * attachments
+  * attachments
 * editing comments
 
 TODO:

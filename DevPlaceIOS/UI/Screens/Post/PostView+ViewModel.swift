@@ -87,6 +87,18 @@ extension PostView {
             }
         }
 
+        func submitComment(targetType: TargetType, targetId: String, parentId: String?, content: String) async -> Bool {
+            do {
+                try await api.createComment(targetType: targetType, targetId: targetId, content: content, parentId: parentId)
+                postDetail = try await api.postDetail(slug: slug)
+                try await AppState.shared.loadFeed(api: api)
+                return true
+            } catch {
+                alertMessage = .presentedError(error)
+                return false
+            }
+        }
+
         func upvoteForeignPost() async {
             guard let detail = postDetail else { return }
             guard !AppState.shared.isCurrentUser(id: detail.post.userId) else {

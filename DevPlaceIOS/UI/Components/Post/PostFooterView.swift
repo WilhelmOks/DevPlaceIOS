@@ -7,6 +7,8 @@ struct PostFooterView: View {
     let currentVote: Vote
     let reactions: Reactions
     let onReact: (String) -> Void
+    var onReply: (() -> Void)? = nil
+    var isReplying: Bool = false
     var onEdit: (() -> Void)? = nil
     var onDelete: (() -> Void)? = nil
     
@@ -24,6 +26,10 @@ struct PostFooterView: View {
                 Spacer(minLength: 0)
 
                 HStack(spacing: 24) {
+                    if let onReply, !isReplying {
+                        replyButton(onReply: onReply)
+                    }
+
                     if let onEdit {
                         editButton(onEdit: onEdit)
                     }
@@ -34,6 +40,17 @@ struct PostFooterView: View {
                 }
             }
         }
+    }
+    
+    @ViewBuilder private func replyButton(onReply: @escaping () -> Void) -> some View {
+        Button {
+            onReply()
+        } label: {
+            Label("Reply to post", systemImage: "arrowshape.turn.up.left")
+                .labelStyle(.iconOnly)
+        }
+        .buttonStyle(.plain)
+        .foregroundStyle(Color.FG_1)
     }
     
     @ViewBuilder private func editButton(onEdit: @escaping () -> Void) -> some View {

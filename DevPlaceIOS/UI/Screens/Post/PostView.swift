@@ -17,8 +17,26 @@ private struct PostViewContent: View {
     var scrollToCommentId: String? = nil
     
     @State private var isEditingPost = false
+    @State private var activeReply: ReplyAnchor?
+    
+    private let appSettings = AppSettingsStore.shared
     
     @Environment(\.dismiss) private var dismiss
+    
+    private enum ReplyAnchor: Equatable {
+        case post
+        case comment(String)
+        case bottom
+    }
+    
+    private static let replyAnimation: Animation = .smooth(duration: 0.28)
+    
+    private var replyDraft: Binding<String> {
+        Binding(
+            get: { appSettings.draftReplyMessage },
+            set: { appSettings.draftReplyMessage = $0 },
+        )
+    }
     
     var body: some View {
         content()
@@ -53,6 +71,8 @@ private struct PostViewContent: View {
                         postBody(postDetail)
                         
                         commentsSection(postDetail)
+                        
+                        bottomCommentSection(postDetail)
                     }
                 }
                 .onAppear {
@@ -73,6 +93,48 @@ private struct PostViewContent: View {
                 proxy.scrollTo(scrollToCommentId, anchor: .top)
             }
         }
+    }
+    
+    private func beginReply(_ anchor: ReplyAnchor) {
+        withAnimation(Self.replyAnimation) {
+            activeReply = anchor
+        }
+    }
+    
+    private func cancelReply() {
+        withAnimation(Self.replyAnimation) {
+            activeReply = nil
+        }
+    }
+    
+    private func submitReplyToPost(_ detail: PostDetail, content: String) {
+        withAnimation(Self.replyAnimation) {
+            activeReply = nil
+        }
+        Task {
+            if await viewModel.submitComment(targetType: .post, targetId: detail.post.id, parentId: nil, content: content) {
+                appSettings.draftReplyMessage = ""
+            }
+        }
+    }
+    
+    private func submitReplyToComment(_ comment: Comment, content: String) {
+        withAnimation(Self.replyAnimation) {
+            activeReply = nil
+        }
+        Task {
+            let targetType = TargetType(rawValue: comment.data.targetType) ?? .post
+            if await viewModel.submitComment(targetType: targetType, targetId: comment.data.targetId, parentId: comment.data.id, content: content) {
+                appSettings.draftReplyMessage = ""
+            }
+        }
+    }
+    
+    private var replyingCommentId: String? {
+        if case .comment(let id) = activeReply {
+            return id
+        }
+        return nil
     }
     
     @ViewBuilder private func postBody(_ detail: PostDetail) -> some View {
@@ -100,6 +162,8 @@ private struct PostViewContent: View {
                 onReact: { emoji in
                     Task { await viewModel.reactToPost(emoji: emoji) }
                 },
+                onReply: { beginReply(.post) },
+                isReplying: activeReply == .post,
                 onEdit: AppState.shared.isCurrentUser(id: detail.post.userId)
                     ? { isEditingPost = true }
                     : nil,
@@ -113,6 +177,15 @@ private struct PostViewContent: View {
                     }
                     : nil,
             )
+            
+            if activeReply == .post {
+                ReplyEditorView(
+                    text: replyDraft,
+                    onCancel: { cancelReply() },
+                    onSubmit: { content in submitReplyToPost(detail, content: content) },
+                )
+                .transition(.opacity)
+            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
@@ -153,10 +226,39 @@ private struct PostViewContent: View {
                     onEditComment: { comment, content in
                         Task { await viewModel.editComment(comment, content: content) }
                     },
+                    replyingCommentId: replyingCommentId,
+                    onReplyComment: { comment in beginReply(.comment(comment.id)) },
+                    replyText: replyDraft,
+                    onSubmitReply: { comment, content in submitReplyToComment(comment, content: content) },
+                    onCancelReply: { cancelReply() },
                 )
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
+    }
+    
+    @ViewBuilder private func bottomCommentSection(_ detail: PostDetail) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            if activeReply == .bottom {
+                ReplyEditorView(
+                    text: replyDraft,
+                    placeholder: "Write a comment…",
+                    onCancel: { cancelReply() },
+                    onSubmit: { content in submitReplyToPost(detail, content: content) },
+                )
+                .transition(.opacity)
+            } else {
+                Button {
+                    beginReply(.bottom)
+                } label: {
+                    Label("Comment", systemImage: "bubble.left")
+                }
+                .buttonStyle(.form)
+                .transition(.opacity)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding()
     }
     
     @ViewBuilder private func reloadToolbarItem() -> some View {

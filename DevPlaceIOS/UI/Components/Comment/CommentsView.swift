@@ -9,6 +9,11 @@ struct CommentsView: View {
     var onReactComment: ((Comment, String) -> Void)? = nil
     var onDeleteComment: ((Comment) -> Void)? = nil
     var onEditComment: ((Comment, String) -> Void)? = nil
+    var replyingCommentId: String? = nil
+    var onReplyComment: ((Comment) -> Void)? = nil
+    var replyText: Binding<String> = .constant("")
+    var onSubmitReply: ((Comment, String) -> Void)? = nil
+    var onCancelReply: (() -> Void)? = nil
 
     var body: some View {
         VStack(spacing: 0) {
@@ -21,6 +26,11 @@ struct CommentsView: View {
                     onReact: onReactComment.map { handler in { emoji in handler(item.comment, emoji) } },
                     onDelete: deleteAction(for: item.comment),
                     onSubmitEdit: editAction(for: item.comment),
+                    onReply: onReplyComment.map { handler in { handler(item.comment) } },
+                    isReplying: replyingCommentId == item.comment.id,
+                    replyText: replyText,
+                    onSubmitReply: onSubmitReply.map { handler in { content in handler(item.comment, content) } },
+                    onCancelReply: onCancelReply,
                 )
             }
         }

@@ -9,6 +9,11 @@ struct CommentView: View {
     var onReact: ((String) -> Void)? = nil
     var onDelete: (() -> Void)? = nil
     var onSubmitEdit: ((String) -> Void)? = nil
+    var onReply: (() -> Void)? = nil
+    var isReplying: Bool = false
+    var replyText: Binding<String> = .constant("")
+    var onSubmitReply: ((String) -> Void)? = nil
+    var onCancelReply: (() -> Void)? = nil
 
     @State private var isConfirmingDelete = false
     @State private var isEditing = false
@@ -73,6 +78,10 @@ struct CommentView: View {
 
                 if !isEditing {
                     HStack(spacing: 24) {
+                        if let onReply, !isReplying {
+                            replyButton(onReply: onReply)
+                        }
+
                         if canEdit {
                             editButton()
                         }
@@ -83,6 +92,15 @@ struct CommentView: View {
                     }
                     .transition(.opacity)
                 }
+            }
+
+            if isReplying && !isEditing {
+                ReplyEditorView(
+                    text: replyText,
+                    onCancel: { onCancelReply?() },
+                    onSubmit: { content in onSubmitReply?(content) },
+                )
+                .transition(.opacity)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -153,6 +171,17 @@ struct CommentView: View {
         let count = TextCharacterCounter.numberOfCharacters(editedText)
         return count >= DevPlaceConstants.minCommentContentLength
             && count <= DevPlaceConstants.maxCommentContentLength
+    }
+
+    @ViewBuilder private func replyButton(onReply: @escaping () -> Void) -> some View {
+        Button {
+            onReply()
+        } label: {
+            Label("Reply to comment", systemImage: "arrowshape.turn.up.left")
+                .labelStyle(.iconOnly)
+        }
+        .buttonStyle(.plain)
+        .foregroundStyle(Color.FG_1)
     }
 
     @ViewBuilder private func editButton() -> some View {

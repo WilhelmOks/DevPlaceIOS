@@ -8,8 +8,11 @@ struct CommentView: View {
     var onDoubleTap: (() -> Void)? = nil
     var onReact: ((String) -> Void)? = nil
     var onDelete: (() -> Void)? = nil
+    var onSubmitEdit: ((String) -> Void)? = nil
 
     @State private var isConfirmingDelete = false
+    @State private var isEditing = false
+    @State private var editedText = ""
 
     private let maxIndentationLevel = 3
     private let indentWidth: CGFloat = 16
@@ -37,13 +40,17 @@ struct CommentView: View {
     @ViewBuilder private func commentBody() -> some View {
         VStack(alignment: .leading, spacing: 8) {
             PostHeaderView(author: comment.author, date: comment.data.createdAt)
-            
-            PostContentView(topic: nil, title: nil, content: comment.data.content)
-            
+
+            if isEditing {
+                editor()
+            } else {
+                PostContentView(topic: nil, title: nil, content: comment.data.content)
+            }
+
             ForEach(comment.attachments, id: \.id) { attachment in
                 AttachmentViewer(attachment: attachment)
             }
-            
+
             HStack(spacing: 12) {
                 VoteView(
                     targetType: .comment,
@@ -51,10 +58,14 @@ struct CommentView: View {
                     count: comment.voteCount,
                     currentVote: comment.myVote,
                 )
-                
+
                 ReactionsBar(reactions: comment.reactions, onReact: onReact ?? { _ in })
 
                 Spacer(minLength: 0)
+
+                if onSubmitEdit != nil, !isEditing {
+                    editButton()
+                }
 
                 if onDelete != nil {
                     deleteButton()
@@ -65,10 +76,62 @@ struct CommentView: View {
         .padding(.horizontal)
         .padding(.vertical, 8)
         .contentShape(Rectangle())
-        .onTapGesture(count: 2) { onDoubleTap?() }
-        .onTapGesture { onSingleTap?() }
+        .onTapGesture(count: 2) { if !isEditing { onDoubleTap?() } }
+        .onTapGesture { if !isEditing { onSingleTap?() } }
     }
-    
+
+    @ViewBuilder private func editor() -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            DevPlaceTextEditor(
+                text: $editedText,
+                placeholder: "Edit your comment…",
+            )
+
+            CharacterCounterView(
+                text: editedText,
+                minCount: DevPlaceConstants.minCommentContentLength,
+                maxCount: DevPlaceConstants.maxCommentContentLength,
+            )
+            .padding(.horizontal, 11)
+
+            HStack(spacing: 12) {
+                Spacer(minLength: 0)
+
+                Button("Cancel") {
+                    isEditing = false
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(Color.FG_2)
+
+                Button {
+                    onSubmitEdit?(editedText)
+                    isEditing = false
+                } label: {
+                    Label("Submit", systemImage: "checkmark")
+                }
+                .disabled(!canSubmitEdit)
+            }
+        }
+    }
+
+    private var canSubmitEdit: Bool {
+        let count = TextCharacterCounter.numberOfCharacters(editedText)
+        return count >= DevPlaceConstants.minCommentContentLength
+            && count <= DevPlaceConstants.maxCommentContentLength
+    }
+
+    @ViewBuilder private func editButton() -> some View {
+        Button {
+            editedText = comment.data.content
+            isEditing = true
+        } label: {
+            Label("Edit comment", systemImage: "pencil")
+                .labelStyle(.iconOnly)
+        }
+        .buttonStyle(.plain)
+        .foregroundStyle(Color.FG_1)
+    }
+
     @ViewBuilder private func deleteButton() -> some View {
         Button {
             isConfirmingDelete = true

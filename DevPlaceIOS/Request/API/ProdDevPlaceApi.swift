@@ -65,6 +65,14 @@ final class ProdDevPlaceApi: DevPlaceApi {
         try await request.deleteComment(uid: uid, token: token)
     }
 
+    func editComment(uid: String, content: String) async throws {
+        guard let token = AppState.shared.token else {
+            throw DevPlaceError.notLoggedIn
+        }
+        try await refreshTokenIfNeeded()
+        try await request.editComment(uid: uid, content: content, token: token)
+    }
+
     func vote(targetType: TargetType, targetId: String, vote: Vote) async throws {
         guard let token = AppState.shared.token else {
             throw DevPlaceError.notLoggedIn

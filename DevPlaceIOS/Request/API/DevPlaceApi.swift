@@ -9,6 +9,7 @@ protocol DevPlaceApi {
     func editPost(slug: String, title: String, topic: PostTopic, content: String, projectLink: String) async throws
     func deletePost(slug: String) async throws
     func deleteComment(uid: String) async throws
+    func editComment(uid: String, content: String) async throws
     func profile(username: String?) async throws -> Profile
     func vote(targetType: TargetType, targetId: String, vote: Vote) async throws
     func submitPollChoice(pollId: String, optionId: String) async throws

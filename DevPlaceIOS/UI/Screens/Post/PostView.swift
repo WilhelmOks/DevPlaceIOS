@@ -150,6 +150,9 @@ private struct PostViewContent: View {
                     onDeleteComment: { comment in
                         Task { await viewModel.deleteComment(comment) }
                     },
+                    onEditComment: { comment, content in
+                        Task { await viewModel.editComment(comment, content: content) }
+                    },
                 )
             }
             .frame(maxWidth: .infinity, alignment: .leading)

@@ -8,6 +8,7 @@ struct CommentsView: View {
     var onDoubleTapComment: ((Comment) -> Void)? = nil
     var onReactComment: ((Comment, String) -> Void)? = nil
     var onDeleteComment: ((Comment) -> Void)? = nil
+    var onEditComment: ((Comment, String) -> Void)? = nil
 
     var body: some View {
         VStack(spacing: 0) {
@@ -19,6 +20,7 @@ struct CommentsView: View {
                     onDoubleTap: onDoubleTapComment.map { handler in { handler(item.comment) } },
                     onReact: onReactComment.map { handler in { emoji in handler(item.comment, emoji) } },
                     onDelete: deleteAction(for: item.comment),
+                    onSubmitEdit: editAction(for: item.comment),
                 )
             }
         }
@@ -29,6 +31,13 @@ struct CommentsView: View {
             return nil
         }
         return { onDeleteComment(comment) }
+    }
+
+    private func editAction(for comment: Comment) -> ((String) -> Void)? {
+        guard let onEditComment, AppState.shared.isCurrentUser(id: comment.data.userId) else {
+            return nil
+        }
+        return { content in onEditComment(comment, content) }
     }
 }
 

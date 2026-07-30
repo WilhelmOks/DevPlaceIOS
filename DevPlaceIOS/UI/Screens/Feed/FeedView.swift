@@ -29,6 +29,7 @@ private struct FeedViewContent: View {
     }
     
     @State private var sheetItem: SheetItem?
+    @State private var activeReplyTargetId: String?
     
     var body: some View {
         content()
@@ -56,9 +57,13 @@ private struct FeedViewContent: View {
             LazyVStack {
                 let posts = appState.feed?.posts ?? []
                 ForEach(posts, id: \.id) { post in
-                    FeedPostView(post: post) { slug, scrollToCommentId in
-                        selectedPost = PostDestination(slug: slug, scrollToCommentId: scrollToCommentId)
-                    }
+                    FeedPostView(
+                        post: post,
+                        onSelect: { slug, scrollToCommentId in
+                            selectedPost = PostDestination(slug: slug, scrollToCommentId: scrollToCommentId)
+                        },
+                        activeReplyTargetId: $activeReplyTargetId,
+                    )
                 }
                 if appState.feed?.nextCursor != nil {
                     ProgressView()

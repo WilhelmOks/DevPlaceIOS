@@ -8,7 +8,22 @@ struct FeedPostView: View {
     let appSettings = AppSettingsStore.shared
     @Environment(\.api) var api
 
+    @Binding var activeReplyTargetId: String?
+    
     @State private var isEditingPost = false
+    
+    private static let replyAnimation: Animation = .smooth(duration: 0.28)
+    
+    private var replyDraft: Binding<String> {
+        Binding(
+            get: { appSettings.draftReplyMessage },
+            set: { appSettings.draftReplyMessage = $0 },
+        )
+    }
+    
+    private var isReplyingToPost: Bool {
+        activeReplyTargetId == post.data.id
+    }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -36,6 +51,8 @@ struct FeedPostView: View {
                     onReact: { emoji in
                         Task { await handleReactPost(emoji: emoji) }
                     },
+                    onReply: { beginReplyToPost() },
+                    isReplying: isReplyingToPost,
                     onEdit: AppState.shared.isCurrentUser(id: post.data.userId)
                         ? { isEditingPost = true }
                         : nil,
@@ -43,6 +60,17 @@ struct FeedPostView: View {
                         ? { Task { await handleDeletePost() } }
                         : nil,
                 )
+                
+                if isReplyingToPost {
+                    CommentEditorView(
+                        text: replyDraft,
+                        initialLineCount: 3,
+                        focusOnAppear: true,
+                        onCancel: { cancelReply() },
+                        onSubmit: { content in submitReplyToPost(content: content) },
+                    )
+                    .transition(.opacity)
+                }
             }
             .padding(.horizontal)
             
@@ -55,6 +83,11 @@ struct FeedPostView: View {
                     onReactComment: { comment, emoji in Task { await handleReactComment(comment, emoji: emoji) } },
                     onDeleteComment: { comment in Task { await handleDeleteComment(comment) } },
                     onEditComment: { comment, content in Task { await handleEditComment(comment, content: content) } },
+                    replyingCommentId: activeReplyTargetId,
+                    onReplyComment: { comment in beginReplyToComment(comment) },
+                    replyText: replyDraft,
+                    onSubmitReply: { comment, content in submitReplyToComment(comment, content: content) },
+                    onCancelReply: { cancelReply() },
                 )
                 .padding(.top, 8)
             }
@@ -67,8 +100,8 @@ struct FeedPostView: View {
             Color.BG_1
         }
         .contentShape(Rectangle())
-        .onTapGesture(count: 2) { Task { await handleDoubleTapPost() } }
-        .onTapGesture { navigateToPost() }
+        .onTapGesture(count: 2) { if activeReplyTargetId == nil { Task { await handleDoubleTapPost() } } }
+        .onTapGesture { if activeReplyTargetId == nil { navigateToPost() } }
         .fullScreenCover(isPresented: $isEditingPost) {
             NavigationStack {
                 CreatePostView(mode: .edit(post)) {
@@ -85,6 +118,58 @@ struct FeedPostView: View {
     private func navigateToPost(scrollToCommentId: String? = nil) {
         guard let slug = post.data.slug else { return }
         onSelect?(slug, scrollToCommentId)
+    }
+    
+    private func beginReplyToPost() {
+        withAnimation(Self.replyAnimation) {
+            activeReplyTargetId = post.data.id
+        }
+    }
+    
+    private func beginReplyToComment(_ comment: Comment) {
+        withAnimation(Self.replyAnimation) {
+            activeReplyTargetId = comment.id
+        }
+    }
+    
+    private func cancelReply() {
+        withAnimation(Self.replyAnimation) {
+            activeReplyTargetId = nil
+        }
+    }
+    
+    private func submitReplyToPost(content: String) {
+        withAnimation(Self.replyAnimation) {
+            activeReplyTargetId = nil
+        }
+        Task {
+            if await createComment(targetType: .post, targetId: post.data.id, parentId: nil, content: content) {
+                appSettings.draftReplyMessage = ""
+            }
+        }
+    }
+    
+    private func submitReplyToComment(_ comment: Comment, content: String) {
+        withAnimation(Self.replyAnimation) {
+            activeReplyTargetId = nil
+        }
+        Task {
+            let targetType = TargetType(rawValue: comment.data.targetType) ?? .post
+            if await createComment(targetType: targetType, targetId: comment.data.targetId, parentId: comment.data.id, content: content) {
+                appSettings.draftReplyMessage = ""
+            }
+        }
+    }
+    
+    private func createComment(targetType: TargetType, targetId: String, parentId: String?, content: String) async -> Bool {
+        do {
+            try await api.createComment(targetType: targetType, targetId: targetId, content: content, parentId: parentId)
+            try await AppState.shared.loadFeed(api: api)
+            return true
+        } catch {
+            dlog("Create comment failed: \(error)")
+            return false
+        }
     }
     
     private func handleDoubleTapPost() async {
@@ -178,11 +263,12 @@ struct FeedPostView: View {
 }
 
 #Preview {
+    @Previewable @State var activeReplyTargetId: String?
     ScrollView {
         LazyVStack(spacing: 16) {
             let posts = [Post].mock
             ForEach(posts, id: \.id) { post in
-                FeedPostView(post: post)
+                FeedPostView(post: post, activeReplyTargetId: $activeReplyTargetId)
             }
         }
         .frame(maxWidth: .infinity)

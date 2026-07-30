@@ -110,13 +110,13 @@ struct CommentView: View {
         .padding(.vertical, 8)
         .contentShape(Rectangle())
         .onTapGesture(count: 2) { handleDoubleTap() }
-        .onTapGesture { if !isEditing { onSingleTap?() } }
+        .onTapGesture { if !isEditing && !isReplying { onSingleTap?() } }
     }
 
     private static let editModeAnimation: Animation = .smooth(duration: 0.28)
 
     private func handleDoubleTap() {
-        guard !isEditing else { return }
+        guard !isEditing, !isReplying else { return }
         if canEdit {
             beginEditing()
         } else {

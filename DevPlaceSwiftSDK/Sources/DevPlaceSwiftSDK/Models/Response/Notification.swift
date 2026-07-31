@@ -18,7 +18,7 @@ public struct Notification: Hashable, Sendable, Identifiable {
 public extension Notification {
     struct Data: Hashable, Sendable, Identifiable {
         public let id: String
-        public let type: String
+        public let type: NotificationType?
         public let message: String
         public let read: Bool
         public let relatedId: String
@@ -27,7 +27,7 @@ public extension Notification {
 
         public init(
             id: String,
-            type: String,
+            type: NotificationType?,
             message: String,
             read: Bool,
             relatedId: String,
@@ -78,7 +78,7 @@ extension Notification.Data.CodingData {
     var decoded: Notification.Data {
         .init(
             id: uid,
-            type: type,
+            type: NotificationType(rawValue: type),
             message: message,
             read: read,
             relatedId: related_uid,

@@ -118,8 +118,12 @@ extension NotificationsView {
         }
 
         private func isCommentNotification(_ notification: DevPlaceSwiftSDK.Notification) -> Bool {
-            let type = notification.data.type.lowercased()
-            return type.contains("comment") || type.contains("reply") || type.contains("mention")
+            switch notification.data.type {
+            case .comment, .reply, .mention:
+                return true
+            case .vote, .none:
+                return false
+            }
         }
 
         func markRead(uid: String) async {

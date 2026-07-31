@@ -11,7 +11,7 @@ extension Notifications {
                         .init(
                             data: .init(
                                 id: "n1",
-                                type: "reaction",
+                                type: nil,
                                 message: "null_void reacted 🎉 to your post \"Shipping the new build system\"",
                                 read: false,
                                 relatedId: "p1",
@@ -23,7 +23,7 @@ extension Notifications {
                         .init(
                             data: .init(
                                 id: "n2",
-                                type: "comment",
+                                type: .comment,
                                 message: "cheeze_on_wheels commented on your post",
                                 read: false,
                                 relatedId: "c6",
@@ -40,7 +40,7 @@ extension Notifications {
                         .init(
                             data: .init(
                                 id: "n3",
-                                type: "follow",
+                                type: nil,
                                 message: "null_void started following you",
                                 read: true,
                                 relatedId: "u2",
@@ -52,7 +52,7 @@ extension Notifications {
                         .init(
                             data: .init(
                                 id: "n4",
-                                type: "vote",
+                                type: .vote,
                                 message: "cheeze_on_wheels upvoted your comment",
                                 read: true,
                                 relatedId: "c1",

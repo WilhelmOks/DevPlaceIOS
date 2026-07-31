@@ -4,6 +4,7 @@ import DevPlaceSwiftSDK
 struct CommentView: View {
     let comment: Comment
     var indentationLevel: Int = 0
+    var linksToProfile: Bool = true
     var maxAttachments: Int? = nil
     var onSingleTap: (() -> Void)? = nil
     var onDoubleTap: (() -> Void)? = nil
@@ -54,7 +55,7 @@ struct CommentView: View {
     
     @ViewBuilder private func commentBody() -> some View {
         VStack(alignment: .leading, spacing: 8) {
-            PostHeaderView(author: comment.author, date: comment.data.createdAt)
+            PostHeaderView(author: comment.author, date: comment.data.createdAt, linksToProfile: linksToProfile)
 
             if isEditing {
                 editor()

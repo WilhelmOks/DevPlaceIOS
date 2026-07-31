@@ -33,7 +33,7 @@ struct FeedPostView: View {
                 .padding(.bottom, 8)
             
             VStack(alignment: .leading, spacing: 8) {
-                PostHeaderView(author: post.author, date: post.data.createdAt)
+                PostHeaderView(author: post.author, date: post.data.createdAt, linksToProfile: false)
                 
                 PostContentView(topic: post.data.topic, title: post.data.title, content: post.data.content)
                 
@@ -82,6 +82,7 @@ struct FeedPostView: View {
                 CommentsView(
                     comments: post.recentComments,
                     baseIndentationLevel: 1,
+                    linksToProfile: false,
                     maxAttachments: appSettings.showFeedAttachments ? 1 : 0,
                     onSingleTapComment: { comment in navigateToPost(scrollToCommentId: comment.id) },
                     onDoubleTapComment: { comment in Task { await handleDoubleTapComment(comment) } },

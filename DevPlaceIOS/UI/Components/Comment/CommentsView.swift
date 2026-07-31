@@ -4,6 +4,7 @@ import DevPlaceSwiftSDK
 struct CommentsView: View {
     let comments: [Comment]
     var baseIndentationLevel: Int = 0
+    var linksToProfile: Bool = true
     var maxAttachments: Int? = nil
     var onSingleTapComment: ((Comment) -> Void)? = nil
     var onDoubleTapComment: ((Comment) -> Void)? = nil
@@ -25,6 +26,7 @@ struct CommentsView: View {
                 CommentView(
                     comment: item.comment,
                     indentationLevel: item.level,
+                    linksToProfile: linksToProfile,
                     maxAttachments: maxAttachments,
                     onSingleTap: onSingleTapComment.map { handler in { handler(item.comment) } },
                     onDoubleTap: onDoubleTapComment.map { handler in { handler(item.comment) } },

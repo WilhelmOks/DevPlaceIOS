@@ -13,6 +13,7 @@ protocol DevPlaceApi {
     func createComment(targetType: TargetType, targetId: String, content: String, parentId: String?, attachments: [UploadResponse]) async throws
     func profile(username: String?) async throws -> Profile
     func notifications(before: Date?) async throws -> Notifications
+    func openNotification(uid: String) async throws -> NotificationOpen
     func notificationCounts() async throws -> NotificationCounts
     func markNotificationRead(uid: String) async throws
     func markAllNotificationsRead() async throws

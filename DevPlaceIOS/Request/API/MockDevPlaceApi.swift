@@ -79,6 +79,15 @@ final class MockDevPlaceApi: DevPlaceApi {
         return .mock
     }
 
+    func openNotification(uid: String) async throws -> NotificationOpen {
+        await mockDelay(0.2)
+        try await refreshTokenIfNeeded()
+        return NotificationOpen(
+            ok: true,
+            redirect: "/posts/a-post-with-several-attachments#comment-c6",
+        )
+    }
+
     func notificationCounts() async throws -> NotificationCounts {
         await mockDelay(0.2)
         try await refreshTokenIfNeeded()

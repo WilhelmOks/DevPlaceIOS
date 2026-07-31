@@ -62,16 +62,29 @@ extension NotificationsView {
             }
         }
 
-        func navigationTarget(for notification: DevPlaceSwiftSDK.Notification) -> NavigationTarget? {
-            guard let slug = postSlug(fromTargetUrl: notification.data.targetUrl) else {
+        func open(notification: DevPlaceSwiftSDK.Notification) async -> NavigationTarget? {
+            do {
+                let result = try await api.openNotification(uid: notification.data.id)
+                let target = navigationTarget(fromRedirect: result.redirect)
+                await load()
+                await refreshUnreadCount()
+                return target
+            } catch {
+                alertMessage = .presentedError(error)
                 return nil
             }
-            let scrollToCommentId = commentUid(for: notification).map { "comment:" + $0 }
+        }
+
+        private func navigationTarget(fromRedirect redirect: String) -> NavigationTarget? {
+            guard let slug = postSlug(from: redirect) else {
+                return nil
+            }
+            let scrollToCommentId = commentUid(from: redirect).map { "comment:" + $0 }
             return NavigationTarget(slug: slug, scrollToCommentId: scrollToCommentId)
         }
 
-        private func postSlug(fromTargetUrl targetUrl: String) -> String? {
-            guard let components = URLComponents(string: targetUrl) else { return nil }
+        private func postSlug(from url: String) -> String? {
+            guard let components = URLComponents(string: url) else { return nil }
             let segments = components.path.split(separator: "/").map(String.init)
             guard let postsIndex = segments.firstIndex(of: "posts"),
                   postsIndex + 1 < segments.count else {
@@ -80,15 +93,8 @@ extension NotificationsView {
             return segments[postsIndex + 1]
         }
 
-        private func commentUid(for notification: DevPlaceSwiftSDK.Notification) -> String? {
-            if let fromUrl = commentUid(fromTargetUrl: notification.data.targetUrl) {
-                return fromUrl
-            }
-            return isCommentNotification(notification) ? notification.data.relatedId : nil
-        }
-
-        private func commentUid(fromTargetUrl targetUrl: String) -> String? {
-            guard let components = URLComponents(string: targetUrl) else { return nil }
+        private func commentUid(from url: String) -> String? {
+            guard let components = URLComponents(string: url) else { return nil }
 
             if let fragment = components.fragment, let uid = commentUid(fromToken: fragment) {
                 return uid
@@ -115,15 +121,6 @@ extension NotificationsView {
                 return uid.isEmpty ? nil : uid
             }
             return nil
-        }
-
-        private func isCommentNotification(_ notification: DevPlaceSwiftSDK.Notification) -> Bool {
-            switch notification.data.type {
-            case .comment, .reply, .mention:
-                return true
-            case .vote, .none:
-                return false
-            }
         }
 
         func markRead(uid: String) async {

@@ -22,13 +22,6 @@ private struct NotificationsViewContent: View {
             .navigationDestination(item: $selectedPost) { target in
                 PostView(slug: target.slug, scrollToCommentId: target.scrollToCommentId)
             }
-            .onChange(of: selectedPost) { _, newValue in
-                if newValue == nil {
-                    Task {
-                        await viewModel.refreshUnreadCount()
-                    }
-                }
-            }
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button("Mark all read") {
@@ -97,11 +90,9 @@ private struct NotificationsViewContent: View {
                         NotificationRow(
                             notification: notification,
                             onSelect: {
-                                selectedPost = viewModel.navigationTarget(for: notification)
-                                /* navigating already marks as read, so this needs to be called only when there is no navigation.
                                 Task {
-                                    await viewModel.markRead(uid: notification.data.id)
-                                }*/
+                                    selectedPost = await viewModel.open(notification: notification)
+                                }
                             },
                         )
                         if notification.id != group.entries.last?.id {

@@ -12,11 +12,16 @@ struct NotificationsView: View {
 private struct NotificationsViewContent: View {
     @State var viewModel: NotificationsView.ViewModel
 
+    @State private var selectedPost: NotificationsView.NavigationTarget?
+
     var body: some View {
         content()
             .screenStyle(bgColor: .BG_2)
             .navigationTitle(Text("Notifications"))
             .alert($viewModel.alertMessage)
+            .navigationDestination(item: $selectedPost) { target in
+                PostView(slug: target.slug, scrollToCommentId: target.scrollToCommentId)
+            }
             .toolbar {
                 if viewModel.hasUnread {
                     ToolbarItem(placement: .primaryAction) {
@@ -87,9 +92,11 @@ private struct NotificationsViewContent: View {
                         NotificationRow(
                             notification: notification,
                             onSelect: {
+                                selectedPost = viewModel.navigationTarget(for: notification)
+                                /* testing if it marks as read without an explicit call:
                                 Task {
                                     await viewModel.markRead(uid: notification.data.id)
-                                }
+                                }*/
                             },
                         )
                         if notification.id != group.entries.last?.id {

@@ -3,6 +3,13 @@ import Observation
 import DevPlaceSwiftSDK
 
 extension NotificationsView {
+    struct NavigationTarget: Hashable, Identifiable {
+        let slug: String
+        let scrollToCommentId: String?
+
+        var id: Self { self }
+    }
+
     @Observable final class ViewModel {
         let api: DevPlaceApi
 
@@ -54,6 +61,66 @@ extension NotificationsView {
             } catch {
                 alertMessage = .presentedError(error)
             }
+        }
+
+        func navigationTarget(for notification: DevPlaceSwiftSDK.Notification) -> NavigationTarget? {
+            guard let slug = postSlug(fromTargetUrl: notification.data.targetUrl) else {
+                return nil
+            }
+            let scrollToCommentId = commentUid(for: notification).map { "comment:" + $0 }
+            return NavigationTarget(slug: slug, scrollToCommentId: scrollToCommentId)
+        }
+
+        private func postSlug(fromTargetUrl targetUrl: String) -> String? {
+            guard let components = URLComponents(string: targetUrl) else { return nil }
+            let segments = components.path.split(separator: "/").map(String.init)
+            guard let postsIndex = segments.firstIndex(of: "posts"),
+                  postsIndex + 1 < segments.count else {
+                return nil
+            }
+            return segments[postsIndex + 1]
+        }
+
+        private func commentUid(for notification: DevPlaceSwiftSDK.Notification) -> String? {
+            if let fromUrl = commentUid(fromTargetUrl: notification.data.targetUrl) {
+                return fromUrl
+            }
+            return isCommentNotification(notification) ? notification.data.relatedId : nil
+        }
+
+        private func commentUid(fromTargetUrl targetUrl: String) -> String? {
+            guard let components = URLComponents(string: targetUrl) else { return nil }
+
+            if let fragment = components.fragment, let uid = commentUid(fromToken: fragment) {
+                return uid
+            }
+
+            let commentQueryNames = ["comment", "comment_id", "commentId", "comment_uid"]
+            if let value = components.queryItems?.first(where: { commentQueryNames.contains($0.name) })?.value,
+               !value.isEmpty {
+                return value
+            }
+
+            let segments = components.path.split(separator: "/").map(String.init)
+            if let commentsIndex = segments.firstIndex(of: "comments"), commentsIndex + 1 < segments.count {
+                return segments[commentsIndex + 1]
+            }
+
+            return nil
+        }
+
+        private func commentUid(fromToken token: String) -> String? {
+            let prefixes = ["comment-", "comment_", "comment:", "comment"]
+            for prefix in prefixes where token.hasPrefix(prefix) {
+                let uid = String(token.dropFirst(prefix.count))
+                return uid.isEmpty ? nil : uid
+            }
+            return nil
+        }
+
+        private func isCommentNotification(_ notification: DevPlaceSwiftSDK.Notification) -> Bool {
+            let type = notification.data.type.lowercased()
+            return type.contains("comment") || type.contains("reply") || type.contains("mention")
         }
 
         func markRead(uid: String) async {

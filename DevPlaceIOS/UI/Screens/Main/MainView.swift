@@ -8,10 +8,34 @@ struct MainView: View {
     @State private var selectedTab: TabSelection = .postsFeed
     @State private var feedPost: PostDestination?
 
+    @State private var feedReselectSignal = false
+    @State private var notificationsReselectSignal = false
+
     private enum TabSelection {
         case postsFeed
         case notifications
         case settings
+    }
+
+    private var tabSelection: Binding<TabSelection> {
+        Binding(
+            get: { selectedTab },
+            set: { newValue in
+                if newValue == selectedTab {
+                    switch newValue {
+                    case .postsFeed:
+                        if feedPost == nil {
+                            feedReselectSignal.toggle()
+                        }
+                    case .notifications:
+                        notificationsReselectSignal.toggle()
+                    case .settings:
+                        break
+                    }
+                }
+                selectedTab = newValue
+            },
+        )
     }
 
     var body: some View {
@@ -19,10 +43,10 @@ struct MainView: View {
     }
 
     @ViewBuilder private func content() -> some View {
-        TabView(selection: $selectedTab) {
+        TabView(selection: tabSelection) {
             Tab(value: .postsFeed) {
                 NavigationStack {
-                    FeedView(selectedPost: $feedPost)
+                    FeedView(selectedPost: $feedPost, reselectSignal: feedReselectSignal)
                 }
             } label: {
                 Label {
@@ -35,6 +59,7 @@ struct MainView: View {
             Tab(value: .notifications) {
                 NavigationStack {
                     NotificationsView(
+                        reselectSignal: notificationsReselectSignal,
                         onOpenPost: { destination in
                             feedPost = destination
                             selectedTab = .postsFeed

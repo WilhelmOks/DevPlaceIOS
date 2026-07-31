@@ -4,17 +4,21 @@ import DevPlaceSwiftSDK
 struct NotificationsView: View {
     @Environment(\.api) var api
 
+    let reselectSignal: Bool
     let onOpenPost: (PostDestination) -> Void
 
     var body: some View {
-        NotificationsViewContent(viewModel: .init(api: api), onOpenPost: onOpenPost)
+        NotificationsViewContent(viewModel: .init(api: api), reselectSignal: reselectSignal, onOpenPost: onOpenPost)
     }
 }
 
 private struct NotificationsViewContent: View {
     @State var viewModel: NotificationsView.ViewModel
 
+    let reselectSignal: Bool
     let onOpenPost: (PostDestination) -> Void
+
+    @State private var isAtTop = true
 
     var body: some View {
         content()
@@ -32,6 +36,13 @@ private struct NotificationsViewContent: View {
             }
             .refreshable {
                 await viewModel.refresh()
+            }
+            .onChange(of: reselectSignal) {
+                if isAtTop {
+                    Task {
+                        await viewModel.refresh()
+                    }
+                }
             }
             .task {
                 await viewModel.load()
@@ -62,6 +73,11 @@ private struct NotificationsViewContent: View {
                 }
                 .padding()
             }
+        }
+        .onScrollGeometryChange(for: Bool.self) { geometry in
+            geometry.contentOffset.y <= geometry.contentInsets.top
+        } action: { _, newValue in
+            isAtTop = newValue
         }
     }
 
@@ -145,7 +161,7 @@ private struct NotificationRow: View {
 
 #Preview {
     NavigationStack {
-        NotificationsView(onOpenPost: { _ in })
+        NotificationsView(reselectSignal: false, onOpenPost: { _ in })
     }
     .environment(\.api, .mock)
 }

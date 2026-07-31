@@ -5,9 +5,10 @@ struct FeedView: View {
     @Environment(\.api) var api
     
     @Binding var selectedPost: PostDestination?
+    let reselectSignal: Bool
     
     var body: some View {
-        FeedViewContent(viewModel: .init(api: api), selectedPost: $selectedPost)
+        FeedViewContent(viewModel: .init(api: api), selectedPost: $selectedPost, reselectSignal: reselectSignal)
     }
 }
 
@@ -16,6 +17,9 @@ private struct FeedViewContent: View {
     let appState = AppState.shared
     
     @Binding var selectedPost: PostDestination?
+    let reselectSignal: Bool
+    
+    @State private var isAtTop = true
     
     enum SheetItem: Identifiable {
         case createPost
@@ -38,6 +42,13 @@ private struct FeedViewContent: View {
             .alert($viewModel.alertMessage)
             .refreshable {
                 await viewModel.refresh()
+            }
+            .onChange(of: reselectSignal) {
+                if isAtTop {
+                    Task {
+                        await viewModel.refresh()
+                    }
+                }
             }
             .navigationDestination(item: $selectedPost) { destination in
                 PostView(slug: destination.slug, scrollToCommentId: destination.scrollToCommentId)
@@ -79,6 +90,11 @@ private struct FeedViewContent: View {
             }
             .frame(maxWidth: .infinity)
         }
+        .onScrollGeometryChange(for: Bool.self) { geometry in
+            geometry.contentOffset.y <= geometry.contentInsets.top
+        } action: { _, newValue in
+            isAtTop = newValue
+        }
         .overlay(alignment: .bottomTrailing) {
             if !isComposing {
                 Button {
@@ -98,6 +114,6 @@ private struct FeedViewContent: View {
 #Preview {
     @Previewable @State var selectedPost: PostDestination?
     NavigationStack {
-        FeedView(selectedPost: $selectedPost)
+        FeedView(selectedPost: $selectedPost, reselectSignal: false)
     }
 }

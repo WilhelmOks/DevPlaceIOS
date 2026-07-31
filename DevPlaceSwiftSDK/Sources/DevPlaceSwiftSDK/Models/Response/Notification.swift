@@ -3,12 +3,12 @@ import Foundation
 public struct Notification: Hashable, Sendable, Identifiable {
     public var id: String { "notification:" + data.id }
     public let data: Data
-    public let actor: User
+    public let actor: User?
     //public let timeAgo: String // exists in API; format on demand from data.createdAt
 
     public init(
         data: Data,
-        actor: User,
+        actor: User?,
     ) {
         self.data = data
         self.actor = actor
@@ -48,7 +48,7 @@ public extension Notification {
 extension Notification {
     struct CodingData: Decodable {
         let notification: Data.CodingData
-        let actor: User.CodingData
+        let actor: User.CodingData?
         //let time_ago: String // not needed because it is formatted on demand from created_at
     }
 }
@@ -69,7 +69,7 @@ extension Notification.CodingData {
     var decoded: Notification {
         .init(
             data: notification.decoded,
-            actor: actor.decoded,
+            actor: actor?.decoded,
         )
     }
 }

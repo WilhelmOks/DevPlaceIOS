@@ -129,6 +129,30 @@ final class ProdDevPlaceApi: DevPlaceApi {
         try await request.deleteAttachment(uid: uid, token: token)
     }
     
+    func notifications(before: Date?) async throws -> Notifications {
+        guard let token = AppState.shared.token else {
+            throw DevPlaceError.notLoggedIn
+        }
+        try await refreshTokenIfNeeded()
+        return try await request.getNotifications(before: before, token: token)
+    }
+
+    func markNotificationRead(uid: String) async throws {
+        guard let token = AppState.shared.token else {
+            throw DevPlaceError.notLoggedIn
+        }
+        try await refreshTokenIfNeeded()
+        try await request.markNotificationRead(uid: uid, token: token)
+    }
+
+    func markAllNotificationsRead() async throws {
+        guard let token = AppState.shared.token else {
+            throw DevPlaceError.notLoggedIn
+        }
+        try await refreshTokenIfNeeded()
+        try await request.markAllNotificationsRead(token: token)
+    }
+
     func profile(username: String?) async throws -> Profile {
         try await refreshTokenIfNeeded()
         if let username {

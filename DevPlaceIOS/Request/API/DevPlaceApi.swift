@@ -12,6 +12,9 @@ protocol DevPlaceApi {
     func editComment(uid: String, content: String) async throws
     func createComment(targetType: TargetType, targetId: String, content: String, parentId: String?, attachments: [UploadResponse]) async throws
     func profile(username: String?) async throws -> Profile
+    func notifications(before: Date?) async throws -> Notifications
+    func markNotificationRead(uid: String) async throws
+    func markAllNotificationsRead() async throws
     func vote(targetType: TargetType, targetId: String, vote: Vote) async throws
     func submitPollChoice(pollId: String, optionId: String) async throws
     func react(targetType: TargetType, targetId: String, emoji: String) async throws
@@ -23,6 +26,10 @@ protocol DevPlaceApi {
 extension DevPlaceApi {
     func feed() async throws -> Feed {
         try await feed(before: nil)
+    }
+
+    func notifications() async throws -> Notifications {
+        try await notifications(before: nil)
     }
     
     private func logInWithStoredCredentials() async throws {

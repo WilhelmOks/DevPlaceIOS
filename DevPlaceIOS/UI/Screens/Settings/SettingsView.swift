@@ -79,7 +79,7 @@ private struct SettingsViewContent: View {
             }
             .listRowBackground(Color.BG_1)
             
-            Section(header: Text("Feed")) {
+            Section(header: Text("Posts Feed")) {
                 Toggle(isOn: $appSettings.showFeedAttachments) {
                     Label {
                         Text("Show one attachment per post")

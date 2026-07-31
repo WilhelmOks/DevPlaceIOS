@@ -39,7 +39,7 @@ private struct FeedViewContent: View {
     var body: some View {
         content()
             .screenStyle(bgColor: .BG_2)
-            .navigationTitle(Text("Feed"))
+            .navigationTitle(Text("Posts"))
             .alert($viewModel.alertMessage)
             .refreshable {
                 await viewModel.refresh()

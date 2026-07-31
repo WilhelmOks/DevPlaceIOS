@@ -5,10 +5,10 @@ struct MainView: View {
 
     private let appState = AppState.shared
 
-    @State private var selectedTab: TabSelection = .feed
+    @State private var selectedTab: TabSelection = .postsFeed
 
     private enum TabSelection {
-        case feed
+        case postsFeed
         case notifications
         case settings
     }
@@ -19,13 +19,13 @@ struct MainView: View {
 
     @ViewBuilder private func content() -> some View {
         TabView(selection: $selectedTab) {
-            Tab(value: .feed) {
+            Tab(value: .postsFeed) {
                 NavigationStack {
                     FeedView()
                 }
             } label: {
                 Label {
-                    Text("Feed")
+                    Text("Posts")
                 } icon: {
                     Image(systemName: "list.bullet.rectangle")
                 }
@@ -57,7 +57,7 @@ struct MainView: View {
             }
         }
         .onChange(of: selectedTab) { _, newValue in
-            guard newValue == .feed || newValue == .notifications else { return }
+            guard newValue == .postsFeed || newValue == .notifications else { return }
             Task {
                 await appState.loadUnreadNotificationCount(api: api)
             }

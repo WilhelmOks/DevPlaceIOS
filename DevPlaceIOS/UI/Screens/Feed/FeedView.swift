@@ -4,8 +4,10 @@ import DevPlaceSwiftSDK
 struct FeedView: View {
     @Environment(\.api) var api
     
+    @Binding var selectedPost: PostDestination?
+    
     var body: some View {
-        FeedViewContent(viewModel: .init(api: api))
+        FeedViewContent(viewModel: .init(api: api), selectedPost: $selectedPost)
     }
 }
 
@@ -13,14 +15,7 @@ private struct FeedViewContent: View {
     @State var viewModel: FeedView.ViewModel
     let appState = AppState.shared
     
-    @State private var selectedPost: PostDestination?
-    
-    struct PostDestination: Hashable, Identifiable {
-        let slug: String
-        let scrollToCommentId: String?
-        
-        var id: Self { self }
-    }
+    @Binding var selectedPost: PostDestination?
     
     enum SheetItem: Identifiable {
         case createPost
@@ -101,7 +96,8 @@ private struct FeedViewContent: View {
 }
 
 #Preview {
+    @Previewable @State var selectedPost: PostDestination?
     NavigationStack {
-        FeedView()
+        FeedView(selectedPost: $selectedPost)
     }
 }

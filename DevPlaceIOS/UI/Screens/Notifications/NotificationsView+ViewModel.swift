@@ -3,13 +3,6 @@ import Observation
 import DevPlaceSwiftSDK
 
 extension NotificationsView {
-    struct NavigationTarget: Hashable, Identifiable {
-        let slug: String
-        let scrollToCommentId: String?
-
-        var id: Self { self }
-    }
-
     @Observable final class ViewModel {
         let api: DevPlaceApi
 
@@ -62,25 +55,25 @@ extension NotificationsView {
             }
         }
 
-        func open(notification: DevPlaceSwiftSDK.Notification) async -> NavigationTarget? {
+        func open(notification: DevPlaceSwiftSDK.Notification) async -> PostDestination? {
             do {
                 let result = try await api.openNotification(uid: notification.data.id)
-                let target = navigationTarget(fromRedirect: result.redirect)
+                let destination = postDestination(fromRedirect: result.redirect)
                 await load()
                 await refreshUnreadCount()
-                return target
+                return destination
             } catch {
                 alertMessage = .presentedError(error)
                 return nil
             }
         }
 
-        private func navigationTarget(fromRedirect redirect: String) -> NavigationTarget? {
+        private func postDestination(fromRedirect redirect: String) -> PostDestination? {
             guard let slug = postSlug(from: redirect) else {
                 return nil
             }
             let scrollToCommentId = commentUid(from: redirect).map { "comment:" + $0 }
-            return NavigationTarget(slug: slug, scrollToCommentId: scrollToCommentId)
+            return PostDestination(slug: slug, scrollToCommentId: scrollToCommentId)
         }
 
         private func postSlug(from url: String) -> String? {

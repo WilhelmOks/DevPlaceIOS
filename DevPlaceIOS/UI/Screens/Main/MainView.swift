@@ -6,6 +6,7 @@ struct MainView: View {
     private let appState = AppState.shared
 
     @State private var selectedTab: TabSelection = .postsFeed
+    @State private var feedPost: PostDestination?
 
     private enum TabSelection {
         case postsFeed
@@ -21,7 +22,7 @@ struct MainView: View {
         TabView(selection: $selectedTab) {
             Tab(value: .postsFeed) {
                 NavigationStack {
-                    FeedView()
+                    FeedView(selectedPost: $feedPost)
                 }
             } label: {
                 Label {
@@ -33,7 +34,12 @@ struct MainView: View {
 
             Tab(value: .notifications) {
                 NavigationStack {
-                    NotificationsView()
+                    NotificationsView(
+                        onOpenPost: { destination in
+                            feedPost = destination
+                            selectedTab = .postsFeed
+                        },
+                    )
                 }
             } label: {
                 Label {

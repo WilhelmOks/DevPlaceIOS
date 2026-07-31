@@ -4,24 +4,23 @@ import DevPlaceSwiftSDK
 struct NotificationsView: View {
     @Environment(\.api) var api
 
+    let onOpenPost: (PostDestination) -> Void
+
     var body: some View {
-        NotificationsViewContent(viewModel: .init(api: api))
+        NotificationsViewContent(viewModel: .init(api: api), onOpenPost: onOpenPost)
     }
 }
 
 private struct NotificationsViewContent: View {
     @State var viewModel: NotificationsView.ViewModel
 
-    @State private var selectedPost: NotificationsView.NavigationTarget?
+    let onOpenPost: (PostDestination) -> Void
 
     var body: some View {
         content()
             .screenStyle(bgColor: .BG_2)
             .navigationTitle(Text("Notifications"))
             .alert($viewModel.alertMessage)
-            .navigationDestination(item: $selectedPost) { target in
-                PostView(slug: target.slug, scrollToCommentId: target.scrollToCommentId)
-            }
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button("Mark all read") {
@@ -91,7 +90,9 @@ private struct NotificationsViewContent: View {
                             notification: notification,
                             onSelect: {
                                 Task {
-                                    selectedPost = await viewModel.open(notification: notification)
+                                    if let destination = await viewModel.open(notification: notification) {
+                                        onOpenPost(destination)
+                                    }
                                 }
                             },
                         )
@@ -144,7 +145,7 @@ private struct NotificationRow: View {
 
 #Preview {
     NavigationStack {
-        NotificationsView()
+        NotificationsView(onOpenPost: { _ in })
     }
     .environment(\.api, .mock)
 }

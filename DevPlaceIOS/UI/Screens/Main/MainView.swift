@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct MainView: View {
+    private let appState = AppState.shared
+
     var body: some View {
         content()
     }
@@ -30,6 +32,7 @@ struct MainView: View {
                     Image(systemName: "bell")
                 }
             }
+            .badge(appState.unreadNotificationCount)
 
             Tab {
                 NavigationStack {

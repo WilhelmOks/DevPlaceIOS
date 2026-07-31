@@ -86,14 +86,14 @@ private struct NotificationsViewContent: View {
                 .font(.headline)
                 .foregroundStyle(Color.FG_2)
 
-            BoxView(paddingSize: .none) {
+            BoxView(backgroundColor: .BG_1, paddingSize: .none) {
                 VStack(spacing: 0) {
                     ForEach(group.entries) { notification in
                         NotificationRow(
                             notification: notification,
                             onSelect: {
                                 selectedPost = viewModel.navigationTarget(for: notification)
-                                /* testing if it marks as read without an explicit call:
+                                /* navigating already marks as read, so this needs to be called only when there is no navigation.
                                 Task {
                                     await viewModel.markRead(uid: notification.data.id)
                                 }*/

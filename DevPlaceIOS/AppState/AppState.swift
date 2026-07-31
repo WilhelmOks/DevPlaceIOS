@@ -16,7 +16,9 @@ final class AppState {
     var currentUser: User?
     
     var feed: Feed?
-    
+
+    var unreadNotificationCount = 0
+
     func isCurrentUser(id: String) -> Bool {
         currentUser?.id == id
     }
@@ -52,5 +54,6 @@ final class AppState {
     func clear() {
         feed = nil
         currentUser = nil
+        unreadNotificationCount = 0
     }
 }

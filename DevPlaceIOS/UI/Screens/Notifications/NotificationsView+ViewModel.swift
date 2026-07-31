@@ -13,7 +13,14 @@ extension NotificationsView {
     @Observable final class ViewModel {
         let api: DevPlaceApi
 
-        var notifications: Notifications?
+        var notifications: Notifications? {
+            didSet {
+                let count = unreadCount
+                Task { @MainActor in
+                    AppState.shared.unreadNotificationCount = count
+                }
+            }
+        }
         var alertMessage: AlertMessage = .none()
         var isLoadingMore = false
 
@@ -25,10 +32,14 @@ extension NotificationsView {
             notifications?.groups ?? []
         }
 
-        var hasUnread: Bool {
-            groups.contains { group in
-                group.entries.contains { !$0.data.read }
+        var unreadCount: Int {
+            groups.reduce(0) { total, group in
+                total + group.entries.filter { !$0.data.read }.count
             }
+        }
+
+        var hasUnread: Bool {
+            unreadCount > 0
         }
 
         func load() async {
@@ -156,7 +167,30 @@ extension NotificationsView {
                     groups.append(group)
                 }
             }
-            return Notifications(groups: groups, nextCursor: older.nextCursor)
+            return deduplicated(Notifications(groups: groups, nextCursor: older.nextCursor))
+        }
+
+        private func deduplicated(_ notifications: Notifications) -> Notifications {
+            var seenIds: Set<String> = []
+            var duplicateIds: [String] = []
+            let groups = notifications.groups.map { group in
+                let uniqueEntries = group.entries.filter { entry in
+                    let id = entry.data.id
+                    guard seenIds.insert(id).inserted else {
+                        duplicateIds.append(id)
+                        return false
+                    }
+                    return true
+                }
+                return NotificationGroup(label: group.label, entries: uniqueEntries)
+            }
+            if !duplicateIds.isEmpty {
+                dlog("Dropped duplicate notification IDs while loading more (backend pagination bug — report to backend team): \(duplicateIds.joined(separator: ", "))")
+            }
+            return Notifications(
+                groups: groups.filter { !$0.entries.isEmpty },
+                nextCursor: notifications.nextCursor,
+            )
         }
 
         private func applyingRead(uids: Set<String>) -> Notifications? {

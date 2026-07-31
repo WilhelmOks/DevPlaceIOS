@@ -22,13 +22,18 @@ private struct NotificationsViewContent: View {
             .navigationDestination(item: $selectedPost) { target in
                 PostView(slug: target.slug, scrollToCommentId: target.scrollToCommentId)
             }
+            .onChange(of: selectedPost) { _, newValue in
+                if newValue == nil {
+                    Task {
+                        await viewModel.refreshUnreadCount()
+                    }
+                }
+            }
             .toolbar {
-                if viewModel.hasUnread {
-                    ToolbarItem(placement: .primaryAction) {
-                        Button("Mark all read") {
-                            Task {
-                                await viewModel.markAllRead()
-                            }
+                ToolbarItem(placement: .primaryAction) {
+                    Button("Mark all read") {
+                        Task {
+                            await viewModel.markAllRead()
                         }
                     }
                 }

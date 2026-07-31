@@ -471,6 +471,12 @@ public extension DevPlaceRequest {
         return response.decoded
     }
 
+    func getNotificationCounts(token: AuthToken) async throws -> NotificationCounts {
+        let config = makeConfig(.get, path: "notifications/counts", token: token)
+        let response: NotificationCounts.CodingData = try await request.requestJson(config: config, apiError: ApiError.self)
+        return response.decoded
+    }
+
     func markNotificationRead(uid: String, token: AuthToken) async throws {
         let config = makeConfig(.post, path: "notifications/mark-read/\(uid)", token: token)
         try await request.requestJson(config: config, apiError: ApiError.self)

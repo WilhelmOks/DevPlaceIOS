@@ -137,6 +137,14 @@ final class ProdDevPlaceApi: DevPlaceApi {
         return try await request.getNotifications(before: before, token: token)
     }
 
+    func notificationCounts() async throws -> NotificationCounts {
+        guard let token = AppState.shared.token else {
+            throw DevPlaceError.notLoggedIn
+        }
+        try await refreshTokenIfNeeded()
+        return try await request.getNotificationCounts(token: token)
+    }
+
     func markNotificationRead(uid: String) async throws {
         guard let token = AppState.shared.token else {
             throw DevPlaceError.notLoggedIn

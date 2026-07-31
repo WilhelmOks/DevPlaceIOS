@@ -13,14 +13,7 @@ extension NotificationsView {
     @Observable final class ViewModel {
         let api: DevPlaceApi
 
-        var notifications: Notifications? {
-            didSet {
-                let count = unreadCount
-                Task { @MainActor in
-                    AppState.shared.unreadNotificationCount = count
-                }
-            }
-        }
+        var notifications: Notifications?
         var alertMessage: AlertMessage = .none()
         var isLoadingMore = false
 
@@ -30,16 +23,6 @@ extension NotificationsView {
 
         var groups: [NotificationGroup] {
             notifications?.groups ?? []
-        }
-
-        var unreadCount: Int {
-            groups.reduce(0) { total, group in
-                total + group.entries.filter { !$0.data.read }.count
-            }
-        }
-
-        var hasUnread: Bool {
-            unreadCount > 0
         }
 
         func load() async {
@@ -53,9 +36,14 @@ extension NotificationsView {
         func refresh() async {
             do {
                 notifications = try await api.notifications()
+                await refreshUnreadCount()
             } catch {
                 alertMessage = .presentedError(error)
             }
+        }
+
+        func refreshUnreadCount() async {
+            await AppState.shared.loadUnreadNotificationCount(api: api)
         }
 
         func loadMore() async {
@@ -138,6 +126,7 @@ extension NotificationsView {
             notifications = applyingRead(uids: [uid])
             do {
                 try await api.markNotificationRead(uid: uid)
+                await refreshUnreadCount()
             } catch {
                 alertMessage = .presentedError(error)
                 await load()
@@ -149,6 +138,7 @@ extension NotificationsView {
             notifications = applyingRead(uids: allUids)
             do {
                 try await api.markAllNotificationsRead()
+                await refreshUnreadCount()
             } catch {
                 alertMessage = .presentedError(error)
                 await load()

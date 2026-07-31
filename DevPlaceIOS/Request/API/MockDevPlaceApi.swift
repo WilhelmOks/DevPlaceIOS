@@ -79,6 +79,12 @@ final class MockDevPlaceApi: DevPlaceApi {
         return .mock
     }
 
+    func notificationCounts() async throws -> NotificationCounts {
+        await mockDelay(0.2)
+        try await refreshTokenIfNeeded()
+        return NotificationCounts(notifications: 3, messages: 1)
+    }
+
     func markNotificationRead(uid: String) async throws {
         await mockDelay(0.2)
         try await refreshTokenIfNeeded()

@@ -25,6 +25,15 @@ final class AppState {
     
     func loadFeed(api: DevPlaceApi) async throws {
         AppState.shared.feed = try await api.feed()
+        await loadUnreadNotificationCount(api: api)
+    }
+
+    func loadUnreadNotificationCount(api: DevPlaceApi) async {
+        do {
+            unreadNotificationCount = try await api.notificationCounts().notifications
+        } catch {
+            dlog("Failed to load unread notification count: \(error)")
+        }
     }
     
     func loadMoreFeed(api: DevPlaceApi) async throws {

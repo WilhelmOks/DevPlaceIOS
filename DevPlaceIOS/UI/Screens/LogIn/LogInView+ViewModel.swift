@@ -40,7 +40,8 @@ extension LogInView {
                     defer { isLoading = false }
                     
                     try await api.logIn(email: email, password: password)
-                    
+                    await AppState.shared.loadUnreadNotificationCount(api: api)
+
                     dismiss.send()
                 } catch {
                     alertMessage = .presentedError(error)

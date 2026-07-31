@@ -1,15 +1,25 @@
 import SwiftUI
 
 struct MainView: View {
+    @Environment(\.api) private var api
+
     private let appState = AppState.shared
+
+    @State private var selectedTab: TabSelection = .feed
+
+    private enum TabSelection {
+        case feed
+        case notifications
+        case settings
+    }
 
     var body: some View {
         content()
     }
-    
+
     @ViewBuilder private func content() -> some View {
-        TabView {
-            Tab {
+        TabView(selection: $selectedTab) {
+            Tab(value: .feed) {
                 NavigationStack {
                     FeedView()
                 }
@@ -20,8 +30,8 @@ struct MainView: View {
                     Image(systemName: "list.bullet.rectangle")
                 }
             }
-            
-            Tab {
+
+            Tab(value: .notifications) {
                 NavigationStack {
                     NotificationsView()
                 }
@@ -34,7 +44,7 @@ struct MainView: View {
             }
             .badge(appState.unreadNotificationCount)
 
-            Tab {
+            Tab(value: .settings) {
                 NavigationStack {
                     SettingsView()
                 }
@@ -44,6 +54,12 @@ struct MainView: View {
                 } icon: {
                     Image(systemName: "gear")
                 }
+            }
+        }
+        .onChange(of: selectedTab) { _, newValue in
+            guard newValue == .feed || newValue == .notifications else { return }
+            Task {
+                await appState.loadUnreadNotificationCount(api: api)
             }
         }
     }

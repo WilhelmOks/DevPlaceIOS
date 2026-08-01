@@ -62,8 +62,8 @@ private struct ConversationViewContent: View {
                 }
             )
             .onScrollGeometryChange(for: Bool.self) { geometry in
-                let visibleBottom = geometry.contentOffset.y + geometry.containerSize.height - geometry.contentInsets.bottom
-                return visibleBottom >= geometry.contentSize.height - 4
+                let visibleBottom = geometry.contentOffset.y + geometry.containerSize.height + geometry.contentInsets.bottom
+                return visibleBottom >= geometry.contentSize.height - 8
             } action: { _, newValue in
                 isAtBottom = newValue
             }
@@ -121,6 +121,7 @@ private struct ConversationViewContent: View {
                 minCount: viewModel.minCharacterCount,
                 maxCount: DevPlaceConstants.maxDirectMessageLength,
             )
+            .padding(.horizontal, 10)
 
             AttachmentUploaderView(
                 attachments: viewModel.attachments,
@@ -129,7 +130,8 @@ private struct ConversationViewContent: View {
             .id(attachmentsResetToken)
             .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .padding()
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
         .background {
             Color.BG_1.ignoresSafeArea()
         }

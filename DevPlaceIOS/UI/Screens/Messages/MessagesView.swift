@@ -16,6 +16,9 @@ private struct MessagesViewContent: View {
         content()
             .screenStyle(bgColor: .BG_2)
             .navigationTitle(Text("Messages"))
+            .navigationDestination(for: User.self) { otherUser in
+                ConversationView(otherUser: otherUser)
+            }
             .alert($viewModel.alertMessage)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -41,9 +44,7 @@ private struct MessagesViewContent: View {
                     BoxView(backgroundColor: .BG_1, paddingSize: .none) {
                         VStack(spacing: 0) {
                             ForEach(viewModel.conversations, id: \.otherUser.id) { conversation in
-                                NavigationLink {
-                                    ConversationView(otherUser: conversation.otherUser)
-                                } label: {
+                                NavigationLink(value: conversation.otherUser) {
                                     ConversationRow(conversation: conversation)
                                 }
                                 .buttonStyle(.plain)

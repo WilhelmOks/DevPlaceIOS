@@ -1,4 +1,5 @@
 import SwiftUI
+import DevPlaceSwiftSDK
 
 struct MainView: View {
     @Environment(\.api) private var api
@@ -8,6 +9,7 @@ struct MainView: View {
 
     @State private var selectedTab: TabSelection = .postsFeed
     @State private var feedPost: PostDestination?
+    @State private var messagesPath: [User] = []
 
     @State private var feedReselectSignal = false
     @State private var notificationsReselectSignal = false
@@ -61,7 +63,7 @@ struct MainView: View {
             }
 
             Tab(value: .messages) {
-                NavigationStack {
+                NavigationStack(path: $messagesPath) {
                     MessagesView()
                 }
             } label: {
@@ -80,6 +82,10 @@ struct MainView: View {
                         onOpenPost: { destination in
                             feedPost = destination
                             selectedTab = .postsFeed
+                        },
+                        onOpenConversation: { otherUser in
+                            messagesPath = [otherUser]
+                            selectedTab = .messages
                         },
                     )
                 }

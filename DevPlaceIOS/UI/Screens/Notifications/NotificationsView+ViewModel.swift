@@ -55,17 +55,27 @@ extension NotificationsView {
             }
         }
 
-        func open(notification: DevPlaceSwiftSDK.Notification) async -> PostDestination? {
+        func open(notification: DevPlaceSwiftSDK.Notification) async -> NotificationRoute? {
             do {
                 let result = try await api.openNotification(uid: notification.data.id)
-                let destination = postDestination(fromRedirect: result.redirect)
+                let route = route(for: notification, redirect: result.redirect)
                 await load()
                 await refreshUnreadCount()
-                return destination
+                return route
             } catch {
                 alertMessage = .presentedError(error)
                 return nil
             }
+        }
+
+        private func route(for notification: DevPlaceSwiftSDK.Notification, redirect: String) -> NotificationRoute? {
+            if notification.data.type == .message, let otherUser = notification.actor {
+                return .conversation(otherUser)
+            }
+            if let destination = postDestination(fromRedirect: redirect) {
+                return .post(destination)
+            }
+            return nil
         }
 
         private func postDestination(fromRedirect redirect: String) -> PostDestination? {

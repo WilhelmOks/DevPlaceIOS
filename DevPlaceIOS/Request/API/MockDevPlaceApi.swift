@@ -93,9 +93,13 @@ final class MockDevPlaceApi: DevPlaceApi {
     func openNotification(uid: String) async throws -> NotificationOpen {
         await mockDelay(0.2)
         try await refreshTokenIfNeeded()
+        let targetUrl = Notifications.mock.groups
+            .flatMap(\.entries)
+            .first { $0.data.id == uid }?
+            .data.targetUrl
         return NotificationOpen(
             ok: true,
-            redirect: "/posts/a-post-with-several-attachments#comment-c6",
+            redirect: targetUrl ?? "/posts/a-post-with-several-attachments#comment-c6",
         )
     }
 

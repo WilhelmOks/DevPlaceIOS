@@ -6,9 +6,15 @@ struct NotificationsView: View {
 
     let reselectSignal: Bool
     let onOpenPost: (PostDestination) -> Void
+    let onOpenConversation: (User) -> Void
 
     var body: some View {
-        NotificationsViewContent(viewModel: .init(api: api), reselectSignal: reselectSignal, onOpenPost: onOpenPost)
+        NotificationsViewContent(
+            viewModel: .init(api: api),
+            reselectSignal: reselectSignal,
+            onOpenPost: onOpenPost,
+            onOpenConversation: onOpenConversation,
+        )
     }
 }
 
@@ -17,6 +23,7 @@ private struct NotificationsViewContent: View {
 
     let reselectSignal: Bool
     let onOpenPost: (PostDestination) -> Void
+    let onOpenConversation: (User) -> Void
 
     @Environment(\.scenePhase) private var scenePhase
 
@@ -114,8 +121,13 @@ private struct NotificationsViewContent: View {
                             notification: notification,
                             onSelect: {
                                 Task {
-                                    if let destination = await viewModel.open(notification: notification) {
+                                    switch await viewModel.open(notification: notification) {
+                                    case .post(let destination):
                                         onOpenPost(destination)
+                                    case .conversation(let otherUser):
+                                        onOpenConversation(otherUser)
+                                    case nil:
+                                        break
                                     }
                                 }
                             },
@@ -169,7 +181,7 @@ private struct NotificationRow: View {
 
 #Preview {
     NavigationStack {
-        NotificationsView(reselectSignal: false, onOpenPost: { _ in })
+        NotificationsView(reselectSignal: false, onOpenPost: { _ in }, onOpenConversation: { _ in })
     }
     .environment(\.api, .mock)
 }

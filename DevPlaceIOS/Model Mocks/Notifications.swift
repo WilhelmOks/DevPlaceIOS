@@ -10,6 +10,18 @@ extension Notifications {
                     entries: [
                         .init(
                             data: .init(
+                                id: "n0",
+                                type: .message,
+                                message: "null_void sent you a message",
+                                read: false,
+                                relatedId: "u2",
+                                targetUrl: "/messages?with_uid=u2",
+                                createdAt: Date().addingTimeInterval(-60 * 3),
+                            ),
+                            actor: .mock2,
+                        ),
+                        .init(
+                            data: .init(
                                 id: "n1",
                                 type: nil,
                                 message: "null_void reacted 🎉 to your post \"Shipping the new build system\"",

@@ -16,7 +16,9 @@ private struct ConversationViewContent: View {
 
     @State private var isAtBottom = true
 
-    private let bottomAnchorId = "conversation-bottom"
+    @FocusState private var isInputFocused: Bool
+
+    @State private var attachmentsResetToken = 0
 
     var body: some View {
         content()
@@ -48,15 +50,20 @@ private struct ConversationViewContent: View {
                         MessageBubbleView(message: message)
                             .id(message.id)
                     }
-
-                    Color.clear
-                        .frame(height: 1)
-                        .id(bottomAnchorId)
                 }
-                .padding()
+                .padding(.horizontal)
+                .padding(.top)
+                .padding(.bottom, 12)
             }
+            .defaultScrollAnchor(.bottom)
+            .simultaneousGesture(
+                TapGesture().onEnded {
+                    isInputFocused = false
+                }
+            )
             .onScrollGeometryChange(for: Bool.self) { geometry in
-                geometry.contentOffset.y + geometry.containerSize.height >= geometry.contentSize.height - 24
+                let visibleBottom = geometry.contentOffset.y + geometry.containerSize.height - geometry.contentInsets.bottom
+                return visibleBottom >= geometry.contentSize.height - 4
             } action: { _, newValue in
                 isAtBottom = newValue
             }
@@ -73,15 +80,15 @@ private struct ConversationViewContent: View {
     }
 
     private func scrollToBottom(_ proxy: ScrollViewProxy, animated: Bool) {
-        guard !viewModel.messages.isEmpty else { return }
+        guard let lastId = viewModel.messages.last?.id else { return }
         Task {
             try? await Task.sleep(for: .milliseconds(50))
             if animated {
                 withAnimation {
-                    proxy.scrollTo(bottomAnchorId, anchor: .bottom)
+                    proxy.scrollTo(lastId, anchor: .bottom)
                 }
             } else {
-                proxy.scrollTo(bottomAnchorId, anchor: .bottom)
+                proxy.scrollTo(lastId, anchor: .bottom)
             }
         }
     }
@@ -99,30 +106,28 @@ private struct ConversationViewContent: View {
     }
 
     @ViewBuilder private func composer() -> some View {
-        VStack(spacing: 8) {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(alignment: .bottom, spacing: 8) {
+                TextField("Type a message…", text: $viewModel.draft, axis: .vertical)
+                    .lineLimit(1...6)
+                    .textFieldStyle(.devPlace)
+                    .focused($isInputFocused)
+
+                sendButton()
+            }
+
+            CharacterCounterView(
+                text: viewModel.draft,
+                minCount: viewModel.minCharacterCount,
+                maxCount: DevPlaceConstants.maxDirectMessageLength,
+            )
+
             AttachmentUploaderView(
                 attachments: viewModel.attachments,
                 onAttachmentsChange: { viewModel.attachments = $0 },
             )
-
-            DevPlaceTextEditor(
-                text: $viewModel.draft,
-                placeholder: "Type a message…",
-                initialLineCount: 1,
-                animatesHeightChanges: true,
-            )
-
-            HStack(alignment: .center, spacing: 12) {
-                CharacterCounterView(
-                    text: viewModel.draft,
-                    minCount: viewModel.minCharacterCount,
-                    maxCount: DevPlaceConstants.maxDirectMessageLength,
-                )
-
-                Spacer(minLength: 0)
-
-                sendButton()
-            }
+            .id(attachmentsResetToken)
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
         .padding()
         .background {
@@ -135,17 +140,22 @@ private struct ConversationViewContent: View {
 
     @ViewBuilder private func sendButton() -> some View {
         Button {
-            Task { await viewModel.send() }
+            Task {
+                if await viewModel.send() {
+                    attachmentsResetToken += 1
+                }
+            }
         } label: {
             if viewModel.isSending {
                 ProgressView()
             } else {
-                Label("Send message", systemImage: "arrow.up")
+                Label("Send message", systemImage: "paperplane.fill")
                     .labelStyle(.iconOnly)
             }
         }
         .buttonStyle(.accentGradient(shape: .circle))
         .disabled(!viewModel.canSend)
+        .opacity(viewModel.canSend ? 1 : 0.4)
     }
 
     @ViewBuilder private func reloadToolbarItem() -> some View {

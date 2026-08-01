@@ -102,9 +102,15 @@ private struct ConversationRow: View {
 
                     Spacer(minLength: 8)
 
-                    Text(conversation.lastMessageAt)
-                        .font(.caption)
-                        .foregroundStyle(Color.FG_2)
+                    Group {
+                        if let date = conversation.lastMessageDate {
+                            Text(date, format: .relative(presentation: .named, unitsStyle: .wide))
+                        } else {
+                            Text(conversation.lastMessageAt)
+                        }
+                    }
+                    .font(.caption)
+                    .foregroundStyle(Color.FG_2)
                 }
 
                 Text(conversation.lastMessage)
@@ -124,6 +130,25 @@ private struct ConversationRow: View {
         .padding(12)
         .background(conversation.unread ? Color.accentColor.opacity(0.08) : Color.clear)
         .contentShape(Rectangle())
+    }
+}
+
+private extension Conversation {
+    static let isoParsers: [ISO8601DateFormatter] = {
+        let fractional = ISO8601DateFormatter()
+        fractional.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        let standard = ISO8601DateFormatter()
+        standard.formatOptions = [.withInternetDateTime]
+        return [fractional, standard]
+    }()
+
+    var lastMessageDate: Date? {
+        for parser in Self.isoParsers {
+            if let date = parser.date(from: lastMessageAt) {
+                return date
+            }
+        }
+        return nil
     }
 }
 

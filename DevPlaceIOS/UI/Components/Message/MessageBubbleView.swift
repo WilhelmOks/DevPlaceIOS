@@ -7,7 +7,6 @@ struct MessageBubbleView: View {
 
     @Environment(\.colorScheme) private var colorScheme
 
-    private let minBubbleWidth: CGFloat = 180
     private let maxBubbleWidth: CGFloat = 320
     private let cornerRadius: CGFloat = 16
 
@@ -41,17 +40,15 @@ struct MessageBubbleView: View {
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
-        .frame(minWidth: minBubbleWidth, maxWidth: maxBubbleWidth, alignment: .leading)
+        .frame(maxWidth: maxBubbleWidth, alignment: .leading)
         .foregroundStyle(Color.FG_1)
         .background(bubbleColor)
         .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
     }
 
     @ViewBuilder private func footer() -> some View {
-        HStack(spacing: 8) {
+        HStack(spacing: 6) {
             RelativeTimeLabel(date: message.data.createdAt)
-
-            Spacer(minLength: 8)
 
             if message.isMine {
                 DoubleCheckmark(read: message.data.read)
@@ -64,8 +61,8 @@ struct MessageBubbleView: View {
             return .BG_1
         }
         return colorScheme == .dark
-            ? Color(white: 0.12)
-            : Color(white: 1.0)
+            ? Color.accentColor.mix(with: .black, by: 0.55)
+            : Color.accentColor.mix(with: .white, by: 0.6)
     }
 }
 

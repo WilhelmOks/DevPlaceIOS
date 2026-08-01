@@ -54,8 +54,8 @@ extension ConversationView {
             }
         }
 
-        func send() async {
-            guard canSend else { return }
+        func send() async -> Bool {
+            guard canSend else { return false }
             let content = draft
             let attachmentsToSend = attachments
             isSending = true
@@ -67,8 +67,10 @@ extension ConversationView {
                 try? await Task.sleep(for: .milliseconds(500))
                 inbox = try await api.messages(withUid: otherUser.id)
                 await AppState.shared.loadUnreadCounts(api: api)
+                return true
             } catch {
                 alertMessage = .presentedError(error)
+                return false
             }
         }
 

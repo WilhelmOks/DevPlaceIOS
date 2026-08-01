@@ -82,25 +82,29 @@ extension Message {
 }
 
 extension MessagesInbox {
+    private static func iso(secondsAgo: TimeInterval) -> String {
+        ISO8601DateFormatter().string(from: Date().addingTimeInterval(-secondsAgo))
+    }
+
     static var mockInbox: MessagesInbox {
         .init(
             conversations: [
                 Conversation(
                     otherUser: .mockAlice,
                     lastMessage: "Sounds good, let's ship it!",
-                    lastMessageAt: "1h ago",
+                    lastMessageAt: iso(secondsAgo: 60 * 60),
                     unread: false,
                 ),
                 Conversation(
                     otherUser: .mockBob,
                     lastMessage: "Could you review my pull request?",
-                    lastMessageAt: "1h ago",
+                    lastMessageAt: iso(secondsAgo: 60 * 90),
                     unread: true,
                 ),
                 Conversation(
                     otherUser: .mockCarol,
                     lastMessage: "Here's the link: https://example.com/demo",
-                    lastMessageAt: "4d ago",
+                    lastMessageAt: iso(secondsAgo: 60 * 60 * 24 * 4),
                     unread: false,
                 ),
             ],

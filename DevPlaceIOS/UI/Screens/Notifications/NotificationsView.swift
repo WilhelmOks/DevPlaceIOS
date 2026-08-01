@@ -18,6 +18,8 @@ private struct NotificationsViewContent: View {
     let reselectSignal: Bool
     let onOpenPost: (PostDestination) -> Void
 
+    @Environment(\.scenePhase) private var scenePhase
+
     @State private var isAtTop = true
 
     var body: some View {
@@ -42,6 +44,12 @@ private struct NotificationsViewContent: View {
                     Task {
                         await viewModel.refresh()
                     }
+                }
+            }
+            .onChange(of: scenePhase) { _, newValue in
+                guard newValue == .active else { return }
+                Task {
+                    await viewModel.refresh()
                 }
             }
             .task {

@@ -19,21 +19,29 @@ final class AppState {
 
     var unreadNotificationCount = 0
 
+    var unreadMessageCount = 0
+
     func isCurrentUser(id: String) -> Bool {
         currentUser?.id == id
     }
     
     func loadFeed(api: DevPlaceApi) async throws {
         AppState.shared.feed = try await api.feed()
-        await loadUnreadNotificationCount(api: api)
+        await loadUnreadCounts(api: api)
+    }
+
+    func loadUnreadCounts(api: DevPlaceApi) async {
+        do {
+            let counts = try await api.notificationCounts()
+            unreadNotificationCount = counts.notifications
+            unreadMessageCount = counts.messages
+        } catch {
+            dlog("Failed to load unread counts: \(error)")
+        }
     }
 
     func loadUnreadNotificationCount(api: DevPlaceApi) async {
-        do {
-            unreadNotificationCount = try await api.notificationCounts().notifications
-        } catch {
-            dlog("Failed to load unread notification count: \(error)")
-        }
+        await loadUnreadCounts(api: api)
     }
     
     func loadMoreFeed(api: DevPlaceApi) async throws {
@@ -64,5 +72,6 @@ final class AppState {
         feed = nil
         currentUser = nil
         unreadNotificationCount = 0
+        unreadMessageCount = 0
     }
 }

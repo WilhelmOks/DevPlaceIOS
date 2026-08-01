@@ -129,6 +129,22 @@ final class ProdDevPlaceApi: DevPlaceApi {
         try await request.deleteAttachment(uid: uid, token: token)
     }
     
+    func messages(withUid: String?) async throws -> MessagesInbox {
+        guard let token = AppState.shared.token else {
+            throw DevPlaceError.notLoggedIn
+        }
+        try await refreshTokenIfNeeded()
+        return try await request.getMessages(withUid: withUid, token: token)
+    }
+
+    func sendMessage(receiverId: String, content: String, attachments: [UploadResponse]) async throws {
+        guard let token = AppState.shared.token else {
+            throw DevPlaceError.notLoggedIn
+        }
+        try await refreshTokenIfNeeded()
+        try await request.sendMessage(receiverId: receiverId, content: content, attachments: attachments, token: token)
+    }
+
     func notifications(before: Date?) async throws -> Notifications {
         guard let token = AppState.shared.token else {
             throw DevPlaceError.notLoggedIn

@@ -445,13 +445,18 @@ public extension DevPlaceRequest {
         return response.decoded
     }
 
-    func sendMessage(receiverId: String, content: String, token: AuthToken) async throws {
+    func sendMessage(receiverId: String, content: String, attachments: [UploadResponse] = [], token: AuthToken) async throws {
         struct Body: Encodable {
             let receiver_uid: String
             let content: String
+            let attachment_uids: [String]
         }
         let config = makeConfig(.post, path: "messages/send", contentType: .jsonBody, token: token)
-        let body = Body(receiver_uid: receiverId, content: content)
+        let body = Body(
+            receiver_uid: receiverId,
+            content: content,
+            attachment_uids: attachments.map(\.id),
+        )
         try await request.requestJson(config: config, json: body, apiError: ApiError.self)
     }
 

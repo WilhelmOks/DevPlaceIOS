@@ -2,6 +2,7 @@ import SwiftUI
 
 struct MainView: View {
     @Environment(\.api) private var api
+    @Environment(\.scenePhase) private var scenePhase
 
     private let appState = AppState.shared
 
@@ -13,6 +14,7 @@ struct MainView: View {
 
     private enum TabSelection {
         case postsFeed
+        case messages
         case notifications
         case settings
     }
@@ -27,6 +29,8 @@ struct MainView: View {
                         if feedPost == nil {
                             feedReselectSignal.toggle()
                         }
+                    case .messages:
+                        break
                     case .notifications:
                         notificationsReselectSignal.toggle()
                     case .settings:
@@ -55,6 +59,19 @@ struct MainView: View {
                     Image(systemName: "list.bullet.rectangle")
                 }
             }
+
+            Tab(value: .messages) {
+                NavigationStack {
+                    MessagesView()
+                }
+            } label: {
+                Label {
+                    Text("Messages")
+                } icon: {
+                    Image(systemName: "bubble.left.and.bubble.right")
+                }
+            }
+            .badge(appState.unreadMessageCount)
 
             Tab(value: .notifications) {
                 NavigationStack {
@@ -87,10 +104,15 @@ struct MainView: View {
                 }
             }
         }
-        .onChange(of: selectedTab) { _, newValue in
-            guard newValue == .postsFeed || newValue == .notifications else { return }
+        .onChange(of: selectedTab) {
             Task {
-                await appState.loadUnreadNotificationCount(api: api)
+                await appState.loadUnreadCounts(api: api)
+            }
+        }
+        .onChange(of: scenePhase) { _, newValue in
+            guard newValue == .active else { return }
+            Task {
+                await appState.loadUnreadCounts(api: api)
             }
         }
     }

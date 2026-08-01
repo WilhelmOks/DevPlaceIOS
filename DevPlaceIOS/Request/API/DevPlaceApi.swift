@@ -12,6 +12,8 @@ protocol DevPlaceApi {
     func editComment(uid: String, content: String) async throws
     func createComment(targetType: TargetType, targetId: String, content: String, parentId: String?, attachments: [UploadResponse]) async throws
     func profile(username: String?) async throws -> Profile
+    func messages(withUid: String?) async throws -> MessagesInbox
+    func sendMessage(receiverId: String, content: String, attachments: [UploadResponse]) async throws
     func notifications(before: Date?) async throws -> Notifications
     func openNotification(uid: String) async throws -> NotificationOpen
     func notificationCounts() async throws -> NotificationCounts
@@ -32,6 +34,10 @@ extension DevPlaceApi {
 
     func notifications() async throws -> Notifications {
         try await notifications(before: nil)
+    }
+
+    func messages() async throws -> MessagesInbox {
+        try await messages(withUid: nil)
     }
     
     private func logInWithStoredCredentials() async throws {

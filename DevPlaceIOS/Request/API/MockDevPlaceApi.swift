@@ -73,6 +73,17 @@ final class MockDevPlaceApi: DevPlaceApi {
         return .mock
     }
 
+    func messages(withUid: String?) async throws -> MessagesInbox {
+        await mockDelay(0.3)
+        try await refreshTokenIfNeeded()
+        return withUid == nil ? .mockInbox : .mockConversation
+    }
+
+    func sendMessage(receiverId: String, content: String, attachments: [UploadResponse]) async throws {
+        await mockDelay(0.2)
+        try await refreshTokenIfNeeded()
+    }
+
     func notifications(before: Date?) async throws -> Notifications {
         await mockDelay(0.5)
         try await refreshTokenIfNeeded()

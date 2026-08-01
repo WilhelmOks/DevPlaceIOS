@@ -2,6 +2,7 @@ import SwiftUI
 import MarkdownUI
 import DevPlaceSwiftSDK
 
+//TODO: rename to something more generic because it's not just for posts.
 struct PostContentView: View {
     let topic: String?
     let title: String?

@@ -31,7 +31,5 @@ Done:
 * creating comments
   * attachments
 * editing comments
-
-TODO:
 * notifications
 * private messages

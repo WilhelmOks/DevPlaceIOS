@@ -48,11 +48,11 @@ struct MessageBubbleView: View {
 
     @ViewBuilder private func footer() -> some View {
         HStack(spacing: 6) {
-            RelativeTimeLabel(date: message.data.createdAt)
-
             if message.isMine {
                 DoubleCheckmark(read: message.data.read)
             }
+
+            RelativeTimeLabel(date: message.data.createdAt)
         }
     }
 

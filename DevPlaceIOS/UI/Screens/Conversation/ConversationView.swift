@@ -53,7 +53,6 @@ private struct ConversationViewContent: View {
                 }
                 .padding(.horizontal)
                 .padding(.top)
-                .padding(.bottom, 12)
             }
             .defaultScrollAnchor(.bottom)
             .simultaneousGesture(
@@ -62,8 +61,8 @@ private struct ConversationViewContent: View {
                 }
             )
             .onScrollGeometryChange(for: Bool.self) { geometry in
-                let visibleBottom = geometry.contentOffset.y + geometry.containerSize.height + geometry.contentInsets.bottom
-                return visibleBottom >= geometry.contentSize.height - 8
+                let distanceFromBottom = geometry.contentSize.height - geometry.contentInsets.top - geometry.containerSize.height - geometry.contentOffset.y
+                return distanceFromBottom <= 30
             } action: { _, newValue in
                 isAtBottom = newValue
             }

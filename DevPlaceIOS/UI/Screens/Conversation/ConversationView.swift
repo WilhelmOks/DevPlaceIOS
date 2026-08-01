@@ -51,7 +51,7 @@ private struct ConversationViewContent: View {
                             .id(message.id)
                     }
                 }
-                .padding(.horizontal)
+                .padding(.horizontal, 12)
                 .padding(.top)
             }
             .defaultScrollAnchor(.bottom)
@@ -105,7 +105,7 @@ private struct ConversationViewContent: View {
     }
 
     @ViewBuilder private func composer() -> some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 4) {
             HStack(alignment: .bottom, spacing: 8) {
                 TextField("Type a message…", text: $viewModel.draft, axis: .vertical)
                     .lineLimit(1...6)
@@ -128,6 +128,7 @@ private struct ConversationViewContent: View {
             )
             .id(attachmentsResetToken)
             .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.top, 4)
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 8)

@@ -38,3 +38,7 @@ The main features are done:
 Other less frequently used features like editing own profile will be implemented later eventually.
 
 If a feature is missing, please use the web app for now: https://devplace.net
+
+## Support
+
+Please create an *Issue* when you find some problem.

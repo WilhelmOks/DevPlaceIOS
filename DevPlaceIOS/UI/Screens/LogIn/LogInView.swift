@@ -13,6 +13,13 @@ private struct LogInViewContent: View {
     
     @State var viewModel: LogInView.ViewModel
     
+    @FocusState private var focusedField: Field?
+    
+    private enum Field {
+        case email
+        case password
+    }
+    
     var body: some View {
         NavigationStack {
             content()
@@ -58,9 +65,19 @@ private struct LogInViewContent: View {
                 TextField("Email", text: $viewModel.email)
                     .textContentType(.emailAddress)
                     .keyboardType(.emailAddress)
+                    .focused($focusedField, equals: .email)
+                    .submitLabel(.next)
+                    .onSubmit {
+                        focusedField = .password
+                    }
                 
                 SecureField("Password", text: $viewModel.password)
                     .textContentType(.password)
+                    .focused($focusedField, equals: .password)
+                    .submitLabel(.go)
+                    .onSubmit {
+                        submit()
+                    }
             }
             .textInputAutocapitalization(.never)
             .autocorrectionDisabled()
@@ -75,7 +92,7 @@ private struct LogInViewContent: View {
                 .opacity(viewModel.isLoading ? 1 : 0)
             
             Button {
-                viewModel.logIn()
+                submit()
             } label: {
                 Text("Sign in")
                     .frame(maxWidth: .infinity)
@@ -85,6 +102,11 @@ private struct LogInViewContent: View {
             .disabled(!viewModel.canSubmit)
             .opacity(viewModel.isLoading ? 0 : 1)
         }
+    }
+    
+    private func submit() {
+        focusedField = nil
+        viewModel.logIn()
     }
     
     @ViewBuilder private func forgotPassword() -> some View {

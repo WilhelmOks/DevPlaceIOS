@@ -12,7 +12,8 @@ This will later be a separate project in a separte repository. But for now it li
 
 ## Status of development
 
-Done:
+The main features are done:
+
 * sign in, sign out
 * forgot password and sign up via redirect to browser
 * listing posts in the feed and loading more
@@ -33,3 +34,7 @@ Done:
 * editing comments
 * notifications
 * private messages
+
+Other less frequently used features like editing own profile will be implemented later eventually.
+
+If a feature is missing, please use the web app for now: https://devplace.net

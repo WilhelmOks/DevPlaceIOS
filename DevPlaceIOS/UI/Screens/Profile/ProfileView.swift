@@ -49,6 +49,9 @@ private struct ProfileViewContent: View {
                         }
                     }
                     .padding(.top, 10)
+                    
+                    webAppInfo()
+                        .padding(.top, 10)
                 }
             }
             .frame(maxWidth: .infinity)
@@ -155,6 +158,14 @@ private struct ProfileViewContent: View {
                 .foregroundStyle(.FG_2)
         }
         .multilineTextAlignment(.center)
+    }
+    
+    @ViewBuilder private func webAppInfo() -> some View {
+        if let username = viewModel.profile?.user.username,
+           let text = try? AttributedString(markdown: "For more info and options, visit this profile in the [web app](https://devplace.net/profile/\(username)).") {
+            Text(text)
+                .multilineTextAlignment(.center)
+        }
     }
 }
 

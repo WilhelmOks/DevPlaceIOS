@@ -106,29 +106,47 @@ private struct ConversationViewContent: View {
 
     @ViewBuilder private func composer() -> some View {
         VStack(alignment: .leading, spacing: 4) {
-            HStack(alignment: .bottom, spacing: 8) {
-                TextField("Type a message…", text: $viewModel.draft, axis: .vertical)
-                    .lineLimit(1...6)
-                    .textFieldStyle(.devPlace)
-                    .focused($isInputFocused)
+            HStack(alignment: .composerInput, spacing: 8) {
+                VStack(alignment: .leading, spacing: 4) {
+                    TextField("Type a message…", text: $viewModel.draft, axis: .vertical)
+                        .lineLimit(1...6)
+                        .textFieldStyle(.devPlace)
+                        .focused($isInputFocused)
+                        .alignmentGuide(.composerInput) { $0[.bottom] }
+
+                    HStack(spacing: 8) {
+                        CharacterCounterView(
+                            text: viewModel.draft,
+                            minCount: viewModel.minCharacterCount,
+                            maxCount: DevPlaceConstants.maxDirectMessageLength,
+                        )
+
+                        if viewModel.attachments.isEmpty {
+                            Spacer(minLength: 0)
+
+                            AttachmentUploaderView(
+                                isSmall: true,
+                                attachments: viewModel.attachments,
+                                onAttachmentsChange: { viewModel.attachments = $0 },
+                            )
+                            .id(attachmentsResetToken)
+                        }
+                    }
+                    .padding(.horizontal, 10)
+                }
 
                 sendButton()
             }
 
-            CharacterCounterView(
-                text: viewModel.draft,
-                minCount: viewModel.minCharacterCount,
-                maxCount: DevPlaceConstants.maxDirectMessageLength,
-            )
-            .padding(.horizontal, 10)
-
-            AttachmentUploaderView(
-                attachments: viewModel.attachments,
-                onAttachmentsChange: { viewModel.attachments = $0 },
-            )
-            .id(attachmentsResetToken)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.top, 4)
+            if !viewModel.attachments.isEmpty {
+                AttachmentUploaderView(
+                    attachments: viewModel.attachments,
+                    onAttachmentsChange: { viewModel.attachments = $0 },
+                )
+                .id(attachmentsResetToken)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.top, 4)
+            }
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
@@ -172,6 +190,16 @@ private struct ConversationViewContent: View {
             }
         }
     }
+}
+
+private extension VerticalAlignment {
+    enum ComposerInputAlignment: AlignmentID {
+        static func defaultValue(in dimensions: ViewDimensions) -> CGFloat {
+            dimensions[.bottom]
+        }
+    }
+
+    static let composerInput = VerticalAlignment(ComposerInputAlignment.self)
 }
 
 #Preview {

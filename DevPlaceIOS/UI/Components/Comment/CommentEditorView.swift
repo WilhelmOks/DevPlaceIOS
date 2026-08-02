@@ -25,10 +25,6 @@ struct CommentEditorView: View {
             )
             .focused($isFocused)
 
-            if let onAttachmentsChange {
-                AttachmentUploaderView(attachments: attachments, onAttachmentsChange: onAttachmentsChange)
-            }
-
             HStack(alignment: .top, spacing: 12) {
                 CharacterCounterView(
                     text: text,
@@ -40,6 +36,14 @@ struct CommentEditorView: View {
                 Spacer(minLength: 0)
 
                 HStack(spacing: 24) {
+                    if let onAttachmentsChange, attachments.isEmpty {
+                        AttachmentUploaderView(
+                            isSmall: true,
+                            attachments: attachments,
+                            onAttachmentsChange: onAttachmentsChange,
+                        )
+                    }
+
                     Button {
                         onCancel()
                     } label: {
@@ -60,6 +64,13 @@ struct CommentEditorView: View {
                     .disabled(!canSubmit)
                 }
                 .padding(.horizontal, 11)
+            }
+
+            if let onAttachmentsChange, !attachments.isEmpty {
+                AttachmentUploaderView(
+                    attachments: attachments,
+                    onAttachmentsChange: onAttachmentsChange,
+                )
             }
         }
         .onAppear {

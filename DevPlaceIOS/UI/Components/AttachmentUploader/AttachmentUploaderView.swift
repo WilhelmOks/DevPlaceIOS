@@ -4,6 +4,7 @@ import UniformTypeIdentifiers
 import DevPlaceSwiftSDK
 
 struct AttachmentUploaderView: View {
+    var isSmall = false
     var attachments: [UploadResponse] = []
     var onAttachmentsChange: ([UploadResponse]) -> Void = { _ in }
     
@@ -11,6 +12,7 @@ struct AttachmentUploaderView: View {
     
     var body: some View {
         AttachmentUploaderViewContent(
+            isSmall: isSmall,
             viewModel: .init(
                 attachments: attachments,
                 api: api,
@@ -21,6 +23,8 @@ struct AttachmentUploaderView: View {
 }
 
 private struct AttachmentUploaderViewContent: View {
+    var isSmall = false
+    
     @State var viewModel: AttachmentUploaderView.ViewModel
     
     @State private var isShowingAddChoice = false
@@ -28,6 +32,8 @@ private struct AttachmentUploaderViewContent: View {
     @State private var isShowingPhotoPicker = false
     @State private var selectedPhoto: PhotosPickerItem?
     @State private var urlText = ""
+    
+    @ScaledMetric private var scale = 1.0
     
     var body: some View {
         content()
@@ -73,21 +79,33 @@ private struct AttachmentUploaderViewContent: View {
     }
     
     @ViewBuilder private func content() -> some View {
-        BoxView {
-            VStack(alignment: .leading, spacing: 10) {
-                ForEach(viewModel.attachments) { attachment in
-                    attachmentRow(attachment: attachment)
-                }
-                
-                if viewModel.isBusy {
-                    ProgressView()
-                        .frame(maxWidth: .infinity)
-                }
-                
-                if viewModel.canAddMore {
-                    addButton()
+        if isSmall && viewModel.attachments.isEmpty {
+            smallEmptyContent()
+        } else {
+            BoxView {
+                VStack(alignment: .leading, spacing: 10) {
+                    ForEach(viewModel.attachments) { attachment in
+                        attachmentRow(attachment: attachment)
+                    }
+                    
+                    if viewModel.isBusy {
+                        ProgressView()
+                            .frame(maxWidth: .infinity)
+                    }
+                    
+                    if viewModel.canAddMore {
+                        addButton()
+                    }
                 }
             }
+        }
+    }
+    
+    @ViewBuilder private func smallEmptyContent() -> some View {
+        if viewModel.isBusy {
+            ProgressView()
+        } else {
+            addButton()
         }
     }
     
@@ -118,7 +136,7 @@ private struct AttachmentUploaderViewContent: View {
         Button {
             isShowingAddChoice = true
         } label: {
-            Label("Add Attachment", systemImage: "paperclip")
+            addButtonLabel()
         }
         .disabled(viewModel.isBusy)
         .confirmationDialog("Add Attachment", isPresented: $isShowingAddChoice, titleVisibility: .visible) {
@@ -132,6 +150,17 @@ private struct AttachmentUploaderViewContent: View {
                 isShowingUrlPrompt = true
             }
             Button("Cancel", role: .cancel) {}
+        }
+    }
+    
+    @ViewBuilder private func addButtonLabel() -> some View {
+        if isSmall {
+            Label("Add Attachment", systemImage: "paperclip")
+                .labelStyle(.iconOnly)
+                .foregroundStyle(.FG_2)
+                .font(.system(size: 14 * scale))
+        } else {
+            Label("Add Attachment", systemImage: "paperclip")
         }
     }
     
@@ -161,6 +190,13 @@ private struct AttachmentUploaderViewContent: View {
 
 #Preview("Empty") {
     AttachmentUploaderView()
+        .padding()
+        .background(Color.BG_1)
+        .environment(\.api, .mock)
+}
+
+#Preview("Empty small") {
+    AttachmentUploaderView(isSmall: true)
         .padding()
         .background(Color.BG_1)
         .environment(\.api, .mock)

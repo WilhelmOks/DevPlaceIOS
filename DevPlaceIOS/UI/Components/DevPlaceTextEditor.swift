@@ -12,6 +12,7 @@ struct DevPlaceTextEditor: View {
     var initialLineCount: Int?
     var animatesHeightChanges: Bool = false
     var initialHeight: CGFloat?
+    var backgroundColor: Color = .BG_1
 
     @State private var height: CGFloat = 0
     @State private var singleLineHeight: CGFloat = 0
@@ -25,7 +26,7 @@ struct DevPlaceTextEditor: View {
 
     var body: some View {
         BoxView(
-            backgroundColor: .BG_1,
+            backgroundColor: backgroundColor,
             borderOpacity: 0.5,
             cornerSize: .big,
             paddingSize: .none,

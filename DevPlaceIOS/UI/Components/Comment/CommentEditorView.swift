@@ -22,6 +22,7 @@ struct CommentEditorView: View {
                 initialLineCount: initialLineCount,
                 animatesHeightChanges: true,
                 initialHeight: initialHeight,
+                backgroundColor: .BG_0,
             )
             .focused($isFocused)
 

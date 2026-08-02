@@ -110,7 +110,7 @@ private struct ConversationViewContent: View {
                 VStack(alignment: .leading, spacing: 4) {
                     TextField("Type a message…", text: $viewModel.draft, axis: .vertical)
                         .lineLimit(1...6)
-                        .textFieldStyle(.devPlace)
+                        .textFieldStyle(.devPlace(backgroundColor: .BG_0))
                         .focused($isInputFocused)
                         .alignmentGuide(.composerInput) { $0[.bottom] }
 

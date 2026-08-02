@@ -24,11 +24,6 @@ extension Collection where Element == Badge {
                 icon: "⭐️",
                 createdAt: Date().addingTimeInterval(-60 * 60 * 24 * 7),
             ),
-            .init(
-                name: nil,
-                icon: nil,
-                createdAt: Date().addingTimeInterval(-60 * 60),
-            ),
         ]
     }
 }

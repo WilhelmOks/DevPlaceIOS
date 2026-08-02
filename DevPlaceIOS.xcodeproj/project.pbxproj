@@ -16,9 +16,22 @@
 		0C80C1CB2FE18EE600673451 /* DevPlaceIOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DevPlaceIOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		0C9467AB301F6356003AD76F /* Exceptions for "DevPlaceIOS" folder in "DevPlaceIOS" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 0C80C1CA2FE18EE600673451 /* DevPlaceIOS */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		0C80C1CD2FE18EE600673451 /* DevPlaceIOS */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				0C9467AB301F6356003AD76F /* Exceptions for "DevPlaceIOS" folder in "DevPlaceIOS" target */,
+			);
 			path = DevPlaceIOS;
 			sourceTree = "<group>";
 		};
@@ -273,7 +286,9 @@
 				DEVELOPMENT_TEAM = J8UL3VBQ4J;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = DevPlaceIOS/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = DevPlace;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -307,7 +322,9 @@
 				DEVELOPMENT_TEAM = J8UL3VBQ4J;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = DevPlaceIOS/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = DevPlace;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;

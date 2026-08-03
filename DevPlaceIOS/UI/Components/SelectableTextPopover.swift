@@ -76,22 +76,24 @@ private struct SelectableRawTextView: UIViewRepresentable {
     }
 
     func sizeThatFits(_ proposal: ProposedViewSize, uiView: UITextView, context: Context) -> CGSize? {
+        let availableWidth = min(proposal.width ?? maxSize.width, maxSize.width)
         let ideal = uiView.sizeThatFits(
             CGSize(
                 width: CGFloat.greatestFiniteMagnitude,
                 height: CGFloat.greatestFiniteMagnitude,
             )
         )
-        let width = min(ideal.width, maxSize.width)
+        let width = min(ideal.width, availableWidth)
         let fittedHeight = uiView.sizeThatFits(
             CGSize(
                 width: width,
                 height: CGFloat.greatestFiniteMagnitude,
             )
         ).height
+        let availableHeight = min(proposal.height ?? maxSize.height, maxSize.height)
         return CGSize(
             width: width,
-            height: min(fittedHeight, maxSize.height),
+            height: min(fittedHeight, availableHeight),
         )
     }
 }

@@ -31,6 +31,7 @@ struct MessageBubbleView: View {
                     Markdown(message.data.content)
                         .markdownTheme(.devPlace)
                         .markdownSoftBreakMode(.lineBreak)
+                        .selectableTextPopover(message.data.content)
                 }
 
                 ForEach(message.attachments, id: \.id) { attachment in

@@ -19,11 +19,13 @@ struct PostContentView: View {
                 Text(markdownTitle)
                     .lineSpacing(0)
                     .font(.title)
+                    .selectableTextPopover(title)
             }
             
             Markdown(content)
                 .markdownTheme(.devPlace)
                 .markdownSoftBreakMode(.lineBreak)
+                .selectableTextPopover(content)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }

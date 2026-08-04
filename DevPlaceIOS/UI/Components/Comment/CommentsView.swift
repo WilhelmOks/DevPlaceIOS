@@ -21,10 +21,12 @@ struct CommentsView: View {
     var editingCommentId: Binding<String?> = .constant(nil)
     var pendingEditQuote: String? = nil
     var onConsumeEditQuote: (() -> Void)? = nil
+    var showsDividers: Bool = false
+    var showsLeadingDivider: Bool = false
 
     var body: some View {
         VStack(spacing: 0) {
-            ForEach(comments.indented(startingAt: baseIndentationLevel)) { item in
+            ForEach(Array(comments.indented(startingAt: baseIndentationLevel).enumerated()), id: \.element.id) { index, item in
                 CommentView(
                     comment: item.comment,
                     indentationLevel: item.level,
@@ -45,6 +47,7 @@ struct CommentsView: View {
                     editingCommentId: editingCommentId,
                     pendingEditQuote: pendingEditQuote,
                     onConsumeEditQuote: onConsumeEditQuote,
+                    showsTopDivider: showsDividers && (index > 0 || showsLeadingDivider),
                 )
             }
         }

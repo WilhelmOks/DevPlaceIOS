@@ -101,6 +101,8 @@ struct FeedPostView: View {
                     editingCommentId: $editingCommentId,
                     pendingEditQuote: pendingEditQuote,
                     onConsumeEditQuote: onConsumeEditQuote,
+                    showsDividers: true,
+                    showsLeadingDivider: true,
                 )
                 .padding(.top, 8)
             }

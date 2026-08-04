@@ -277,6 +277,7 @@ private struct PostViewContent: View {
                     editingCommentId: $editingCommentId,
                     pendingEditQuote: pendingEditQuote,
                     onConsumeEditQuote: { pendingEditQuote = nil },
+                    showsDividers: true,
                 )
             }
             .frame(maxWidth: .infinity, alignment: .leading)

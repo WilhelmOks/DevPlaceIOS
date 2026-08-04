@@ -21,6 +21,7 @@ struct CommentView: View {
     var editingCommentId: Binding<String?> = .constant(nil)
     var pendingEditQuote: String? = nil
     var onConsumeEditQuote: (() -> Void)? = nil
+    var showsTopDivider: Bool = false
 
     @State private var isConfirmingDelete = false
     @State private var isEditing = false
@@ -50,7 +51,14 @@ struct CommentView: View {
                 }
             }
             
-            commentBody()
+            VStack(alignment: .leading, spacing: 0) {
+                if showsTopDivider {
+                    Divider()
+                        .padding(.horizontal, indentWidth)
+                }
+                
+                commentBody()
+            }
         }
         .foregroundStyle(Color.FG_1)
     }

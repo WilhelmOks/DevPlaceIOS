@@ -15,28 +15,24 @@ struct PostFooterView: View {
     @State private var isConfirmingDelete = false
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Divider()
+        HStack(spacing: 12) {
+            VoteView(targetType: .post, targetId: targetId, count: starCount, currentVote: currentVote)
             
-            HStack(spacing: 12) {
-                VoteView(targetType: .post, targetId: targetId, count: starCount, currentVote: currentVote)
+            ReactionsBar(reactions: reactions, onReact: onReact)
+            
+            Spacer(minLength: 0)
+            
+            HStack(spacing: 24) {
+                if let onReply, !isReplying {
+                    replyButton(onReply: onReply)
+                }
                 
-                ReactionsBar(reactions: reactions, onReact: onReact)
+                if let onEdit {
+                    editButton(onEdit: onEdit)
+                }
                 
-                Spacer(minLength: 0)
-
-                HStack(spacing: 24) {
-                    if let onReply, !isReplying {
-                        replyButton(onReply: onReply)
-                    }
-
-                    if let onEdit {
-                        editButton(onEdit: onEdit)
-                    }
-
-                    if onDelete != nil {
-                        deleteButton()
-                    }
+                if onDelete != nil {
+                    deleteButton()
                 }
             }
         }

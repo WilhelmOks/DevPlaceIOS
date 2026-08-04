@@ -65,6 +65,7 @@ private struct FeedViewContent: View {
             }
             .navigationDestination(item: $selectedPost) { destination in
                 PostView(slug: destination.slug, scrollToCommentId: destination.scrollToCommentId)
+                    .id(destination)
             }
             .fullScreenCover(item: $sheetItem) { item in
                 switch item {

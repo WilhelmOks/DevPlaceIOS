@@ -18,6 +18,7 @@ private struct MessagesViewContent: View {
             .navigationTitle(Text("Messages"))
             .navigationDestination(for: User.self) { otherUser in
                 ConversationView(otherUser: otherUser)
+                    .id(otherUser.id)
             }
             .alert($viewModel.alertMessage)
             .toolbar {

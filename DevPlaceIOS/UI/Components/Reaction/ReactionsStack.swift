@@ -6,6 +6,7 @@ struct ReactionsStack: View {
     let onSelect: (String) -> Void
     
     @State private var isShowingAll = false
+    @State private var visibleChipCount = Int.max
     
     @ScaledMetric private var scale = 1.0
     
@@ -24,23 +25,14 @@ struct ReactionsStack: View {
     
     var body: some View {
         if !items.isEmpty {
-            ViewThatFits(in: .horizontal) {
-                ForEach(Array((0...items.count).reversed()), id: \.self) { visibleCount in
-                    row(visibleCount: visibleCount)
+            ReactionRowLayout(spacing: spacing, visibleChipCount: $visibleChipCount) {
+                ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
+                    reactionButton(item)
+                        .accessibilityHidden(index >= visibleChipCount)
                 }
-            }
-        }
-    }
-    
-    @ViewBuilder private func row(visibleCount: Int) -> some View {
-        let hiddenCount = items.count - visibleCount
-        HStack(spacing: spacing) {
-            ForEach(Array(items.prefix(visibleCount))) { item in
-                reactionButton(item)
-            }
-            
-            if hiddenCount > 0 {
-                moreButton(hiddenCount: hiddenCount)
+
+                moreButton()
+                    .accessibilityHidden(visibleChipCount >= items.count)
             }
         }
     }
@@ -54,11 +46,11 @@ struct ReactionsStack: View {
         .buttonStyle(.plain)
     }
     
-    @ViewBuilder private func moreButton(hiddenCount: Int) -> some View {
+    @ViewBuilder private func moreButton() -> some View {
         Button {
             isShowingAll = true
         } label: {
-            moreIndicator(count: hiddenCount)
+            moreIndicator()
         }
         .buttonStyle(.plain)
         .popover(isPresented: $isShowingAll) {
@@ -83,12 +75,104 @@ struct ReactionsStack: View {
         .presentationCompactAdaptation(.popover)
     }
     
-    @ViewBuilder private func moreIndicator(count: Int) -> some View {
-        Text("+\(count)")
-            .font(.system(size: 14 * scale, weight: .medium))
-            .monospacedDigit()
+    @ViewBuilder private func moreIndicator() -> some View {
+        Text("…")
+            .font(.system(size: 14 * scale))
             .foregroundStyle(Color.FG_1)
             .reactionChip()
+            .accessibilityLabel(Text("Show all reactions"))
+    }
+}
+
+private struct ReactionRowLayout: Layout {
+    let spacing: CGFloat
+    @Binding var visibleChipCount: Int
+
+    private let hiddenOffset: CGFloat = -100_000
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        plan(proposal: proposal, subviews: subviews).size
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        let plan = plan(proposal: proposal, subviews: subviews)
+        publishVisibleChipCount(plan: plan, subviews: subviews)
+        var x = bounds.minX
+        for index in subviews.indices {
+            if plan.visibleIndices.contains(index) {
+                let size = plan.sizes[index]
+                let y = bounds.minY + (plan.size.height - size.height) / 2
+                subviews[index].place(
+                    at: CGPoint(x: x, y: y),
+                    anchor: .topLeading,
+                    proposal: ProposedViewSize(size),
+                )
+                x += size.width + spacing
+            } else {
+                subviews[index].place(
+                    at: CGPoint(x: hiddenOffset, y: bounds.minY),
+                    anchor: .topLeading,
+                    proposal: ProposedViewSize(plan.sizes[index]),
+                )
+            }
+        }
+    }
+
+    private func publishVisibleChipCount(plan: Plan, subviews: Subviews) {
+        let chipCount = subviews.count - 1
+        let visible = plan.visibleIndices.filter { $0 < chipCount }.count
+        guard visible != visibleChipCount else { return }
+        DispatchQueue.main.async {
+            visibleChipCount = visible
+        }
+    }
+
+    private func plan(proposal: ProposedViewSize, subviews: Subviews) -> Plan {
+        let sizes = subviews.map { $0.sizeThatFits(.unspecified) }
+        let height = sizes.map(\.height).max() ?? 0
+
+        guard subviews.count > 1 else {
+            let indices = Array(subviews.indices)
+            let width = sizes.map(\.width).reduce(0, +)
+            return Plan(sizes: sizes, visibleIndices: indices, size: CGSize(width: width, height: height))
+        }
+
+        let moreIndex = subviews.count - 1
+        let chipCount = moreIndex
+        let available = proposal.width ?? .infinity
+
+        let allChipsWidth = sizes[0..<chipCount].map(\.width).reduce(0, +) + spacing * CGFloat(chipCount - 1)
+        if allChipsWidth <= available {
+            return Plan(
+                sizes: sizes,
+                visibleIndices: Array(0..<chipCount),
+                size: CGSize(width: allChipsWidth, height: height),
+            )
+        }
+
+        let moreWidth = sizes[moreIndex].width
+        var fittingCount = 0
+        var usedWidth: CGFloat = 0
+        for index in 0..<chipCount {
+            let candidate = usedWidth + (index > 0 ? spacing : 0) + sizes[index].width
+            if candidate + spacing + moreWidth <= available {
+                usedWidth = candidate
+                fittingCount = index + 1
+            } else {
+                break
+            }
+        }
+
+        var visibleIndices = Array(0..<fittingCount)
+        visibleIndices.append(moreIndex)
+        let width = usedWidth + (fittingCount > 0 ? spacing : 0) + moreWidth
+        return Plan(sizes: sizes, visibleIndices: visibleIndices, size: CGSize(width: width, height: height))
+    }
+
+    private struct Plan {
+        let sizes: [CGSize]
+        let visibleIndices: [Int]
+        let size: CGSize
     }
 }
 

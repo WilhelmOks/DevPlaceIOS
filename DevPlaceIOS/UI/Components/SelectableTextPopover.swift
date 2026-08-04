@@ -27,35 +27,81 @@ private struct SelectableTextPopoverModifier: ViewModifier {
 private struct SelectableTextPopoverContent: View {
     let text: String
 
+    @State private var selection = TextSelectionController()
+
     private let maxContentSize = CGSize(width: 360, height: 400)
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             title()
 
-            SelectableRawTextView(text: text, maxSize: maxContentSize)
+            SelectableRawTextView(
+                text: text,
+                maxSize: maxContentSize,
+                selection: selection,
+            )
         }
         .padding(20)
     }
 
     @ViewBuilder private func title() -> some View {
-        HStack(spacing: 4) {
-            Image(systemName: "selection.pin.in.out")
-            Image(systemName: "arrow.forward")
-            Image(systemName: "document.on.document")
-            Image(systemName: "arrow.forward")
-            Image(systemName: "document.on.clipboard")
+        HStack {
+            Button {
+                selection.selectFirstWord()
+            } label: {
+                HStack(spacing: 4) {
+                    Image(systemName: "selection.pin.in.out")
+                    Image(systemName: "arrow.forward")
+                    Image(systemName: "document.on.document")
+                    Image(systemName: "arrow.forward")
+                    Image(systemName: "document.on.clipboard")
+                }
+            }
+            .accessibilityLabel(Text("Select text and copy it to the clipboard"))
+
+            Spacer()
+
+            Button {
+                selection.selectAll()
+            } label: {
+                Label("Select all text", systemImage: "textformat.characters.arrow.left.and.right")
+                    .labelStyle(.iconOnly)
+            }
         }
         .font(.footnote)
         .foregroundStyle(Color.FG_2)
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel(Text("Select text and copy it to the clipboard"))
+        .buttonStyle(.plain)
+    }
+}
+
+@MainActor private final class TextSelectionController {
+    weak var textView: UITextView?
+
+    func selectFirstWord() {
+        guard let textView else { return }
+        textView.becomeFirstResponder()
+        let content = textView.text as NSString? ?? ""
+        let wordRange = content.range(of: "\\S+", options: .regularExpression)
+        guard wordRange.location != NSNotFound,
+              let start = textView.position(from: textView.beginningOfDocument, offset: wordRange.location),
+              let end = textView.position(from: start, offset: wordRange.length) else { return }
+        textView.selectedTextRange = textView.textRange(from: start, to: end)
+    }
+
+    func selectAll() {
+        guard let textView else { return }
+        textView.becomeFirstResponder()
+        textView.selectedTextRange = textView.textRange(
+            from: textView.beginningOfDocument,
+            to: textView.endOfDocument,
+        )
     }
 }
 
 private struct SelectableRawTextView: UIViewRepresentable {
     let text: String
     let maxSize: CGSize
+    let selection: TextSelectionController
 
     func makeUIView(context: Context) -> UITextView {
         let textView = UITextView()
@@ -68,11 +114,13 @@ private struct SelectableRawTextView: UIViewRepresentable {
         textView.adjustsFontForContentSizeCategory = true
         textView.textColor = .FG_1
         textView.text = text
+        selection.textView = textView
         return textView
     }
 
     func updateUIView(_ uiView: UITextView, context: Context) {
         uiView.text = text
+        selection.textView = uiView
     }
 
     func sizeThatFits(_ proposal: ProposedViewSize, uiView: UITextView, context: Context) -> CGSize? {

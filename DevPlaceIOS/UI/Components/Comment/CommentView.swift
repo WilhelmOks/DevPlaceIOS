@@ -22,6 +22,7 @@ struct CommentView: View {
     var pendingEditQuote: String? = nil
     var onConsumeEditQuote: (() -> Void)? = nil
     var showsTopDivider: Bool = false
+    var previousIndentationLevel: Int? = nil
 
     @State private var isConfirmingDelete = false
     @State private var isEditing = false
@@ -34,6 +35,12 @@ struct CommentView: View {
     
     private var effectiveLevel: Int {
         min(indentationLevel, maxIndentationLevel)
+    }
+
+    private var dividerLeadingPadding: CGFloat {
+        let previousEffectiveLevel = previousIndentationLevel.map { min($0, maxIndentationLevel) } ?? effectiveLevel
+        let deepestLevel = max(effectiveLevel, previousEffectiveLevel)
+        return indentWidth + CGFloat(deepestLevel - effectiveLevel) * indentWidth
     }
 
     private var displayedAttachments: [Attachment] {
@@ -54,7 +61,8 @@ struct CommentView: View {
             VStack(alignment: .leading, spacing: 0) {
                 if showsTopDivider {
                     Divider()
-                        .padding(.horizontal, indentWidth)
+                        .padding(.leading, dividerLeadingPadding)
+                        .padding(.trailing, indentWidth)
                 }
                 
                 commentBody()

@@ -30,13 +30,26 @@ private struct FeedViewContent: View {
     @State private var sheetItem: SheetItem?
     @State private var activeReplyTargetId: String?
     @State private var editingCommentId: String?
+    @State private var pendingEditQuote: String?
     
     private var isComposing: Bool {
         activeReplyTargetId != nil || editingCommentId != nil
     }
     
+    private func insertQuote(_ quote: String) {
+        if editingCommentId != nil {
+            pendingEditQuote = quote
+        } else if activeReplyTargetId != nil {
+            AppSettingsStore.shared.draftReplyMessage += quote
+        }
+    }
+    
     var body: some View {
         content()
+            .environment(
+                \.quoteComposer,
+                QuoteComposer(isActive: isComposing, insert: insertQuote),
+            )
             .screenStyle(bgColor: .BG_2)
             .navigationTitle(Text("Posts"))
             .alert($viewModel.alertMessage)
@@ -75,6 +88,8 @@ private struct FeedViewContent: View {
                         },
                         activeReplyTargetId: $activeReplyTargetId,
                         editingCommentId: $editingCommentId,
+                        pendingEditQuote: pendingEditQuote,
+                        onConsumeEditQuote: { pendingEditQuote = nil },
                     )
                 }
                 if appState.feed?.nextCursor != nil {

@@ -19,6 +19,8 @@ private struct PostViewContent: View {
     @State private var isEditingPost = false
     @State private var activeReply: ReplyAnchor?
     @State private var replyAttachments: [UploadResponse] = []
+    @State private var editingCommentId: String?
+    @State private var pendingEditQuote: String?
     
     private let appSettings = AppSettingsStore.shared
     
@@ -38,9 +40,25 @@ private struct PostViewContent: View {
             set: { appSettings.draftReplyMessage = $0 },
         )
     }
+
+    private var isComposerActive: Bool {
+        activeReply != nil || editingCommentId != nil
+    }
+
+    private func insertQuote(_ quote: String) {
+        if editingCommentId != nil {
+            pendingEditQuote = quote
+        } else if activeReply != nil {
+            appSettings.draftReplyMessage += quote
+        }
+    }
     
     var body: some View {
         content()
+            .environment(
+                \.quoteComposer,
+                QuoteComposer(isActive: isComposerActive, insert: insertQuote),
+            )
             .screenStyle(bgColor: .BG_1)
             .navigationTitle(Text(viewModel.navigationTitle))
             .navigationBarTitleDisplayMode(.inline)
@@ -256,6 +274,9 @@ private struct PostViewContent: View {
                     onReplyAttachmentsChange: { replyAttachments = $0 },
                     onSubmitReply: { comment, content in submitReplyToComment(comment, content: content) },
                     onCancelReply: { cancelReply() },
+                    editingCommentId: $editingCommentId,
+                    pendingEditQuote: pendingEditQuote,
+                    onConsumeEditQuote: { pendingEditQuote = nil },
                 )
             }
             .frame(maxWidth: .infinity, alignment: .leading)

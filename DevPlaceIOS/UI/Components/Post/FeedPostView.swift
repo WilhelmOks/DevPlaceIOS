@@ -10,6 +10,8 @@ struct FeedPostView: View {
 
     @Binding var activeReplyTargetId: String?
     @Binding var editingCommentId: String?
+    var pendingEditQuote: String? = nil
+    var onConsumeEditQuote: (() -> Void)? = nil
     
     @State private var isEditingPost = false
     @State private var replyAttachments: [UploadResponse] = []
@@ -97,6 +99,8 @@ struct FeedPostView: View {
                     onSubmitReply: { comment, content in submitReplyToComment(comment, content: content) },
                     onCancelReply: { cancelReply() },
                     editingCommentId: $editingCommentId,
+                    pendingEditQuote: pendingEditQuote,
+                    onConsumeEditQuote: onConsumeEditQuote,
                 )
                 .padding(.top, 8)
             }

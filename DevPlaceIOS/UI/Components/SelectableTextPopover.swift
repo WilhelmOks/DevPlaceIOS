@@ -29,43 +29,62 @@ private struct SelectableTextPopoverContent: View {
 
     @State private var selection = TextSelectionController()
 
+    @Environment(\.quoteComposer) private var quoteComposer
+    @Environment(\.dismiss) private var dismiss
+
     private let maxContentSize = CGSize(width: 360, height: 400)
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            title()
-
+        VStack(alignment: .leading, spacing: 12) {
             SelectableRawTextView(
                 text: text,
                 maxSize: maxContentSize,
                 selection: selection,
             )
+
+            footer()
         }
         .padding(20)
     }
 
-    @ViewBuilder private func title() -> some View {
+    @ViewBuilder private func footer() -> some View {
         HStack {
-            Button {
-                selection.selectFirstWord()
-            } label: {
-                HStack(spacing: 4) {
-                    Image(systemName: "selection.pin.in.out")
-                    Image(systemName: "arrow.forward")
-                    Image(systemName: "document.on.document")
-                    Image(systemName: "arrow.forward")
-                    Image(systemName: "document.on.clipboard")
+            HStack(spacing: 16) {
+                Button {
+                    selection.selectFirstWord()
+                } label: {
+                    Label("Select first word", systemImage: "selection.pin.in.out")
+                        .labelStyle(.iconOnly)
+                }
+
+                Button {
+                    selection.selectAll()
+                } label: {
+                    Label("Select all text", systemImage: "textformat.characters.arrow.left.and.right")
+                        .labelStyle(.iconOnly)
                 }
             }
-            .accessibilityLabel(Text("Select text and copy it to the clipboard"))
 
             Spacer()
 
-            Button {
-                selection.selectAll()
-            } label: {
-                Label("Select all text", systemImage: "textformat.characters.arrow.left.and.right")
-                    .labelStyle(.iconOnly)
+            HStack(spacing: 16) {
+                Button {
+                    selection.copySelection()
+                    dismiss()
+                } label: {
+                    Label("Copy to clipboard", systemImage: "document.on.clipboard")
+                        .labelStyle(.iconOnly)
+                }
+
+                if quoteComposer.isActive {
+                    Button {
+                        quoteComposer.insert("> " + selection.selectedText + "\n\n")
+                        dismiss()
+                    } label: {
+                        Label("Insert as quote", systemImage: "text.quote")
+                            .labelStyle(.iconOnly)
+                    }
+                }
             }
         }
         .font(.footnote)
@@ -76,6 +95,14 @@ private struct SelectableTextPopoverContent: View {
 
 @MainActor private final class TextSelectionController {
     weak var textView: UITextView?
+
+    var selectedText: String {
+        guard let textView else { return "" }
+        if let range = textView.selectedTextRange, !range.isEmpty {
+            return textView.text(in: range) ?? ""
+        }
+        return textView.text ?? ""
+    }
 
     func selectFirstWord() {
         guard let textView else { return }
@@ -95,6 +122,10 @@ private struct SelectableTextPopoverContent: View {
             from: textView.beginningOfDocument,
             to: textView.endOfDocument,
         )
+    }
+
+    func copySelection() {
+        UIPasteboard.general.string = selectedText
     }
 }
 

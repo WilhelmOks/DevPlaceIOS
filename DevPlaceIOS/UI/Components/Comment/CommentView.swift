@@ -19,6 +19,8 @@ struct CommentView: View {
     var onSubmitReply: ((String) -> Void)? = nil
     var onCancelReply: (() -> Void)? = nil
     var editingCommentId: Binding<String?> = .constant(nil)
+    var pendingEditQuote: String? = nil
+    var onConsumeEditQuote: (() -> Void)? = nil
 
     @State private var isConfirmingDelete = false
     @State private var isEditing = false
@@ -149,6 +151,11 @@ struct CommentView: View {
                 endEditing()
             },
         )
+        .onChange(of: pendingEditQuote) { _, quote in
+            guard let quote else { return }
+            editedText += quote
+            onConsumeEditQuote?()
+        }
     }
 
     @ViewBuilder private func replyButton(onReply: @escaping () -> Void) -> some View {

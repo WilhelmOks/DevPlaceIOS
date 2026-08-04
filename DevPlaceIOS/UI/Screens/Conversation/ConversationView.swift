@@ -22,6 +22,10 @@ private struct ConversationViewContent: View {
 
     var body: some View {
         content()
+            .environment(
+                \.quoteComposer,
+                QuoteComposer(isActive: true) { viewModel.draft += $0 },
+            )
             .screenStyle(bgColor: .BG_2)
             .navigationTitle(Text(viewModel.otherUser.username))
             .navigationBarTitleDisplayMode(.inline)

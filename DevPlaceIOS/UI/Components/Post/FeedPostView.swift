@@ -35,7 +35,7 @@ struct FeedPostView: View {
                 .padding(.bottom, 8)
             
             VStack(alignment: .leading, spacing: 8) {
-                PostHeaderView(author: post.author, date: post.data.createdAt, linksToProfile: false)
+                PostHeaderView(author: post.author, date: post.data.createdAt, linksToProfile: false, commentCount: post.commentCount)
                 
                 PostContentView(topic: post.data.topic, title: post.data.title, content: post.data.content)
                 

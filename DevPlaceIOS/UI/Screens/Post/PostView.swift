@@ -179,6 +179,7 @@ private struct PostViewContent: View {
             PostHeaderView(
                 author: detail.author,
                 date: detail.post.createdAt,
+                commentCount: detail.commentCount,
             )
             
             PostContentView(topic: detail.post.topic, title: detail.post.title, content: detail.post.content)

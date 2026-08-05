@@ -21,6 +21,8 @@ private struct PostViewContent: View {
     @State private var replyAttachments: [UploadResponse] = []
     @State private var editingCommentId: String?
     @State private var pendingEditQuote: String?
+
+    @State private var mentionListHeight: CGFloat = 0
     
     private let appSettings = AppSettingsStore.shared
     
@@ -91,11 +93,17 @@ private struct PostViewContent: View {
                 ScrollView {
                     VStack(spacing: 0) {
                         postBody(postDetail)
-                        
+
                         commentsSection(postDetail)
-                        
+
                         bottomCommentSection(postDetail)
                     }
+                }
+                .onPreferenceChange(MentionListHeightKey.self) { newHeight in
+                    mentionListHeight = newHeight
+                }
+                .onChange(of: mentionListHeight) {
+                    proxy.scrollTo(CommentEditorView.scrollAnchorName, anchor: .bottom)
                 }
                 .onAppear {
                     scrollToTargetComment(using: proxy)
@@ -116,6 +124,7 @@ private struct PostViewContent: View {
             }
         }
     }
+
     
     private func beginReply(_ anchor: ReplyAnchor) {
         discardReplyAttachments()

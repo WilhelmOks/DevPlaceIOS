@@ -31,6 +31,7 @@ private struct FeedViewContent: View {
     @State private var activeReplyTargetId: String?
     @State private var editingCommentId: String?
     @State private var pendingEditQuote: String?
+    @State private var mentionListHeight: CGFloat = 0
     
     private var isComposing: Bool {
         activeReplyTargetId != nil || editingCommentId != nil
@@ -79,38 +80,46 @@ private struct FeedViewContent: View {
     }
     
     @ViewBuilder private func content() -> some View {
-        ScrollView {
-            LazyVStack {
-                let posts = appState.feed?.posts ?? []
-                ForEach(posts, id: \.id) { post in
-                    FeedPostView(
-                        post: post,
-                        onSelect: { slug, scrollToCommentId in
-                            selectedPost = PostDestination(slug: slug, scrollToCommentId: scrollToCommentId)
-                        },
-                        activeReplyTargetId: $activeReplyTargetId,
-                        editingCommentId: $editingCommentId,
-                        pendingEditQuote: pendingEditQuote,
-                        onConsumeEditQuote: { pendingEditQuote = nil },
-                    )
-                }
-                if appState.feed?.nextCursor != nil {
-                    ProgressView()
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .onAppear {
-                            Task {
-                                await viewModel.loadMore()
+        ScrollViewReader { proxy in
+            ScrollView {
+                LazyVStack {
+                    let posts = appState.feed?.posts ?? []
+                    ForEach(posts, id: \.id) { post in
+                        FeedPostView(
+                            post: post,
+                            onSelect: { slug, scrollToCommentId in
+                                selectedPost = PostDestination(slug: slug, scrollToCommentId: scrollToCommentId)
+                            },
+                            activeReplyTargetId: $activeReplyTargetId,
+                            editingCommentId: $editingCommentId,
+                            pendingEditQuote: pendingEditQuote,
+                            onConsumeEditQuote: { pendingEditQuote = nil },
+                        )
+                    }
+                    if appState.feed?.nextCursor != nil {
+                        ProgressView()
+                            .padding()
+                            .frame(maxWidth: .infinity)
+                            .onAppear {
+                                Task {
+                                    await viewModel.loadMore()
+                                }
                             }
-                        }
+                    }
                 }
+                .frame(maxWidth: .infinity)
             }
-            .frame(maxWidth: .infinity)
-        }
-        .onScrollGeometryChange(for: Bool.self) { geometry in
-            geometry.contentOffset.y <= geometry.contentInsets.top
-        } action: { _, newValue in
-            isAtTop = newValue
+            .onScrollGeometryChange(for: Bool.self) { geometry in
+                geometry.contentOffset.y <= geometry.contentInsets.top
+            } action: { _, newValue in
+                isAtTop = newValue
+            }
+            .onPreferenceChange(MentionListHeightKey.self) { newHeight in
+                mentionListHeight = newHeight
+            }
+            .onChange(of: mentionListHeight) {
+                proxy.scrollTo(CommentEditorView.scrollAnchorName, anchor: .bottom)
+            }
         }
         .overlay(alignment: .bottomTrailing) {
             if !isComposing {

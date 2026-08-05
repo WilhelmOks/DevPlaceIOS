@@ -1,10 +1,17 @@
 import SwiftUI
 import DevPlaceSwiftSDK
 
+struct MentionListHeightKey: PreferenceKey {
+    static let defaultValue: CGFloat = 0
+
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = max(value, nextValue())
+    }
+}
+
 struct MentionSuggestionsView: View {
     let text: String
     var participants: [UserSearch.Result] = []
-    var maxHeight: CGFloat? = nil
     let onSelect: (UserSearch.Result) -> Void
 
     @Environment(\.api) private var api
@@ -14,7 +21,6 @@ struct MentionSuggestionsView: View {
             viewModel: .init(api: api),
             text: text,
             participants: participants,
-            maxHeight: maxHeight,
             onSelect: onSelect,
         )
     }
@@ -24,14 +30,16 @@ private struct MentionSuggestionsViewContent: View {
     @State var viewModel: MentionSuggestionsView.ViewModel
     let text: String
     var participants: [UserSearch.Result]
-    var maxHeight: CGFloat?
     let onSelect: (UserSearch.Result) -> Void
 
     @State private var rowsContentHeight: CGFloat = 0
 
+    @ScaledMetric private var minHeight: CGFloat = 50
+    @ScaledMetric private var maxHeight: CGFloat = 164
+
     var body: some View {
         Group {
-            if viewModel.isActive && !viewModel.suggestions.isEmpty {
+            if isShowingList {
                 suggestionsList()
             }
         }
@@ -41,6 +49,15 @@ private struct MentionSuggestionsViewContent: View {
         .onChange(of: participants) {
             viewModel.update(text: text, participants: participants)
         }
+        .preference(key: MentionListHeightKey.self, value: emittedHeight)
+    }
+
+    private var isShowingList: Bool {
+        viewModel.isActive && !viewModel.suggestions.isEmpty
+    }
+
+    private var emittedHeight: CGFloat {
+        isShowingList ? listHeight : 0
     }
 
     @ViewBuilder private func suggestionsList() -> some View {
@@ -59,9 +76,10 @@ private struct MentionSuggestionsViewContent: View {
                     proxy.size.height
                 } action: { rowsContentHeight = $0 }
             }
-            .frame(height: scrollHeight)
+            .frame(height: listHeight)
             .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
         }
+        .contentShape(Rectangle())
         .overlay(alignment: .topTrailing) {
             closeButton()
         }
@@ -69,18 +87,12 @@ private struct MentionSuggestionsViewContent: View {
         .transition(.opacity)
     }
 
-    private var cornerRadius: CGFloat {
-        BoxView<EmptyView>.CornerSize.big.value
+    private var listHeight: CGFloat {
+        min(max(rowsContentHeight, minHeight), maxHeight)
     }
 
-    private var scrollHeight: CGFloat? {
-        guard rowsContentHeight > 0 else {
-            return nil
-        }
-        guard let maxHeight else {
-            return rowsContentHeight
-        }
-        return min(rowsContentHeight, maxHeight)
+    private var cornerRadius: CGFloat {
+        BoxView<EmptyView>.CornerSize.big.value
     }
 
     @ViewBuilder private func closeButton() -> some View {
@@ -128,7 +140,6 @@ private struct MentionSuggestionsViewContent: View {
         MentionSuggestionsView(
             text: text,
             participants: UserSearch.mock.results,
-            maxHeight: 200,
             onSelect: { _ in },
         )
     }

@@ -11,6 +11,7 @@ struct MentionListHeightKey: PreferenceKey {
 
 struct MentionSuggestionsView: View {
     let text: String
+    var caret: String.Index? = nil
     var participants: [UserSearch.Result] = []
     let onSelect: (UserSearch.Result) -> Void
 
@@ -20,6 +21,7 @@ struct MentionSuggestionsView: View {
         MentionSuggestionsViewContent(
             viewModel: .init(api: api),
             text: text,
+            caret: caret,
             participants: participants,
             onSelect: onSelect,
         )
@@ -29,6 +31,7 @@ struct MentionSuggestionsView: View {
 private struct MentionSuggestionsViewContent: View {
     @State var viewModel: MentionSuggestionsView.ViewModel
     let text: String
+    var caret: String.Index?
     var participants: [UserSearch.Result]
     let onSelect: (UserSearch.Result) -> Void
 
@@ -51,10 +54,13 @@ private struct MentionSuggestionsViewContent: View {
                 }
             }
             .onChange(of: text, initial: true) {
-                viewModel.update(text: text, participants: participants)
+                viewModel.update(text: text, caret: caret, participants: participants)
+            }
+            .onChange(of: caret) {
+                viewModel.update(text: text, caret: caret, participants: participants)
             }
             .onChange(of: participants) {
-                viewModel.update(text: text, participants: participants)
+                viewModel.update(text: text, caret: caret, participants: participants)
             }
     }
 

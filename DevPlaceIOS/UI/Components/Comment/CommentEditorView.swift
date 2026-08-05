@@ -16,6 +16,7 @@ struct CommentEditorView: View {
     let onSubmit: (String) -> Void
 
     @FocusState private var isFocused: Bool
+    @State private var selection: TextSelection?
 
     private let keyboardGap: CGFloat = 4
 
@@ -23,6 +24,7 @@ struct CommentEditorView: View {
         VStack(alignment: .leading, spacing: 0) {
             MentionSuggestionsView(
                 text: text,
+                caret: caretIndex,
                 participants: mentionParticipants,
                 onSelect: { suggestion in insertMention(suggestion) },
             )
@@ -30,6 +32,7 @@ struct CommentEditorView: View {
             VStack(alignment: .leading, spacing: 8) {
                 DevPlaceTextEditor(
                     text: $text,
+                    selection: $selection,
                     placeholder: placeholder,
                     initialLineCount: initialLineCount,
                     animatesHeightChanges: true,
@@ -104,11 +107,27 @@ struct CommentEditorView: View {
             && count <= DevPlaceConstants.maxCommentContentLength
     }
 
+    private var caretIndex: String.Index? {
+        guard let selection else {
+            return nil
+        }
+        if case .selection(let range) = selection.indices {
+            return range.upperBound
+        }
+        return nil
+    }
+
     private func insertMention(_ suggestion: UserSearch.Result) {
-        guard let token = MentionToken.active(in: text) else {
+        guard let token = MentionToken.active(in: text, caret: caretIndex) else {
             return
         }
-        text.replaceSubrange(token.range, with: "@\(suggestion.username) ")
+        let followedBySpace = token.range.upperBound < text.endIndex && text[token.range.upperBound].isWhitespace
+        let insertion = followedBySpace ? "@\(suggestion.username)" : "@\(suggestion.username) "
+        let prefixCount = text.distance(from: text.startIndex, to: token.range.lowerBound)
+        text.replaceSubrange(token.range, with: insertion)
+        let caretOffset = prefixCount + insertion.count + (followedBySpace ? 1 : 0)
+        let caret = text.index(text.startIndex, offsetBy: caretOffset)
+        selection = TextSelection(insertionPoint: caret)
     }
 }
 

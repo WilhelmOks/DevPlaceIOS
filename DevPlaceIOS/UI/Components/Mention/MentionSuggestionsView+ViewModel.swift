@@ -19,10 +19,10 @@ extension MentionSuggestionsView {
             self.api = api
         }
 
-        func update(text: String, participants: [UserSearch.Result]) {
+        func update(text: String, caret: String.Index?, participants: [UserSearch.Result]) {
             self.participants = participants
 
-            guard let token = MentionToken.active(in: text) else {
+            guard let token = MentionToken.active(in: text, caret: caret) else {
                 deactivate()
                 return
             }

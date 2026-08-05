@@ -7,6 +7,7 @@ struct DevPlaceTextEditor: View {
     }
 
     @Binding var text: String
+    var selection: Binding<TextSelection?>? = nil
     var placeholder: String = ""
     var sizeMode: SizeMode = .resizable
     var initialLineCount: Int?
@@ -111,8 +112,14 @@ struct DevPlaceTextEditor: View {
                     .allowsHitTesting(false)
             }
 
-            TextEditor(text: $text)
-                .scrollContentBackground(.hidden)
+            Group {
+                if let selection {
+                    TextEditor(text: $text, selection: selection)
+                } else {
+                    TextEditor(text: $text)
+                }
+            }
+            .scrollContentBackground(.hidden)
         }
         .padding(.horizontal, 5)
         .padding(.vertical, 2)

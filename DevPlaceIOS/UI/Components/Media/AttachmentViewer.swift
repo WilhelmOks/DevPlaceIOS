@@ -45,7 +45,7 @@ struct AttachmentViewer: View {
             Button {
                 fullscreen = .image(url)
             } label: {
-                AsyncImage(url: url) { image in
+                CachedAsyncImage(url: url) { image in
                     image
                         .resizable()
                         .scaledToFit()

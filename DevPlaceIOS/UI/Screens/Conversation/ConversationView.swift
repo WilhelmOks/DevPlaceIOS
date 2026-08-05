@@ -18,6 +18,8 @@ private struct ConversationViewContent: View {
 
     @State private var isAtBottom = true
 
+    @State private var scrollPosition = ScrollPosition(edge: .bottom)
+
     @FocusState private var isInputFocused: Bool
 
     @State private var attachmentsResetToken = 0
@@ -54,58 +56,54 @@ private struct ConversationViewContent: View {
     }
 
     @ViewBuilder private func content() -> some View {
-        ScrollViewReader { proxy in
-            ScrollView {
-                LazyVStack(spacing: 12) {
-                    ForEach(viewModel.messages) { message in
-                        MessageBubbleView(message: message)
-                            .id(message.id)
-                    }
-                }
-                .padding(.horizontal, 12)
-                .padding(.top)
-            }
-            .defaultScrollAnchor(.bottom)
-            .simultaneousGesture(
-                TapGesture().onEnded {
-                    isInputFocused = false
-                }
-            )
-            .onScrollGeometryChange(for: Bool.self) { geometry in
-                let distanceFromBottom = geometry.contentSize.height - geometry.contentInsets.top - geometry.containerSize.height - geometry.contentOffset.y
-                return distanceFromBottom <= 30
-            } action: { _, newValue in
-                isAtBottom = newValue
-            }
-            .onChange(of: viewModel.messages.last?.id, initial: true) {
-                scrollToBottom(proxy, animated: false)
-            }
-            .overlay(alignment: .bottomTrailing) {
-                if !isAtBottom {
-                    scrollToBottomButton(proxy)
+        ScrollView {
+            LazyVStack(spacing: 12) {
+                ForEach(viewModel.messages) { message in
+                    MessageBubbleView(message: message)
+                        .id(message.id)
                 }
             }
-            .animation(.snappy, value: isAtBottom)
+            .padding(.horizontal, 12)
+            .padding(.top)
+        }
+        .scrollPosition($scrollPosition)
+        .defaultScrollAnchor(.bottom)
+        .simultaneousGesture(
+            TapGesture().onEnded {
+                isInputFocused = false
+            }
+        )
+        .onScrollGeometryChange(for: Bool.self) { geometry in
+            let distanceFromBottom = geometry.contentSize.height - geometry.contentInsets.top - geometry.containerSize.height - geometry.contentOffset.y
+            return distanceFromBottom <= 30
+        } action: { _, newValue in
+            isAtBottom = newValue
+        }
+        .onChange(of: viewModel.messages.last?.id, initial: true) {
+            scrollToBottom(animated: false)
+        }
+        .overlay(alignment: .bottomTrailing) {
+            if !isAtBottom {
+                scrollToBottomButton()
+            }
+        }
+        .animation(.snappy, value: isAtBottom)
+    }
+
+    private func scrollToBottom(animated: Bool) {
+        guard !viewModel.messages.isEmpty else { return }
+        if animated {
+            withAnimation {
+                scrollPosition.scrollTo(edge: .bottom)
+            }
+        } else {
+            scrollPosition.scrollTo(edge: .bottom)
         }
     }
 
-    private func scrollToBottom(_ proxy: ScrollViewProxy, animated: Bool) {
-        guard let lastId = viewModel.messages.last?.id else { return }
-        Task {
-            try? await Task.sleep(for: .milliseconds(50))
-            if animated {
-                withAnimation {
-                    proxy.scrollTo(lastId, anchor: .bottom)
-                }
-            } else {
-                proxy.scrollTo(lastId, anchor: .bottom)
-            }
-        }
-    }
-
-    @ViewBuilder private func scrollToBottomButton(_ proxy: ScrollViewProxy) -> some View {
+    @ViewBuilder private func scrollToBottomButton() -> some View {
         Button {
-            scrollToBottom(proxy, animated: true)
+            scrollToBottom(animated: true)
         } label: {
             Label("Scroll to latest", systemImage: "chevron.down")
                 .labelStyle(.iconOnly)

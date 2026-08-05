@@ -26,6 +26,7 @@ private struct NotificationsViewContent: View {
     let onOpenConversation: (User) -> Void
 
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.openURL) private var openURL
 
     @State private var isAtTop = true
 
@@ -126,6 +127,8 @@ private struct NotificationsViewContent: View {
                                         onOpenPost(destination)
                                     case .conversation(let otherUser):
                                         onOpenConversation(otherUser)
+                                    case .web(let url):
+                                        openURL(url)
                                     case nil:
                                         break
                                     }

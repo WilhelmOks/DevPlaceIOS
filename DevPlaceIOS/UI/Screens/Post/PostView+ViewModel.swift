@@ -21,6 +21,31 @@ extension PostView {
         var navigationTitle: String {
             postDetail?.post.title ?? "Post"
         }
+
+        var mentionParticipants: [UserSearch.Result] {
+            guard let detail = postDetail else {
+                return []
+            }
+            let authors = [detail.author] + detail.comments.flatMap(\.flattenedAuthors)
+            var seen = Set<String>()
+            var participants: [UserSearch.Result] = []
+            for author in authors {
+                guard !AppState.shared.isCurrentUser(id: author.id) else {
+                    continue
+                }
+                guard seen.insert(author.id).inserted else {
+                    continue
+                }
+                participants.append(
+                    .init(
+                        id: author.id,
+                        username: author.username,
+                        avatarSeed: author.avatarSeed,
+                    )
+                )
+            }
+            return participants
+        }
         
         var editablePost: Post? {
             guard let detail = postDetail else { return nil }
@@ -170,5 +195,11 @@ extension PostView {
                 AppState.shared.updateCommentReactionInFeed(commentId: comment.data.id, emoji: emoji)
             }
         }
+    }
+}
+
+private extension Comment {
+    var flattenedAuthors: [User] {
+        [author] + children.flatMap(\.flattenedAuthors)
     }
 }

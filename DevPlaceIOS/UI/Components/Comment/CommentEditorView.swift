@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 import DevPlaceSwiftSDK
 
 struct CommentEditorView: View {
@@ -9,10 +10,16 @@ struct CommentEditorView: View {
     var focusOnAppear: Bool = false
     var attachments: [UploadResponse] = []
     var onAttachmentsChange: (([UploadResponse]) -> Void)? = nil
+    var mentionParticipants: [UserSearch.Result] = []
     let onCancel: () -> Void
     let onSubmit: (String) -> Void
 
     @FocusState private var isFocused: Bool
+    @State private var editorTopY: CGFloat = 0
+
+    private let mentionGap: CGFloat = 8
+    private let mentionTopClearance: CGFloat = 66
+    private let mentionMinHeight: CGFloat = 70
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -25,6 +32,18 @@ struct CommentEditorView: View {
                 backgroundColor: .BG_0,
             )
             .focused($isFocused)
+            .onGeometryChange(for: CGFloat.self) { proxy in
+                proxy.frame(in: .global).minY
+            } action: { editorTopY = $0 }
+            .overlay(alignment: .top) {
+                MentionSuggestionsView(
+                    text: text,
+                    participants: mentionParticipants,
+                    maxHeight: mentionMaxHeight,
+                    onSelect: { suggestion in insertMention(suggestion) },
+                )
+                .alignmentGuide(.top) { dimensions in dimensions[.bottom] + mentionGap }
+            }
 
             HStack(alignment: .top, spacing: 12) {
                 CharacterCounterView(
@@ -87,6 +106,28 @@ struct CommentEditorView: View {
         let count = TextCharacterCounter.numberOfCharacters(text)
         return count >= DevPlaceConstants.minCommentContentLength
             && count <= DevPlaceConstants.maxCommentContentLength
+    }
+
+    private var mentionMaxHeight: CGFloat? {
+        guard editorTopY > 0 else {
+            return nil
+        }
+        return max(mentionMinHeight, editorTopY - topSafeAreaInset - mentionTopClearance)
+    }
+
+    private var topSafeAreaInset: CGFloat {
+        UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .flatMap(\.windows)
+            .first { $0.isKeyWindow }?
+            .safeAreaInsets.top ?? 0
+    }
+
+    private func insertMention(_ suggestion: UserSearch.Result) {
+        guard let token = MentionToken.active(in: text) else {
+            return
+        }
+        text.replaceSubrange(token.range, with: "@\(suggestion.username) ")
     }
 }
 

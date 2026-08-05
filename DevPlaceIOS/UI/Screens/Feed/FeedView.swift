@@ -52,6 +52,7 @@ private struct FeedViewContent: View {
             )
             .screenStyle(bgColor: .BG_2)
             .navigationTitle(Text("Posts"))
+            .navigationBarTitleDisplayMode(.inline)
             .alert($viewModel.alertMessage)
             .refreshable {
                 await viewModel.refresh()

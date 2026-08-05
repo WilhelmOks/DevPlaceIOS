@@ -223,6 +223,7 @@ private struct PostViewContent: View {
                     focusOnAppear: true,
                     attachments: replyAttachments,
                     onAttachmentsChange: { replyAttachments = $0 },
+                    mentionParticipants: viewModel.mentionParticipants,
                     onCancel: { cancelReply() },
                     onSubmit: { content in submitReplyToPost(detail, content: content) },
                 )
@@ -275,6 +276,7 @@ private struct PostViewContent: View {
                     onReplyAttachmentsChange: { replyAttachments = $0 },
                     onSubmitReply: { comment, content in submitReplyToComment(comment, content: content) },
                     onCancelReply: { cancelReply() },
+                    mentionParticipants: viewModel.mentionParticipants,
                     editingCommentId: $editingCommentId,
                     pendingEditQuote: pendingEditQuote,
                     onConsumeEditQuote: { pendingEditQuote = nil },
@@ -295,6 +297,7 @@ private struct PostViewContent: View {
                     focusOnAppear: true,
                     attachments: replyAttachments,
                     onAttachmentsChange: { replyAttachments = $0 },
+                    mentionParticipants: viewModel.mentionParticipants,
                     onCancel: { cancelReply() },
                     onSubmit: { content in submitReplyToPost(detail, content: content) },
                 )

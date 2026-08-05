@@ -18,6 +18,7 @@ struct CommentsView: View {
     var onReplyAttachmentsChange: (([UploadResponse]) -> Void)? = nil
     var onSubmitReply: ((Comment, String) -> Void)? = nil
     var onCancelReply: (() -> Void)? = nil
+    var mentionParticipants: [UserSearch.Result] = []
     var editingCommentId: Binding<String?> = .constant(nil)
     var pendingEditQuote: String? = nil
     var onConsumeEditQuote: (() -> Void)? = nil
@@ -45,6 +46,7 @@ struct CommentsView: View {
                     onReplyAttachmentsChange: onReplyAttachmentsChange,
                     onSubmitReply: onSubmitReply.map { handler in { content in handler(item.comment, content) } },
                     onCancelReply: onCancelReply,
+                    mentionParticipants: mentionParticipants,
                     editingCommentId: editingCommentId,
                     pendingEditQuote: pendingEditQuote,
                     onConsumeEditQuote: onConsumeEditQuote,

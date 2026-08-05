@@ -18,6 +18,7 @@ struct CommentView: View {
     var onReplyAttachmentsChange: (([UploadResponse]) -> Void)? = nil
     var onSubmitReply: ((String) -> Void)? = nil
     var onCancelReply: (() -> Void)? = nil
+    var mentionParticipants: [UserSearch.Result] = []
     var editingCommentId: Binding<String?> = .constant(nil)
     var pendingEditQuote: String? = nil
     var onConsumeEditQuote: (() -> Void)? = nil
@@ -129,6 +130,7 @@ struct CommentView: View {
                     focusOnAppear: true,
                     attachments: replyAttachments,
                     onAttachmentsChange: onReplyAttachmentsChange,
+                    mentionParticipants: mentionParticipants,
                     onCancel: { onCancelReply?() },
                     onSubmit: { content in onSubmitReply?(content) },
                 )
@@ -159,6 +161,7 @@ struct CommentView: View {
             text: $editedText,
             placeholder: "Edit your comment…",
             initialHeight: contentHeight > 0 ? contentHeight : nil,
+            mentionParticipants: mentionParticipants,
             onCancel: {
                 endEditing()
             },

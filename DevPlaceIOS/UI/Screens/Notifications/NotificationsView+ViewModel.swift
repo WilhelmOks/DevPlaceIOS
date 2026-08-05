@@ -72,6 +72,9 @@ extension NotificationsView {
             if notification.data.type == .message, let otherUser = notification.actor {
                 return .conversation(otherUser)
             }
+            if notification.data.type == .badge {
+                return .ownProfile
+            }
             if notification.data.type == .issue {
                 if let url = URL(string: "https://devplace.net/issues/\(notification.data.relatedId)") {
                     return .web(url)

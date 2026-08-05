@@ -10,6 +10,7 @@ struct MainView: View {
     @State private var selectedTab: TabSelection = .postsFeed
     @State private var feedPost: PostDestination?
     @State private var messagesPath: [User] = []
+    @State private var settingsPath: [SettingsDestination] = []
 
     @State private var feedReselectSignal = false
     @State private var notificationsReselectSignal = false
@@ -87,6 +88,10 @@ struct MainView: View {
                             messagesPath = [otherUser]
                             selectedTab = .messages
                         },
+                        onOpenOwnProfile: {
+                            settingsPath = [.profile]
+                            selectedTab = .settings
+                        },
                     )
                 }
             } label: {
@@ -99,7 +104,7 @@ struct MainView: View {
             .badge(appState.unreadNotificationCount)
 
             Tab(value: .settings) {
-                NavigationStack {
+                NavigationStack(path: $settingsPath) {
                     SettingsView()
                 }
             } label: {

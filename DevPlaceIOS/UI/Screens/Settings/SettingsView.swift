@@ -27,6 +27,12 @@ private struct SettingsViewContent: View {
         content()
             .screenStyle()
             .navigationTitle(Text("Settings"))
+            .navigationDestination(for: SettingsDestination.self) { destination in
+                switch destination {
+                case .profile:
+                    ProfileView()
+                }
+            }
             .toolbar {
                 if !appState.isLoggedIn {
                     ToolbarItem(placement: .topBarTrailing) {
@@ -51,7 +57,7 @@ private struct SettingsViewContent: View {
         Form {
             Section {
                 if appState.isLoggedIn {
-                    NavigationLink(destination: ProfileView()) {
+                    NavigationLink(value: SettingsDestination.profile) {
                         Label {
                             Text("Profile")
                         } icon: {

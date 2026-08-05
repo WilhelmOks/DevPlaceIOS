@@ -7,6 +7,7 @@ struct NotificationsView: View {
     let reselectSignal: Bool
     let onOpenPost: (PostDestination) -> Void
     let onOpenConversation: (User) -> Void
+    let onOpenOwnProfile: () -> Void
 
     var body: some View {
         NotificationsViewContent(
@@ -14,6 +15,7 @@ struct NotificationsView: View {
             reselectSignal: reselectSignal,
             onOpenPost: onOpenPost,
             onOpenConversation: onOpenConversation,
+            onOpenOwnProfile: onOpenOwnProfile,
         )
     }
 }
@@ -24,6 +26,7 @@ private struct NotificationsViewContent: View {
     let reselectSignal: Bool
     let onOpenPost: (PostDestination) -> Void
     let onOpenConversation: (User) -> Void
+    let onOpenOwnProfile: () -> Void
 
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.openURL) private var openURL
@@ -129,6 +132,8 @@ private struct NotificationsViewContent: View {
                                         onOpenConversation(otherUser)
                                     case .web(let url):
                                         openURL(url)
+                                    case .ownProfile:
+                                        onOpenOwnProfile()
                                     case nil:
                                         break
                                     }
@@ -184,7 +189,7 @@ private struct NotificationRow: View {
 
 #Preview {
     NavigationStack {
-        NotificationsView(reselectSignal: false, onOpenPost: { _ in }, onOpenConversation: { _ in })
+        NotificationsView(reselectSignal: false, onOpenPost: { _ in }, onOpenConversation: { _ in }, onOpenOwnProfile: {})
     }
     .environment(\.api, .mock)
 }

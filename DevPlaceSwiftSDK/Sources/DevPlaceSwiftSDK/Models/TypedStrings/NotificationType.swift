@@ -5,4 +5,5 @@ public enum NotificationType: String, Hashable, Sendable {
     case vote = "vote"
     case message = "message"
     case issue = "issue"
+    case badge = "badge"
 }

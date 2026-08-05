@@ -59,16 +59,18 @@ extension ConversationView {
             let content = draft
             let attachmentsToSend = attachments
             isSending = true
+            draft = ""
+            attachments = []
             defer { isSending = false }
             do {
                 try await api.sendMessage(receiverId: otherUser.id, content: content, attachments: attachmentsToSend)
-                draft = ""
-                attachments = []
                 try? await Task.sleep(for: .milliseconds(500))
                 inbox = try await api.messages(withUid: otherUser.id)
                 await AppState.shared.loadUnreadCounts(api: api)
                 return true
             } catch {
+                draft = content
+                attachments = attachmentsToSend
                 alertMessage = .presentedError(error)
                 return false
             }

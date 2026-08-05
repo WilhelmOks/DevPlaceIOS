@@ -14,6 +14,8 @@ struct ConversationView: View {
 private struct ConversationViewContent: View {
     @State var viewModel: ConversationView.ViewModel
 
+    @Environment(\.scenePhase) private var scenePhase
+
     @State private var isAtBottom = true
 
     @FocusState private var isInputFocused: Bool
@@ -43,6 +45,11 @@ private struct ConversationViewContent: View {
             }
             .onDisappear {
                 Task { await viewModel.deleteUnsubmittedAttachments() }
+            }
+            .onChange(of: scenePhase) { _, newPhase in
+                if newPhase == .active {
+                    Task { await viewModel.load() }
+                }
             }
     }
 

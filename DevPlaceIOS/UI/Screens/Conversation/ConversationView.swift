@@ -63,11 +63,13 @@ private struct ConversationViewContent: View {
                         .id(message.id)
                 }
             }
+            .scrollTargetLayout()
             .padding(.horizontal, 12)
             .padding(.top)
         }
         .scrollPosition($scrollPosition)
         .defaultScrollAnchor(.bottom)
+        .scrollDismissesKeyboard(.interactively)
         .simultaneousGesture(
             TapGesture().onEnded {
                 isInputFocused = false
@@ -91,13 +93,13 @@ private struct ConversationViewContent: View {
     }
 
     private func scrollToBottom(animated: Bool) {
-        guard !viewModel.messages.isEmpty else { return }
+        guard let lastMessageId = viewModel.messages.last?.id else { return }
         if animated {
             withAnimation {
-                scrollPosition.scrollTo(edge: .bottom)
+                scrollPosition.scrollTo(id: lastMessageId, anchor: .bottom)
             }
         } else {
-            scrollPosition.scrollTo(edge: .bottom)
+            scrollPosition.scrollTo(id: lastMessageId, anchor: .bottom)
         }
     }
 

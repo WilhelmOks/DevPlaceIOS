@@ -12,13 +12,16 @@ public extension UserSearch {
     struct Result: Hashable, Sendable, Identifiable {
         public let id: String
         public let username: String
+        public let avatarSeed: String?
 
         public init(
             id: String,
             username: String,
+            avatarSeed: String?,
         ) {
             self.id = id
             self.username = username
+            self.avatarSeed = avatarSeed
         }
     }
 }
@@ -33,6 +36,7 @@ extension UserSearch.Result {
     struct CodingData: Decodable {
         let uid: String
         let username: String
+        let avatar_seed: String?
     }
 }
 
@@ -49,6 +53,7 @@ extension UserSearch.Result.CodingData {
         .init(
             id: uid,
             username: username,
+            avatarSeed: avatar_seed,
         )
     }
 }

@@ -84,6 +84,18 @@ final class MockDevPlaceApi: DevPlaceApi {
         try await refreshTokenIfNeeded()
     }
 
+    func usersForMentioning(matching query: String) async throws -> UserSearch {
+        await mockDelay(0.2)
+        try await refreshTokenIfNeeded()
+        guard !query.isEmpty else {
+            return .mock
+        }
+        let matches = UserSearch.mock.results.filter {
+            $0.username.localizedCaseInsensitiveContains(query)
+        }
+        return UserSearch(results: matches)
+    }
+
     func notifications(before: Date?) async throws -> Notifications {
         await mockDelay(0.5)
         try await refreshTokenIfNeeded()

@@ -145,6 +145,14 @@ final class ProdDevPlaceApi: DevPlaceApi {
         try await request.sendMessage(receiverId: receiverId, content: content, attachments: attachments, token: token)
     }
 
+    func usersForMentioning(matching query: String) async throws -> UserSearch {
+        guard let token = AppState.shared.token else {
+            throw DevPlaceError.notLoggedIn
+        }
+        try await refreshTokenIfNeeded()
+        return try await request.searchMessageRecipients(q: query, token: token)
+    }
+
     func notifications(before: Date?) async throws -> Notifications {
         guard let token = AppState.shared.token else {
             throw DevPlaceError.notLoggedIn

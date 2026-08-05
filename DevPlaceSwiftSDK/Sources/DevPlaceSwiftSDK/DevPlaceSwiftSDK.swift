@@ -334,8 +334,8 @@ public extension DevPlaceRequest {
         return response.decoded
     }
 
-    func searchProfiles(q: String, token: AuthToken) async throws -> UserSearch {
-        let config = makeConfig(.get, path: "profile/search", urlParameters: ["q": q], token: token)
+    func searchProfiles(q: String) async throws -> UserSearch {
+        let config = makeConfig(.get, path: "profile/search", urlParameters: ["q": q], token: nil)
         let response: UserSearch.CodingData = try await request.requestJson(config: config, apiError: ApiError.self)
         return response.decoded
     }

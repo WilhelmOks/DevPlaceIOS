@@ -37,27 +37,29 @@ private struct MentionSuggestionsViewContent: View {
     @ScaledMetric private var minHeight: CGFloat = 50
     @ScaledMetric private var maxHeight: CGFloat = 164
 
+    private let bottomGap: CGFloat = 8
+
     var body: some View {
-        Group {
-            if isShowingList {
-                suggestionsList()
+        suggestionsList()
+            .opacity(isShowingList ? 1 : 0)
+            .allowsHitTesting(isShowingList)
+            .padding(.bottom, isShowingList ? bottomGap : 0)
+            .animation(.smooth(duration: 0.25), value: listHeight)
+            .background {
+                GeometryReader { proxy in
+                    Color.clear.preference(key: MentionListHeightKey.self, value: proxy.size.height)
+                }
             }
-        }
-        .onChange(of: text, initial: true) {
-            viewModel.update(text: text, participants: participants)
-        }
-        .onChange(of: participants) {
-            viewModel.update(text: text, participants: participants)
-        }
-        .preference(key: MentionListHeightKey.self, value: emittedHeight)
+            .onChange(of: text, initial: true) {
+                viewModel.update(text: text, participants: participants)
+            }
+            .onChange(of: participants) {
+                viewModel.update(text: text, participants: participants)
+            }
     }
 
     private var isShowingList: Bool {
         viewModel.isActive && !viewModel.suggestions.isEmpty
-    }
-
-    private var emittedHeight: CGFloat {
-        isShowingList ? listHeight : 0
     }
 
     @ViewBuilder private func suggestionsList() -> some View {
@@ -84,11 +86,13 @@ private struct MentionSuggestionsViewContent: View {
             closeButton()
         }
         .shadow(color: .black.opacity(0.2), radius: 12, y: 4)
-        .transition(.opacity)
     }
 
     private var listHeight: CGFloat {
-        min(max(rowsContentHeight, minHeight), maxHeight)
+        guard isShowingList else {
+            return 0
+        }
+        return min(max(rowsContentHeight, minHeight), maxHeight)
     }
 
     private var cornerRadius: CGFloat {

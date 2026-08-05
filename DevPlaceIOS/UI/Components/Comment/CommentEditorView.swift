@@ -17,72 +17,74 @@ struct CommentEditorView: View {
 
     @FocusState private var isFocused: Bool
 
-    private let keyboardGap: CGFloat = 12
+    private let keyboardGap: CGFloat = 4
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 0) {
             MentionSuggestionsView(
                 text: text,
                 participants: mentionParticipants,
                 onSelect: { suggestion in insertMention(suggestion) },
             )
 
-            DevPlaceTextEditor(
-                text: $text,
-                placeholder: placeholder,
-                initialLineCount: initialLineCount,
-                animatesHeightChanges: true,
-                initialHeight: initialHeight,
-                backgroundColor: .BG_0,
-            )
-            .focused($isFocused)
-
-            HStack(alignment: .top, spacing: 12) {
-                CharacterCounterView(
-                    text: text,
-                    minCount: DevPlaceConstants.minCommentContentLength,
-                    maxCount: DevPlaceConstants.maxCommentContentLength,
+            VStack(alignment: .leading, spacing: 8) {
+                DevPlaceTextEditor(
+                    text: $text,
+                    placeholder: placeholder,
+                    initialLineCount: initialLineCount,
+                    animatesHeightChanges: true,
+                    initialHeight: initialHeight,
+                    backgroundColor: .BG_0,
                 )
-                .padding(.horizontal, 11)
+                .focused($isFocused)
 
-                Spacer(minLength: 0)
+                HStack(alignment: .top, spacing: 12) {
+                    CharacterCounterView(
+                        text: text,
+                        minCount: DevPlaceConstants.minCommentContentLength,
+                        maxCount: DevPlaceConstants.maxCommentContentLength,
+                    )
+                    .padding(.horizontal, 11)
 
-                HStack(spacing: 24) {
-                    if let onAttachmentsChange, attachments.isEmpty {
-                        AttachmentUploaderView(
-                            isSmall: true,
-                            attachments: attachments,
-                            onAttachmentsChange: onAttachmentsChange,
-                        )
+                    Spacer(minLength: 0)
+
+                    HStack(spacing: 24) {
+                        if let onAttachmentsChange, attachments.isEmpty {
+                            AttachmentUploaderView(
+                                isSmall: true,
+                                attachments: attachments,
+                                onAttachmentsChange: onAttachmentsChange,
+                            )
+                        }
+
+                        Button {
+                            onCancel()
+                        } label: {
+                            Label("Cancel", systemImage: "xmark")
+                                .labelStyle(.iconOnly)
+                        }
+                        .buttonStyle(.plain)
+                        .foregroundStyle(Color.FG_2)
+
+                        Button {
+                            onSubmit(text)
+                        } label: {
+                            Label("Submit", systemImage: "checkmark")
+                                .labelStyle(.iconOnly)
+                        }
+                        .buttonStyle(.plain)
+                        .foregroundStyle(Color.accentColor)
+                        .disabled(!canSubmit)
                     }
-
-                    Button {
-                        onCancel()
-                    } label: {
-                        Label("Cancel", systemImage: "xmark")
-                            .labelStyle(.iconOnly)
-                    }
-                    .buttonStyle(.plain)
-                    .foregroundStyle(Color.FG_2)
-
-                    Button {
-                        onSubmit(text)
-                    } label: {
-                        Label("Submit", systemImage: "checkmark")
-                            .labelStyle(.iconOnly)
-                    }
-                    .buttonStyle(.plain)
-                    .foregroundStyle(Color.accentColor)
-                    .disabled(!canSubmit)
+                    .padding(.horizontal, 11)
                 }
-                .padding(.horizontal, 11)
-            }
 
-            if let onAttachmentsChange, !attachments.isEmpty {
-                AttachmentUploaderView(
-                    attachments: attachments,
-                    onAttachmentsChange: onAttachmentsChange,
-                )
+                if let onAttachmentsChange, !attachments.isEmpty {
+                    AttachmentUploaderView(
+                        attachments: attachments,
+                        onAttachmentsChange: onAttachmentsChange,
+                    )
+                }
             }
         }
         .padding(.bottom, keyboardGap)

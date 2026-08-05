@@ -28,6 +28,28 @@ struct FeedPostView: View {
     private var isReplyingToPost: Bool {
         activeReplyTargetId == post.data.id
     }
+
+    private var mentionParticipants: [UserSearch.Result] {
+        let authors = [post.author] + post.recentComments.flatMap(\.flattenedAuthors)
+        var seen = Set<String>()
+        var participants: [UserSearch.Result] = []
+        for author in authors {
+            guard !AppState.shared.isCurrentUser(id: author.id) else {
+                continue
+            }
+            guard seen.insert(author.id).inserted else {
+                continue
+            }
+            participants.append(
+                .init(
+                    id: author.id,
+                    username: author.username,
+                    avatarSeed: author.avatarSeed,
+                )
+            )
+        }
+        return participants
+    }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -72,6 +94,7 @@ struct FeedPostView: View {
                         focusOnAppear: true,
                         attachments: replyAttachments,
                         onAttachmentsChange: { replyAttachments = $0 },
+                        mentionParticipants: mentionParticipants,
                         onCancel: { cancelReply() },
                         onSubmit: { content in submitReplyToPost(content: content) },
                     )
@@ -98,6 +121,7 @@ struct FeedPostView: View {
                     onReplyAttachmentsChange: { replyAttachments = $0 },
                     onSubmitReply: { comment, content in submitReplyToComment(comment, content: content) },
                     onCancelReply: { cancelReply() },
+                    mentionParticipants: mentionParticipants,
                     editingCommentId: $editingCommentId,
                     pendingEditQuote: pendingEditQuote,
                     onConsumeEditQuote: onConsumeEditQuote,
@@ -296,6 +320,12 @@ struct FeedPostView: View {
         ) {
             AppState.shared.updateCommentReactionInFeed(commentId: comment.data.id, emoji: emoji)
         }
+    }
+}
+
+private extension Comment {
+    var flattenedAuthors: [User] {
+        [author] + children.flatMap(\.flattenedAuthors)
     }
 }
 

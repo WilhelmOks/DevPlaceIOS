@@ -78,7 +78,7 @@ private struct ConversationViewContent: View {
 
     @ViewBuilder private func messages() -> some View {
         ScrollView {
-            LazyVStack(spacing: 12) {
+            VStack(spacing: 12) {
                 ForEach(viewModel.messages) { message in
                     MessageBubbleView(message: message, maxBubbleWidth: bubbleMaxWidth)
                         .id(message.id)
@@ -96,18 +96,20 @@ private struct ConversationViewContent: View {
                 isInputFocused = false
             }
         )
-        .onScrollGeometryChange(for: CGFloat.self) { geometry in
-            geometry.containerSize.width
-        } action: { _, newValue in
+        .onGeometryChange(for: CGFloat.self) { proxy in
+            proxy.size.width
+        } action: { newValue in
             scrollViewWidth = newValue
         }
         .onScrollGeometryChange(for: Bool.self) { geometry in
             let distanceFromBottom = geometry.contentSize.height - geometry.contentInsets.top - geometry.containerSize.height - geometry.contentOffset.y
-            return distanceFromBottom <= 30
+            return distanceFromBottom <= 80
         } action: { _, newValue in
             isAtBottom = newValue
         }
-        .onChange(of: viewModel.messages.last?.id, initial: true) {
+        .onScrollGeometryChange(for: CGFloat.self) { geometry in
+            geometry.contentSize.height
+        } action: { _, _ in
             if isAtBottom {
                 scrollToBottom(animated: false)
             }

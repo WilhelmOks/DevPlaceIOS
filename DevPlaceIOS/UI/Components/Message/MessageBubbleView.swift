@@ -9,6 +9,7 @@ struct MessageBubbleView: View {
 
     private let maxBubbleWidth: CGFloat = 320
     private let cornerRadius: CGFloat = 16
+    private let tailCornerRadius: CGFloat = 4
 
     var body: some View {
         HStack(spacing: 0) {
@@ -45,7 +46,10 @@ struct MessageBubbleView: View {
         }
         .foregroundStyle(Color.FG_1)
         .background(bubbleColor)
-        .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+        .clipShape(bubbleShape)
+        .overlay {
+            bubbleShape.strokeBorder(Color.FG_2.opacity(0.12), lineWidth: 1)
+        }
     }
 
     @ViewBuilder private func footer() -> some View {
@@ -56,6 +60,15 @@ struct MessageBubbleView: View {
                 DoubleCheckmark(read: message.data.read)
             }
         }
+    }
+
+    private var bubbleShape: UnevenRoundedRectangle {
+        UnevenRoundedRectangle(
+            topLeadingRadius: cornerRadius,
+            bottomLeadingRadius: message.isMine ? cornerRadius : tailCornerRadius,
+            bottomTrailingRadius: message.isMine ? tailCornerRadius : cornerRadius,
+            topTrailingRadius: cornerRadius,
+        )
     }
 
     private var bubbleAlignment: HorizontalAlignment {

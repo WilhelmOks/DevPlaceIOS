@@ -5,7 +5,11 @@ struct TypingIndicatorView: View {
 
     @State private var isAnimating = false
 
-    @ScaledMetric private var dotSize = 7
+    @ScaledMetric private var dotSize = 5
+
+    private var shape: RoundedRectangle {
+        RoundedRectangle(cornerRadius: 10)
+    }
 
     var body: some View {
         HStack(spacing: dotSize * 0.6) {
@@ -22,10 +26,13 @@ struct TypingIndicatorView: View {
                     )
             }
         }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 12)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 8)
         .background(Color.BG_1)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .clipShape(shape)
+        .overlay {
+            shape.strokeBorder(Color.FG_2.opacity(0.12), lineWidth: 1)
+        }
         .onAppear { isAnimating = true }
         .accessibilityLabel(Text("\(username) is typing"))
     }

@@ -176,6 +176,9 @@ extension ConversationView {
         }
 
         private func upsertIncoming(_ incoming: ChatSocketIncomingMessage) {
+            let belongsToConversation = incoming.senderUid == otherUser.id || incoming.receiverUid == otherUser.id
+            guard belongsToConversation else { return }
+
             let message = makeMessage(from: incoming)
 
             if let clientId = incoming.clientId, let index = messages.firstIndex(where: { $0.data.id == clientId }) {

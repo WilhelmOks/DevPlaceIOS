@@ -4,10 +4,10 @@ import DevPlaceSwiftSDK
 
 struct MessageBubbleView: View {
     let message: Message
+    let maxBubbleWidth: CGFloat
 
     @Environment(\.colorScheme) private var colorScheme
 
-    private let maxBubbleWidth: CGFloat = 320
     private let cornerRadius: CGFloat = 16
     private let tailCornerRadius: CGFloat = 4
 
@@ -79,22 +79,11 @@ struct MessageBubbleView: View {
 private struct HuggingWidthLayout: Layout {
     let maxWidth: CGFloat
 
-    struct CacheData {
-        var cap: CGFloat
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        subviews[0].sizeThatFits(ProposedViewSize(width: maxWidth, height: proposal.height))
     }
 
-    func makeCache(subviews: Subviews) -> CacheData {
-        CacheData(cap: maxWidth)
-    }
-
-    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout CacheData) -> CGSize {
-        if let proposedWidth = proposal.width, proposedWidth > 0, proposedWidth.isFinite {
-            cache.cap = min(proposedWidth, maxWidth)
-        }
-        return subviews[0].sizeThatFits(ProposedViewSize(width: cache.cap, height: proposal.height))
-    }
-
-    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout CacheData) {
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
         subviews[0].place(
             at: bounds.origin,
             proposal: ProposedViewSize(width: bounds.width, height: bounds.height),
@@ -126,7 +115,7 @@ private struct DoubleCheckmark: View {
     ScrollView {
         VStack(spacing: 12) {
             ForEach(MessagesInbox.mockConversation.messages) { message in
-                MessageBubbleView(message: message)
+                MessageBubbleView(message: message, maxBubbleWidth: 300)
             }
         }
         .padding()

@@ -24,6 +24,16 @@ private struct ConversationViewContent: View {
 
     @State private var attachmentsResetToken = 0
 
+    @State private var scrollViewWidth: CGFloat = 0
+
+    private let horizontalInset: CGFloat = 12
+    private let bubbleOppositeEdgeGap: CGFloat = 48
+
+    private var bubbleMaxWidth: CGFloat {
+        guard scrollViewWidth > 0 else { return 300 }
+        return max(scrollViewWidth - horizontalInset * 2 - bubbleOppositeEdgeGap, 120)
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             messages()
@@ -70,12 +80,12 @@ private struct ConversationViewContent: View {
         ScrollView {
             LazyVStack(spacing: 12) {
                 ForEach(viewModel.messages) { message in
-                    MessageBubbleView(message: message)
+                    MessageBubbleView(message: message, maxBubbleWidth: bubbleMaxWidth)
                         .id(message.id)
                 }
             }
             .frame(maxWidth: .infinity)
-            .padding(.horizontal, 12)
+            .padding(.horizontal, horizontalInset)
             .padding(.vertical, 16)
         }
         .scrollPosition($scrollPosition)
@@ -86,6 +96,11 @@ private struct ConversationViewContent: View {
                 isInputFocused = false
             }
         )
+        .onScrollGeometryChange(for: CGFloat.self) { geometry in
+            geometry.containerSize.width
+        } action: { _, newValue in
+            scrollViewWidth = newValue
+        }
         .onScrollGeometryChange(for: Bool.self) { geometry in
             let distanceFromBottom = geometry.contentSize.height - geometry.contentInsets.top - geometry.containerSize.height - geometry.contentOffset.y
             return distanceFromBottom <= 30

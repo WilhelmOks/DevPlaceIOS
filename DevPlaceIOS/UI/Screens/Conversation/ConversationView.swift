@@ -44,14 +44,24 @@ private struct ConversationViewContent: View {
             }
             .task {
                 await viewModel.load()
+                await viewModel.startRealtime()
             }
             .onDisappear {
+                viewModel.stopRealtime()
                 Task { await viewModel.deleteUnsubmittedAttachments() }
             }
             .onChange(of: scenePhase) { _, newPhase in
                 if newPhase == .active {
-                    Task { await viewModel.load() }
+                    Task {
+                        await viewModel.load()
+                        await viewModel.startRealtime()
+                    }
+                } else {
+                    viewModel.stopRealtime()
                 }
+            }
+            .onChange(of: viewModel.draft) {
+                viewModel.userIsTyping()
             }
     }
 
@@ -62,7 +72,14 @@ private struct ConversationViewContent: View {
                     MessageBubbleView(message: message)
                         .id(message.id)
                 }
+
+                if viewModel.isOtherTyping {
+                    TypingIndicatorView(username: viewModel.otherUser.username)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .transition(.opacity)
+                }
             }
+            .animation(.snappy, value: viewModel.isOtherTyping)
             .scrollTargetLayout()
             .padding(.horizontal, 12)
             .padding(.top)

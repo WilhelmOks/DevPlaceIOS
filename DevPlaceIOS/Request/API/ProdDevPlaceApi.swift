@@ -145,6 +145,27 @@ final class ProdDevPlaceApi: DevPlaceApi {
         try await request.sendMessage(receiverId: receiverId, content: content, attachments: attachments, token: token)
     }
 
+    func makeMessagesSocket(otherUserId: String) -> any MessagesSocket {
+        LiveMessagesSocket(receiverUid: otherUserId) {
+            try await self.messagesWebSocketURL()
+        }
+    }
+
+    private func messagesWebSocketURL() async throws -> URL {
+        guard AppState.shared.token != nil else {
+            throw DevPlaceError.notLoggedIn
+        }
+        try await refreshTokenIfNeeded()
+        guard let token = AppState.shared.token else {
+            throw DevPlaceError.notLoggedIn
+        }
+        let ticket = try await request.getMessagesWebSocketTicket(token: token)
+        guard let url = request.messagesWebSocketURL(ticket: ticket.ticket) else {
+            throw DevPlaceError.invalidUrl(ticket.ticket)
+        }
+        return url
+    }
+
     func usersForMentioning(matching query: String) async throws -> UserSearch {
         guard let token = AppState.shared.token else {
             throw DevPlaceError.notLoggedIn

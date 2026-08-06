@@ -14,6 +14,7 @@ protocol DevPlaceApi {
     func profile(username: String?) async throws -> Profile
     func messages(withUid: String?) async throws -> MessagesInbox
     func sendMessage(receiverId: String, content: String, attachments: [UploadResponse]) async throws
+    func makeMessagesSocket(otherUserId: String) -> any MessagesSocket
     func usersForMentioning(matching query: String) async throws -> UserSearch
     func notifications(before: Date?) async throws -> Notifications
     func openNotification(uid: String) async throws -> NotificationOpen

@@ -466,6 +466,26 @@ public extension DevPlaceRequest {
         return response.decoded
     }
 
+    func getMessagesWebSocketTicket(token: AuthToken) async throws -> MessagesWebSocketTicket {
+        let config = makeConfig(.post, path: "messages/ws-ticket", token: token)
+        let response: MessagesWebSocketTicket.CodingData = try await request.requestJson(config: config, apiError: ApiError.self)
+        return response.decoded
+    }
+
+    func messagesWebSocketURL(ticket: String) -> URL? {
+        var base = backend.baseURL
+        if base.hasPrefix("https://") {
+            base = "wss://" + base.dropFirst("https://".count)
+        } else if base.hasPrefix("http://") {
+            base = "ws://" + base.dropFirst("http://".count)
+        }
+        if !base.hasSuffix("/") {
+            base += "/"
+        }
+        let encodedTicket = ticket.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ticket
+        return URL(string: base + "messages/ws?ticket=" + encodedTicket)
+    }
+
     // MARK: - Notifications
 
     func getNotifications(before: Date? = nil, token: AuthToken) async throws -> Notifications {

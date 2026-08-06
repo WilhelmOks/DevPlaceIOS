@@ -84,6 +84,10 @@ final class MockDevPlaceApi: DevPlaceApi {
         try await refreshTokenIfNeeded()
     }
 
+    func makeMessagesSocket(otherUserId: String) -> any MessagesSocket {
+        MockMessagesSocket()
+    }
+
     func usersForMentioning(matching query: String) async throws -> UserSearch {
         await mockDelay(0.2)
         try await refreshTokenIfNeeded()

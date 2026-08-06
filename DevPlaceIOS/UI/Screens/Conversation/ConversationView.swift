@@ -99,7 +99,9 @@ private struct ConversationViewContent: View {
             isAtBottom = newValue
         }
         .onChange(of: viewModel.messages.last?.id, initial: true) {
-            scrollToBottom(animated: false)
+            if isAtBottom {
+                scrollToBottom(animated: false)
+            }
         }
         .overlay(alignment: .bottomTrailing) {
             if !isAtBottom {

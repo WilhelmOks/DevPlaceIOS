@@ -66,12 +66,14 @@ final class LiveMessagesSocket: MessagesSocket {
                 backoffMs = 200
                 try await receiveLoop(socketTask)
             } catch {
-                dlog("Chat socket connection error: \(error)")
+                if isActive && !Task.isCancelled {
+                    dlog("Chat socket connection error: \(error)")
+                }
             }
 
-            continuation.yield(.disconnected)
-
             guard isActive && !Task.isCancelled else { break }
+
+            continuation.yield(.disconnected)
 
             let closeCode = task?.closeCode.rawValue ?? 0
             let delayMs: UInt64

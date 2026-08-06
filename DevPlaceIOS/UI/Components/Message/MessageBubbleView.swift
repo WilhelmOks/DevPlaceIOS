@@ -12,17 +12,8 @@ struct MessageBubbleView: View {
     private let tailCornerRadius: CGFloat = 4
 
     var body: some View {
-        HStack(spacing: 0) {
-            if message.isMine {
-                Spacer(minLength: 40)
-            }
-
-            bubble()
-
-            if !message.isMine {
-                Spacer(minLength: 40)
-            }
-        }
+        bubble()
+            .frame(maxWidth: .infinity, alignment: message.isMine ? .trailing : .leading)
     }
 
     @ViewBuilder private func bubble() -> some View {
@@ -88,12 +79,22 @@ struct MessageBubbleView: View {
 private struct HuggingWidthLayout: Layout {
     let maxWidth: CGFloat
 
-    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
-        let width = min(proposal.replacingUnspecifiedDimensions().width, maxWidth)
-        return subviews[0].sizeThatFits(ProposedViewSize(width: width, height: proposal.height))
+    struct CacheData {
+        var cap: CGFloat
     }
 
-    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+    func makeCache(subviews: Subviews) -> CacheData {
+        CacheData(cap: maxWidth)
+    }
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout CacheData) -> CGSize {
+        if let proposedWidth = proposal.width, proposedWidth > 0, proposedWidth.isFinite {
+            cache.cap = min(proposedWidth, maxWidth)
+        }
+        return subviews[0].sizeThatFits(ProposedViewSize(width: cache.cap, height: proposal.height))
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout CacheData) {
         subviews[0].place(
             at: bounds.origin,
             proposal: ProposedViewSize(width: bounds.width, height: bounds.height),

@@ -74,9 +74,9 @@ private struct ConversationViewContent: View {
                         .id(message.id)
                 }
             }
-            .scrollTargetLayout()
+            .frame(maxWidth: .infinity)
             .padding(.horizontal, 12)
-            .padding(.vertical)
+            .padding(.vertical, 16)
         }
         .scrollPosition($scrollPosition)
         .defaultScrollAnchor(.bottom)
@@ -98,19 +98,23 @@ private struct ConversationViewContent: View {
             }
         }
         .overlay(alignment: .bottom) {
-            if viewModel.isOtherTyping {
-                TypingIndicatorView(username: viewModel.otherUser.username)
-                    .padding(.bottom, 8)
-                    .transition(.opacity)
+            Group {
+                if viewModel.isOtherTyping {
+                    TypingIndicatorView(username: viewModel.otherUser.username)
+                        .padding(.bottom, 8)
+                        .transition(.opacity)
+                }
             }
+            .animation(.snappy, value: viewModel.isOtherTyping)
         }
         .overlay(alignment: .bottomTrailing) {
-            if !isAtBottom {
-                scrollToBottomButton()
+            Group {
+                if !isAtBottom {
+                    scrollToBottomButton()
+                }
             }
+            .animation(.snappy, value: isAtBottom)
         }
-        .animation(.snappy, value: isAtBottom)
-        .animation(.snappy, value: viewModel.isOtherTyping)
     }
 
     private func scrollToBottom(animated: Bool) {

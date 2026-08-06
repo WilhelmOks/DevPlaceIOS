@@ -2,27 +2,28 @@ import Foundation
 
 public enum ChatSocketFrameDecoder {
     public static func decode(_ data: Data) -> ChatSocketEvent? {
-        guard let typeHolder = try? decoder.decode(FrameType.self, from: data) else {
+        guard
+            let typeHolder = try? decoder.decode(FrameType.self, from: data),
+            let type = ChatSocketServerFrameType(rawValue: typeHolder.type)
+        else {
             return nil
         }
-        switch typeHolder.type {
-        case "ready":
+        switch type {
+        case .ready:
             guard let frame = try? decoder.decode(ReadyFrame.self, from: data) else { return nil }
             return .ready(userUid: frame.user_uid)
-        case "message":
+        case .message:
             guard let frame = try? decoder.decode(MessageFrame.self, from: data) else { return nil }
             return .message(frame.incoming)
-        case "typing":
+        case .typing:
             guard let frame = try? decoder.decode(TypingFrame.self, from: data) else { return nil }
             return .typing(fromUid: frame.from_uid)
-        case "read":
+        case .read:
             guard let frame = try? decoder.decode(ReadFrame.self, from: data) else { return nil }
             return .read(byUid: frame.by_uid)
-        case "error":
+        case .error:
             guard let frame = try? decoder.decode(ErrorFrame.self, from: data) else { return nil }
             return .failed(clientId: frame.client_id, text: frame.text)
-        default:
-            return nil
         }
     }
 
@@ -125,7 +126,7 @@ private struct AttachmentFrame: Decodable {
 }
 
 private struct OutgoingSendFrame: Encodable {
-    let type = "send"
+    let type = ChatSocketClientFrameType.send.rawValue
     let receiver_uid: String
     let content: String
     let attachment_uids: [String]
@@ -133,11 +134,11 @@ private struct OutgoingSendFrame: Encodable {
 }
 
 private struct OutgoingTypingFrame: Encodable {
-    let type = "typing"
+    let type = ChatSocketClientFrameType.typing.rawValue
     let receiver_uid: String
 }
 
 private struct OutgoingReadFrame: Encodable {
-    let type = "read"
+    let type = ChatSocketClientFrameType.read.rawValue
     let with_uid: String
 }

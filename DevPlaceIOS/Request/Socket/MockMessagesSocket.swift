@@ -1,4 +1,5 @@
 import Foundation
+import DevPlaceSwiftSDK
 
 final class MockMessagesSocket: MessagesSocket {
     let events: AsyncStream<ChatSocketEvent>

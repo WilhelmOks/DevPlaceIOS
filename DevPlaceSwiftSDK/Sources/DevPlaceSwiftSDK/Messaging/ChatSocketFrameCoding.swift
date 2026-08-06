@@ -1,8 +1,7 @@
 import Foundation
-import DevPlaceSwiftSDK
 
-enum ChatSocketFrameDecoder {
-    static func decode(_ data: Data) -> ChatSocketEvent? {
+public enum ChatSocketFrameDecoder {
+    public static func decode(_ data: Data) -> ChatSocketEvent? {
         guard let typeHolder = try? decoder.decode(FrameType.self, from: data) else {
             return nil
         }
@@ -27,33 +26,33 @@ enum ChatSocketFrameDecoder {
         }
     }
 
-    private static let decoder: JSONDecoder = {
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .custom { decoder in
-            let container = try decoder.singleValueContainer()
-            let string = try container.decode(String.self)
-            if let date = fractionalSecondsFormatter.date(from: string) ?? plainFormatter.date(from: string) {
-                return date
-            }
-            throw DecodingError.dataCorruptedError(
-                in: container,
-                debugDescription: "Unrecognized date format: \(string)",
+    private static let decoder = JSONDecoder.devPlace
+}
+
+public enum ChatSocketFrameEncoder {
+    public static func send(receiverUid: String, content: String, attachmentUids: [String], clientId: String) -> String {
+        encode(
+            OutgoingSendFrame(
+                receiver_uid: receiverUid,
+                content: content,
+                attachment_uids: attachmentUids,
+                client_id: clientId,
             )
-        }
-        return decoder
-    }()
+        )
+    }
 
-    private static let fractionalSecondsFormatter: ISO8601DateFormatter = {
-        let formatter = ISO8601DateFormatter()
-        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-        return formatter
-    }()
+    public static func typing(receiverUid: String) -> String {
+        encode(OutgoingTypingFrame(receiver_uid: receiverUid))
+    }
 
-    private static let plainFormatter: ISO8601DateFormatter = {
-        let formatter = ISO8601DateFormatter()
-        formatter.formatOptions = [.withInternetDateTime]
-        return formatter
-    }()
+    public static func read(withUid uid: String) -> String {
+        encode(OutgoingReadFrame(with_uid: uid))
+    }
+
+    private static func encode(_ frame: some Encodable) -> String {
+        guard let data = try? JSONEncoder().encode(frame) else { return "{}" }
+        return String(decoding: data, as: UTF8.self)
+    }
 }
 
 private struct FrameType: Decodable {
@@ -123,4 +122,22 @@ private struct AttachmentFrame: Decodable {
             canModify: can_modify ?? false,
         )
     }
+}
+
+private struct OutgoingSendFrame: Encodable {
+    let type = "send"
+    let receiver_uid: String
+    let content: String
+    let attachment_uids: [String]
+    let client_id: String
+}
+
+private struct OutgoingTypingFrame: Encodable {
+    let type = "typing"
+    let receiver_uid: String
+}
+
+private struct OutgoingReadFrame: Encodable {
+    let type = "read"
+    let with_uid: String
 }

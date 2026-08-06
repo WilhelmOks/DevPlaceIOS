@@ -1,4 +1,5 @@
 import Foundation
+import DevPlaceSwiftSDK
 
 final class LiveMessagesSocket: MessagesSocket {
     let events: AsyncStream<ChatSocketEvent>
@@ -36,22 +37,22 @@ final class LiveMessagesSocket: MessagesSocket {
     }
 
     func send(content: String, attachmentUids: [String], clientId: String) async {
-        await sendFrame(
-            OutgoingSendFrame(
-                receiver_uid: receiverUid,
+        await sendText(
+            ChatSocketFrameEncoder.send(
+                receiverUid: receiverUid,
                 content: content,
-                attachment_uids: attachmentUids,
-                client_id: clientId,
+                attachmentUids: attachmentUids,
+                clientId: clientId,
             )
         )
     }
 
     func sendTyping() async {
-        await sendFrame(OutgoingTypingFrame(receiver_uid: receiverUid))
+        await sendText(ChatSocketFrameEncoder.typing(receiverUid: receiverUid))
     }
 
     func sendRead(withUid uid: String) async {
-        await sendFrame(OutgoingReadFrame(with_uid: uid))
+        await sendText(ChatSocketFrameEncoder.read(withUid: uid))
     }
 
     private func runConnectionLoop() async {
@@ -109,32 +110,12 @@ final class LiveMessagesSocket: MessagesSocket {
         continuation.yield(event)
     }
 
-    private func sendFrame(_ frame: some Encodable) async {
+    private func sendText(_ text: String) async {
         guard let task else { return }
         do {
-            let data = try JSONEncoder().encode(frame)
-            let text = String(decoding: data, as: UTF8.self)
             try await task.send(.string(text))
         } catch {
             dlog("Chat socket send failed: \(error)")
         }
     }
-}
-
-private struct OutgoingSendFrame: Encodable {
-    let type = "send"
-    let receiver_uid: String
-    let content: String
-    let attachment_uids: [String]
-    let client_id: String
-}
-
-private struct OutgoingTypingFrame: Encodable {
-    let type = "typing"
-    let receiver_uid: String
-}
-
-private struct OutgoingReadFrame: Encodable {
-    let type = "read"
-    let with_uid: String
 }

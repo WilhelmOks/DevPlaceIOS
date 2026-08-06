@@ -25,64 +25,58 @@ private struct ConversationViewContent: View {
     @State private var attachmentsResetToken = 0
 
     var body: some View {
-        content()
-            .environment(
-                \.quoteComposer,
-                QuoteComposer(isActive: true) { viewModel.draft += $0 },
-            )
-            .screenStyle(bgColor: .BG_2)
-            .navigationTitle(Text(viewModel.otherUser.username))
-            .navigationBarTitleDisplayMode(.inline)
-            .alert($viewModel.alertMessage)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    reloadToolbarItem()
+        VStack(spacing: 0) {
+            messages()
+
+            composer()
+        }
+        .environment(
+            \.quoteComposer,
+            QuoteComposer(isActive: true) { viewModel.draft += $0 },
+        )
+        .screenStyle(bgColor: .BG_2)
+        .navigationTitle(Text(viewModel.otherUser.username))
+        .navigationBarTitleDisplayMode(.inline)
+        .alert($viewModel.alertMessage)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                reloadToolbarItem()
+            }
+        }
+        .task {
+            await viewModel.load()
+            await viewModel.startRealtime()
+        }
+        .onDisappear {
+            viewModel.stopRealtime()
+            Task { await viewModel.deleteUnsubmittedAttachments() }
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .active {
+                Task {
+                    await viewModel.load()
+                    await viewModel.startRealtime()
                 }
-            }
-            .safeAreaInset(edge: .bottom) {
-                composer()
-            }
-            .task {
-                await viewModel.load()
-                await viewModel.startRealtime()
-            }
-            .onDisappear {
+            } else {
                 viewModel.stopRealtime()
-                Task { await viewModel.deleteUnsubmittedAttachments() }
             }
-            .onChange(of: scenePhase) { _, newPhase in
-                if newPhase == .active {
-                    Task {
-                        await viewModel.load()
-                        await viewModel.startRealtime()
-                    }
-                } else {
-                    viewModel.stopRealtime()
-                }
-            }
-            .onChange(of: viewModel.draft) {
-                viewModel.userIsTyping()
-            }
+        }
+        .onChange(of: viewModel.draft) {
+            viewModel.userIsTyping()
+        }
     }
 
-    @ViewBuilder private func content() -> some View {
+    @ViewBuilder private func messages() -> some View {
         ScrollView {
             LazyVStack(spacing: 12) {
                 ForEach(viewModel.messages) { message in
                     MessageBubbleView(message: message)
                         .id(message.id)
                 }
-
-                if viewModel.isOtherTyping {
-                    TypingIndicatorView(username: viewModel.otherUser.username)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .transition(.opacity)
-                }
             }
-            .animation(.snappy, value: viewModel.isOtherTyping)
             .scrollTargetLayout()
             .padding(.horizontal, 12)
-            .padding(.top)
+            .padding(.vertical)
         }
         .scrollPosition($scrollPosition)
         .defaultScrollAnchor(.bottom)
@@ -103,22 +97,29 @@ private struct ConversationViewContent: View {
                 scrollToBottom(animated: false)
             }
         }
+        .overlay(alignment: .bottom) {
+            if viewModel.isOtherTyping {
+                TypingIndicatorView(username: viewModel.otherUser.username)
+                    .padding(.bottom, 8)
+                    .transition(.opacity)
+            }
+        }
         .overlay(alignment: .bottomTrailing) {
             if !isAtBottom {
                 scrollToBottomButton()
             }
         }
         .animation(.snappy, value: isAtBottom)
+        .animation(.snappy, value: viewModel.isOtherTyping)
     }
 
     private func scrollToBottom(animated: Bool) {
-        guard let lastMessageId = viewModel.messages.last?.id else { return }
         if animated {
             withAnimation {
-                scrollPosition.scrollTo(id: lastMessageId, anchor: .bottom)
+                scrollPosition.scrollTo(edge: .bottom)
             }
         } else {
-            scrollPosition.scrollTo(id: lastMessageId, anchor: .bottom)
+            scrollPosition.scrollTo(edge: .bottom)
         }
     }
 

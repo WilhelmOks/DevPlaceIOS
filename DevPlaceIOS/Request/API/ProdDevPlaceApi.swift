@@ -129,6 +129,38 @@ final class ProdDevPlaceApi: DevPlaceApi {
         try await request.deleteAttachment(uid: uid, token: token)
     }
     
+    func blockUser(username: String) async throws {
+        guard let token = AppState.shared.token else {
+            throw DevPlaceError.notLoggedIn
+        }
+        try await refreshTokenIfNeeded()
+        try await request.blockUser(username: username, token: token)
+    }
+
+    func unblockUser(username: String) async throws {
+        guard let token = AppState.shared.token else {
+            throw DevPlaceError.notLoggedIn
+        }
+        try await refreshTokenIfNeeded()
+        try await request.unblockUser(username: username, token: token)
+    }
+
+    func muteUser(username: String) async throws {
+        guard let token = AppState.shared.token else {
+            throw DevPlaceError.notLoggedIn
+        }
+        try await refreshTokenIfNeeded()
+        try await request.muteUser(username: username, token: token)
+    }
+
+    func unmuteUser(username: String) async throws {
+        guard let token = AppState.shared.token else {
+            throw DevPlaceError.notLoggedIn
+        }
+        try await refreshTokenIfNeeded()
+        try await request.unmuteUser(username: username, token: token)
+    }
+
     func messages(withUid: String?) async throws -> MessagesInbox {
         guard let token = AppState.shared.token else {
             throw DevPlaceError.notLoggedIn

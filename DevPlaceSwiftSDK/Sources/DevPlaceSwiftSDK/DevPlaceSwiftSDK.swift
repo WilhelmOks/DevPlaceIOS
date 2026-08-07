@@ -368,6 +368,26 @@ public extension DevPlaceRequest {
         try await request.requestJson(config: config, apiError: ApiError.self)
     }
 
+    func blockUser(username: String, token: AuthToken) async throws {
+        let config = makeConfig(.post, path: "block/\(username)", token: token)
+        try await request.requestJson(config: config, apiError: ApiError.self)
+    }
+
+    func unblockUser(username: String, token: AuthToken) async throws {
+        let config = makeConfig(.post, path: "block/unblock/\(username)", token: token)
+        try await request.requestJson(config: config, apiError: ApiError.self)
+    }
+
+    func muteUser(username: String, token: AuthToken) async throws {
+        let config = makeConfig(.post, path: "mute/\(username)", token: token)
+        try await request.requestJson(config: config, apiError: ApiError.self)
+    }
+
+    func unmuteUser(username: String, token: AuthToken) async throws {
+        let config = makeConfig(.post, path: "mute/unmute/\(username)", token: token)
+        try await request.requestJson(config: config, apiError: ApiError.self)
+    }
+
     // MARK: - Leaderboard
 
     func getLeaderboard(token: AuthToken?) async throws -> Leaderboard {

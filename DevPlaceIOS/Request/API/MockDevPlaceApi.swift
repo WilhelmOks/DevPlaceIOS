@@ -73,6 +73,26 @@ final class MockDevPlaceApi: DevPlaceApi {
         return .mock
     }
 
+    func blockUser(username: String) async throws {
+        await mockDelay(0.2)
+        try await refreshTokenIfNeeded()
+    }
+
+    func unblockUser(username: String) async throws {
+        await mockDelay(0.2)
+        try await refreshTokenIfNeeded()
+    }
+
+    func muteUser(username: String) async throws {
+        await mockDelay(0.2)
+        try await refreshTokenIfNeeded()
+    }
+
+    func unmuteUser(username: String) async throws {
+        await mockDelay(0.2)
+        try await refreshTokenIfNeeded()
+    }
+
     func messages(withUid: String?) async throws -> MessagesInbox {
         await mockDelay(0.3)
         try await refreshTokenIfNeeded()

@@ -12,6 +12,10 @@ protocol DevPlaceApi {
     func editComment(uid: String, content: String) async throws
     func createComment(targetType: TargetType, targetId: String, content: String, parentId: String?, attachments: [UploadResponse]) async throws
     func profile(username: String?) async throws -> Profile
+    func blockUser(username: String) async throws
+    func unblockUser(username: String) async throws
+    func muteUser(username: String) async throws
+    func unmuteUser(username: String) async throws
     func messages(withUid: String?) async throws -> MessagesInbox
     func sendMessage(receiverId: String, content: String, attachments: [UploadResponse]) async throws
     func makeMessagesSocket(otherUserId: String) -> any MessagesSocket

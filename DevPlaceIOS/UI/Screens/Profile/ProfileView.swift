@@ -14,14 +14,44 @@ struct ProfileView: View {
 
 private struct ProfileViewContent: View {
     @State var viewModel: ProfileView.ViewModel
-    
+
     @ScaledMetric private var scale = 1.0
-    
+
+    @State private var showBlockConfirmation = false
+
+    @State private var showMuteConfirmation = false
+
     var body: some View {
         content()
             .screenStyle()
             .navigationTitle(Text(viewModel.navigationTitle))
             .alert($viewModel.alertMessage)
+            .alert(
+                "Block \(viewModel.displayedUsername)?",
+                isPresented: $showBlockConfirmation,
+                actions: {
+                    Button("Block", role: .destructive) {
+                        Task { await viewModel.block() }
+                    }
+                    Button("Cancel", role: .cancel) {}
+                },
+                message: {
+                    Text("You will no longer see their posts, comments or messages anywhere except on this profile.")
+                }
+            )
+            .alert(
+                "Mute \(viewModel.displayedUsername)?",
+                isPresented: $showMuteConfirmation,
+                actions: {
+                    Button("Mute", role: .destructive) {
+                        Task { await viewModel.mute() }
+                    }
+                    Button("Cancel", role: .cancel) {}
+                },
+                message: {
+                    Text("They will no longer create notifications for you.")
+                }
+            )
             .task {
                 await viewModel.load()
             }
@@ -40,7 +70,12 @@ private struct ProfileViewContent: View {
                         .padding(.vertical, 10)
                     
                     infoRowsArea(profile)
-                    
+
+                    if !viewModel.isMyOwnProfile {
+                        blockMuteButtons()
+                            .padding(.top, 10)
+                    }
+
                     //TODO: place those badges somewhere else.
                     //Divider()
                     VFlowStack(spacing: 8) {
@@ -59,6 +94,36 @@ private struct ProfileViewContent: View {
         }
     }
     
+    @ViewBuilder private func blockMuteButtons() -> some View {
+        HStack(spacing: 12) {
+            Button {
+                if viewModel.isBlocked {
+                    Task { await viewModel.unblock() }
+                } else {
+                    showBlockConfirmation = true
+                }
+            } label: {
+                Text(viewModel.isBlocked ? "Unblock" : "Block")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.accentGradient)
+            .frame(maxWidth: 200)
+
+            Button {
+                if viewModel.isMuted {
+                    Task { await viewModel.unmute() }
+                } else {
+                    showMuteConfirmation = true
+                }
+            } label: {
+                Text(viewModel.isMuted ? "Unmute" : "Mute")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.accentGradient)
+            .frame(maxWidth: 200)
+        }
+    }
+
     @ViewBuilder private func numericInfoArea(_ profile: Profile) -> some View {
         HStack(spacing: 20) {
             numericInfo(label: "Posts", numericText: profile.postsCount.formatted())

@@ -36,7 +36,7 @@ struct MessageBubbleView: View {
             .padding(.vertical, 8)
         }
         .foregroundStyle(Color.FG_1)
-        .background(bubbleColor)
+        .background(bubbleGradient)
         .clipShape(bubbleShape)
         .overlay {
             bubbleShape.strokeBorder(Color.FG_2.opacity(0.12), lineWidth: 1)
@@ -64,6 +64,35 @@ struct MessageBubbleView: View {
 
     private var bubbleAlignment: HorizontalAlignment {
         message.isMine ? .trailing : .leading
+    }
+
+    private var bubbleGradient: LinearGradient {
+        LinearGradient(
+            colors: [
+                bubbleColor.mix(with: .white, by: topBrighten),
+                bubbleColor.mix(with: .black, by: bottomDarken),
+            ],
+            startPoint: .top,
+            endPoint: .bottom,
+        )
+    }
+
+    private var topBrighten: Double {
+        let isDark = colorScheme == .dark
+        if message.isMine {
+            return isDark ? 0.10 : 0.36
+        } else {
+            return isDark ? 0.12 : 0
+        }
+    }
+
+    private var bottomDarken: Double {
+        let isDark = colorScheme == .dark
+        if message.isMine {
+            return isDark ? 0.10 : 0.08
+        } else {
+            return isDark ? 0 : 0.12
+        }
     }
 
     private var bubbleColor: Color {

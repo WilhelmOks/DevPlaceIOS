@@ -19,6 +19,10 @@ extension MessagesView {
         }
 
         func load() async {
+            guard AppState.shared.isLoggedIn else {
+                inbox = nil
+                return
+            }
             do {
                 inbox = try await api.messages()
                 await AppState.shared.loadUnreadCounts(api: api)
@@ -28,6 +32,10 @@ extension MessagesView {
         }
 
         func reload() async {
+            guard AppState.shared.isLoggedIn else {
+                inbox = nil
+                return
+            }
             guard !isReloading else { return }
             isReloading = true
             defer { isReloading = false }

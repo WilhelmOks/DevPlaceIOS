@@ -12,6 +12,8 @@ struct MessagesView: View {
 private struct MessagesViewContent: View {
     @State var viewModel: MessagesView.ViewModel
 
+    private let appState = AppState.shared
+
     var body: some View {
         content()
             .screenStyle(bgColor: .BG_2)
@@ -28,6 +30,11 @@ private struct MessagesViewContent: View {
             }
             .refreshable {
                 await viewModel.reload()
+            }
+            .onChange(of: appState.isLoggedIn) {
+                Task {
+                    await viewModel.load()
+                }
             }
             .task {
                 await viewModel.load()
@@ -64,7 +71,13 @@ private struct MessagesViewContent: View {
     }
 
     @ViewBuilder private func emptyState() -> some View {
-        if viewModel.inbox == nil {
+        if !appState.isLoggedIn {
+            ContentUnavailableView(
+                "Sign in required",
+                systemImage: "bubble.left.and.bubble.right",
+                description: Text("Sign in from the Settings tab to see your messages."),
+            )
+        } else if viewModel.inbox == nil {
             ProgressView()
         } else {
             ContentUnavailableView(

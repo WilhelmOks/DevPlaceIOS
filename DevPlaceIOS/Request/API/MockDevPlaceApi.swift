@@ -29,6 +29,11 @@ final class MockDevPlaceApi: DevPlaceApi {
         await mockDelay()
     }
     
+    func deleteAccount() async throws {
+        await mockDelay(0.2)
+        try await refreshTokenIfNeeded()
+    }
+    
     func feed(before: Date?) async throws -> Feed {
         await mockDelay()
         try await refreshTokenIfNeeded()

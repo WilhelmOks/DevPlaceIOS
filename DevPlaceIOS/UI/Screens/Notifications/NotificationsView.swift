@@ -31,6 +31,8 @@ private struct NotificationsViewContent: View {
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.openURL) private var openURL
 
+    private let appState = AppState.shared
+
     @State private var isAtTop = true
 
     var body: some View {
@@ -39,10 +41,12 @@ private struct NotificationsViewContent: View {
             .navigationTitle(Text("Notifications"))
             .alert($viewModel.alertMessage)
             .toolbar {
-                ToolbarItem(placement: .primaryAction) {
-                    Button("Mark all read") {
-                        Task {
-                            await viewModel.markAllRead()
+                if appState.isLoggedIn {
+                    ToolbarItem(placement: .primaryAction) {
+                        Button("Mark all read") {
+                            Task {
+                                await viewModel.markAllRead()
+                            }
                         }
                     }
                 }
@@ -61,6 +65,11 @@ private struct NotificationsViewContent: View {
                 guard newValue == .active else { return }
                 Task {
                     await viewModel.refresh()
+                }
+            }
+            .onChange(of: appState.isLoggedIn) {
+                Task {
+                    await viewModel.load()
                 }
             }
             .task {
@@ -101,7 +110,13 @@ private struct NotificationsViewContent: View {
     }
 
     @ViewBuilder private func emptyState() -> some View {
-        if viewModel.notifications == nil {
+        if !appState.isLoggedIn {
+            ContentUnavailableView(
+                "Sign in required",
+                systemImage: "bell.slash",
+                description: Text("Sign in from the Settings tab to see your notifications."),
+            )
+        } else if viewModel.notifications == nil {
             ProgressView()
         } else {
             ContentUnavailableView(

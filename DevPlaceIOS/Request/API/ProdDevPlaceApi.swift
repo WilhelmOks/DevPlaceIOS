@@ -27,6 +27,14 @@ final class ProdDevPlaceApi: DevPlaceApi {
         try await request.signUp(username: username, email: email, password: password, confirmPassword: confirmPassword)
     }
     
+    func deleteAccount() async throws {
+        guard AppState.shared.token != nil else {
+            throw DevPlaceError.notLoggedIn
+        }
+        try await refreshTokenIfNeeded()
+        // TODO: Call the SDK's delete-account request here once the backend API and SDK support are ready.
+    }
+    
     func feed(before: Date?) async throws -> Feed {
         try await refreshTokenIfNeeded()
         return try await request.getFeed(before: before, token: AppState.shared.token)

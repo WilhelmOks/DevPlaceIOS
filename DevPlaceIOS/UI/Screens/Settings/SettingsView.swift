@@ -14,6 +14,8 @@ private struct SettingsViewContent: View {
     @Bindable var appSettings = AppSettingsStore.shared
 
     @State private var logOutConfirmationPresented = false
+    @State private var deleteAccountConfirmationPresented = false
+    @State private var deleteAccountFinalConfirmationPresented = false
     
     enum FullscreenNavigationItem: Identifiable {
         case signIn
@@ -124,7 +126,40 @@ private struct SettingsViewContent: View {
                     ) {
                         Button(role: .cancel, action: {})
                         Button("Sign out", role: .destructive) {
-                            viewModel.logOut()
+                            Task {
+                                await viewModel.logOut()
+                            }
+                        }
+                    }
+                    
+                    Button {
+                        deleteAccountConfirmationPresented = true
+                    } label: {
+                        Label {
+                            Text("Delete account")
+                        } icon: {
+                            Image(systemName: "trash")
+                        }
+                    }
+                    .buttonStyle(.form)
+                    .alert(
+                        "Do you want to permanently delete your account?",
+                        isPresented: $deleteAccountConfirmationPresented
+                    ) {
+                        Button(role: .cancel, action: {})
+                        Button("Delete account", role: .destructive) {
+                            deleteAccountFinalConfirmationPresented = true
+                        }
+                    }
+                    .alert(
+                        "Your account will be deleted. This cannot be undone! Do you want to proceed?",
+                        isPresented: $deleteAccountFinalConfirmationPresented
+                    ) {
+                        Button(role: .cancel, action: {})
+                        Button("Delete account", role: .destructive) {
+                            Task {
+                                await viewModel.deleteAccount()
+                            }
                         }
                     }
                 }

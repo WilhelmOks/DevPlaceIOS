@@ -69,6 +69,7 @@ final class AppState {
     }
     
     func clear() {
+        token = nil
         feed = nil
         currentUser = nil
         unreadNotificationCount = 0

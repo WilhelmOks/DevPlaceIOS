@@ -10,10 +10,20 @@ extension SettingsView {
             self.api = api
         }
         
-        func logOut() {
+        func logOut() async {
             UserSessionStore.shared.email = nil
             UserSessionStore.shared.password = nil
-            AppState.shared.token = nil
+            AppState.shared.clear()
+            try? await AppState.shared.loadFeed(api: api)
+        }
+        
+        func deleteAccount() async {
+            do {
+                try await api.deleteAccount()
+                await logOut()
+            } catch {
+                dlog("Failed to delete account: \(error)")
+            }
         }
     }
 }

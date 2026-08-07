@@ -115,6 +115,12 @@ struct MainView: View {
                 }
             }
         }
+        .onChange(of: appState.isLoggedIn) { _, isLoggedIn in
+            if !isLoggedIn {
+                messagesPath = []
+                settingsPath = []
+            }
+        }
         .onChange(of: selectedTab) {
             Task {
                 await appState.loadUnreadCounts(api: api)

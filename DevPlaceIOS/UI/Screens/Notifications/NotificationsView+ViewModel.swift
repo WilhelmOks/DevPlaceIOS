@@ -19,6 +19,10 @@ extension NotificationsView {
         }
 
         func load() async {
+            guard AppState.shared.isLoggedIn else {
+                notifications = nil
+                return
+            }
             do {
                 notifications = try await api.notifications()
             } catch {
@@ -27,6 +31,10 @@ extension NotificationsView {
         }
 
         func refresh() async {
+            guard AppState.shared.isLoggedIn else {
+                notifications = nil
+                return
+            }
             do {
                 notifications = try await api.notifications()
                 await refreshUnreadCount()

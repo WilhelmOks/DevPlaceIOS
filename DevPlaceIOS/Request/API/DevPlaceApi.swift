@@ -4,6 +4,7 @@ import DevPlaceSwiftSDK
 protocol DevPlaceApi {
     func logIn(email: String, password: String) async throws
     func signUp(username: String, email: String, password: String, confirmPassword: String) async throws
+    func deleteAccount() async throws
     func feed(before: Date?) async throws -> Feed
     func postDetail(slug: String) async throws -> PostDetail
     func createPost(title: String?, topic: PostTopic?, content: String, attachments: [UploadResponse], pollQuestion: String?, pollOptions: [String], projectLink: String?) async throws

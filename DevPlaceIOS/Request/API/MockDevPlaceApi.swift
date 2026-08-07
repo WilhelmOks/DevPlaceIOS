@@ -189,6 +189,11 @@ final class MockDevPlaceApi: DevPlaceApi {
         try await refreshTokenIfNeeded()
     }
     
+    func flag(targetType: TargetType, targetId: String) async throws {
+        await mockDelay(0.2)
+        try await refreshTokenIfNeeded()
+    }
+    
     func uploadFile(data: Data, filename: String, mimeType: String) async throws -> UploadResponse {
         await mockDelay()
         try await refreshTokenIfNeeded()

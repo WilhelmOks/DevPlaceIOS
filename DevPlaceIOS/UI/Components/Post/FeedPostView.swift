@@ -71,6 +71,7 @@ struct FeedPostView: View {
                 
                 PostFooterView(
                     targetId: post.data.id,
+                    authorId: post.data.userId,
                     starCount: post.data.stars,
                     currentVote: post.myVote,
                     reactions: post.reactions,

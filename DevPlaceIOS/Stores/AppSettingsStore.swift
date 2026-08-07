@@ -10,6 +10,7 @@ final class AppSettingsStore {
     private let appearanceKey = "appearance"
     private let showFeedAttachmentsKey = "showFeedAttachments"
     private let showFeedCommentsKey = "showFeedComments"
+    private let showFlagButtonsKey = "showFlagButtons"
     private let recentEmojisKey = "recentEmojis"
     private let draftPostTitleKey = "draftPostTitle"
     private let draftPostMessageKey = "draftPostMessage"
@@ -32,6 +33,12 @@ final class AppSettingsStore {
     var showFeedComments: Bool {
         didSet {
             userDefaults.set(showFeedComments, forKey: showFeedCommentsKey)
+        }
+    }
+    
+    var showFlagButtons: Bool {
+        didSet {
+            userDefaults.set(showFlagButtons, forKey: showFlagButtonsKey)
         }
     }
     
@@ -64,6 +71,7 @@ final class AppSettingsStore {
         self.appearance = raw.flatMap(AppearanceMode.init(rawValue:)) ?? .dark
         self.showFeedAttachments = (userDefaults.object(forKey: showFeedAttachmentsKey) as? Bool) ?? true
         self.showFeedComments = (userDefaults.object(forKey: showFeedCommentsKey) as? Bool) ?? true
+        self.showFlagButtons = (userDefaults.object(forKey: showFlagButtonsKey) as? Bool) ?? true
         self.recentEmojis = (userDefaults.array(forKey: recentEmojisKey) as? [String]) ?? []
         self.draftPostTitle = userDefaults.string(forKey: draftPostTitleKey) ?? ""
         self.draftPostMessage = userDefaults.string(forKey: draftPostMessageKey) ?? ""

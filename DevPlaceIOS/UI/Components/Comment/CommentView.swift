@@ -111,6 +111,8 @@ struct CommentView: View {
                             replyButton(onReply: onReply)
                         }
 
+                        FlagButton(targetType: .comment, targetId: comment.data.id, authorId: comment.data.userId)
+
                         if canEdit {
                             editButton()
                         }

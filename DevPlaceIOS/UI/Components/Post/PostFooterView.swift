@@ -3,6 +3,7 @@ import DevPlaceSwiftSDK
 
 struct PostFooterView: View {
     let targetId: String
+    let authorId: String
     let starCount: Int
     let currentVote: Vote
     let reactions: Reactions
@@ -26,6 +27,8 @@ struct PostFooterView: View {
                 if let onReply, !isReplying {
                     replyButton(onReply: onReply)
                 }
+                
+                FlagButton(targetType: .post, targetId: targetId, authorId: authorId)
                 
                 if let onEdit {
                     editButton(onEdit: onEdit)

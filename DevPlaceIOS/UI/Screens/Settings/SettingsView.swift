@@ -108,6 +108,18 @@ private struct SettingsViewContent: View {
             }
             .listRowBackground(Color.BG_1)
             
+            Section(header: Text("Violating Content")) {
+                Toggle(isOn: $appSettings.showFlagButtons) {
+                    Label {
+                        Text("Show flag buttons")
+                    } icon: {
+                        Image(systemName: "flag")
+                    }
+                }
+                .tint(Color.accentColor)
+            }
+            .listRowBackground(Color.BG_1)
+            
             Section {
                 if appState.isLoggedIn {
                     Button {

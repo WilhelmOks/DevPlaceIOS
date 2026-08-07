@@ -117,6 +117,14 @@ final class ProdDevPlaceApi: DevPlaceApi {
         try await request.react(targetType: targetType, targetId: targetId, emoji: emoji, token: token)
     }
     
+    func flag(targetType: TargetType, targetId: String) async throws {
+        guard AppState.shared.token != nil else {
+            throw DevPlaceError.notLoggedIn
+        }
+        try await refreshTokenIfNeeded()
+        // TODO: Call the SDK's flag/report request here once the backend API and SDK support are ready.
+    }
+    
     func uploadFile(data: Data, filename: String, mimeType: String) async throws -> UploadResponse {
         guard let token = AppState.shared.token else {
             throw DevPlaceError.notLoggedIn

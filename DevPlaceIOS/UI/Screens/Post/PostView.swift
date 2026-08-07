@@ -203,6 +203,7 @@ private struct PostViewContent: View {
             
             PostFooterView(
                 targetId: detail.post.id,
+                authorId: detail.post.userId,
                 starCount: detail.starCount,
                 currentVote: detail.myVote,
                 reactions: detail.reactions,

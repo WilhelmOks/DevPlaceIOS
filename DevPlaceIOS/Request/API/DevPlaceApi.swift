@@ -12,6 +12,8 @@ protocol DevPlaceApi {
     func editComment(uid: String, content: String) async throws
     func createComment(targetType: TargetType, targetId: String, content: String, parentId: String?, attachments: [UploadResponse]) async throws
     func profile(username: String?) async throws -> Profile
+    func followUser(username: String) async throws
+    func unfollowUser(username: String) async throws
     func blockUser(username: String) async throws
     func unblockUser(username: String) async throws
     func muteUser(username: String) async throws

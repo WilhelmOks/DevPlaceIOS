@@ -73,6 +73,16 @@ final class MockDevPlaceApi: DevPlaceApi {
         return .mock
     }
 
+    func followUser(username: String) async throws {
+        await mockDelay(0.2)
+        try await refreshTokenIfNeeded()
+    }
+
+    func unfollowUser(username: String) async throws {
+        await mockDelay(0.2)
+        try await refreshTokenIfNeeded()
+    }
+
     func blockUser(username: String) async throws {
         await mockDelay(0.2)
         try await refreshTokenIfNeeded()

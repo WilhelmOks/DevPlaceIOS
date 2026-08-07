@@ -14,6 +14,8 @@ extension ProfileView {
         
         var profile: Profile?
 
+        var isFollowing = false
+
         var isBlocked = false
 
         var isMuted = false
@@ -42,8 +44,29 @@ extension ProfileView {
             do {
                 let profile = try await api.profile(username: username)
                 self.profile = profile
+                isFollowing = profile.isFollowing
                 isBlocked = profile.isBlocked
                 isMuted = profile.isMuted
+            } catch {
+                alertMessage = .presentedError(error)
+            }
+        }
+
+        func follow() async {
+            guard let username = profile?.user.username else { return }
+            do {
+                try await api.followUser(username: username)
+                isFollowing = true
+            } catch {
+                alertMessage = .presentedError(error)
+            }
+        }
+
+        func unfollow() async {
+            guard let username = profile?.user.username else { return }
+            do {
+                try await api.unfollowUser(username: username)
+                isFollowing = false
             } catch {
                 alertMessage = .presentedError(error)
             }

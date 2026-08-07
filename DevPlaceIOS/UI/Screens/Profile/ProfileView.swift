@@ -97,6 +97,19 @@ private struct ProfileViewContent: View {
     @ViewBuilder private func blockMuteButtons() -> some View {
         HStack(spacing: 12) {
             Button {
+                if viewModel.isFollowing {
+                    Task { await viewModel.unfollow() }
+                } else {
+                    Task { await viewModel.follow() }
+                }
+            } label: {
+                Text(viewModel.isFollowing ? "Unfollow" : "Follow")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.accentGradient)
+            .frame(maxWidth: 150)
+
+            Button {
                 if viewModel.isBlocked {
                     Task { await viewModel.unblock() }
                 } else {
@@ -107,7 +120,7 @@ private struct ProfileViewContent: View {
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.accentGradient)
-            .frame(maxWidth: 200)
+            .frame(maxWidth: 150)
 
             Button {
                 if viewModel.isMuted {
@@ -120,7 +133,7 @@ private struct ProfileViewContent: View {
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.accentGradient)
-            .frame(maxWidth: 200)
+            .frame(maxWidth: 150)
         }
     }
 

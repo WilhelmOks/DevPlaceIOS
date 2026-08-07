@@ -129,6 +129,22 @@ final class ProdDevPlaceApi: DevPlaceApi {
         try await request.deleteAttachment(uid: uid, token: token)
     }
     
+    func followUser(username: String) async throws {
+        guard let token = AppState.shared.token else {
+            throw DevPlaceError.notLoggedIn
+        }
+        try await refreshTokenIfNeeded()
+        try await request.followUser(username: username, token: token)
+    }
+
+    func unfollowUser(username: String) async throws {
+        guard let token = AppState.shared.token else {
+            throw DevPlaceError.notLoggedIn
+        }
+        try await refreshTokenIfNeeded()
+        try await request.unfollowUser(username: username, token: token)
+    }
+
     func blockUser(username: String) async throws {
         guard let token = AppState.shared.token else {
             throw DevPlaceError.notLoggedIn

@@ -1,3 +1,5 @@
+// Some of those values are actually adjustable in the admin page,
+// but they aren't exposed by the API (afaik), so in this SDK they are constants.
 public enum DevPlaceConstants {
     public static let maxPostTitleLength = 500
     public static let minPostContentLength = 10

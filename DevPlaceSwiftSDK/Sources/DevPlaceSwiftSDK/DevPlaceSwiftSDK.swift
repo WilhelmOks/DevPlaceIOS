@@ -74,30 +74,23 @@ public extension DevPlaceRequest {
 
     func signUp(
         username: String,
+        email: String,
         password: String,
-        confirmPassword: String,
-        recaptchaResponse: String? = nil
+        confirmPassword: String
     ) async throws {
         struct Body: Encodable {
             let username: String
+            let email: String
             let password: String
             let confirm_password: String
-            let g_recaptcha_response: String?
-
-            enum CodingKeys: String, CodingKey {
-                case username
-                case password
-                case confirm_password
-                case g_recaptcha_response = "g-recaptcha-response"
-            }
         }
 
         let config = makeConfig(.post, path: "auth/signup", contentType: .jsonBody)
         let body = Body(
             username: username,
+            email: email,
             password: password,
-            confirm_password: confirmPassword,
-            g_recaptcha_response: recaptchaResponse
+            confirm_password: confirmPassword
         )
         try await request.requestJson(config: config, json: body, apiError: ApiError.self)
     }

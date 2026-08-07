@@ -23,6 +23,10 @@ final class ProdDevPlaceApi: DevPlaceApi {
         AppState.shared.currentUser = try? await request.getProfile(username: nil, token: token).user
     }
     
+    func signUp(username: String, email: String, password: String, confirmPassword: String) async throws {
+        try await request.signUp(username: username, email: email, password: password, confirmPassword: confirmPassword)
+    }
+    
     func feed(before: Date?) async throws -> Feed {
         try await refreshTokenIfNeeded()
         return try await request.getFeed(before: before, token: AppState.shared.token)

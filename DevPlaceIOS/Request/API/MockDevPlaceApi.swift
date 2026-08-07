@@ -25,6 +25,10 @@ final class MockDevPlaceApi: DevPlaceApi {
         AppState.shared.currentUser = Profile.mock.user
     }
     
+    func signUp(username: String, email: String, password: String, confirmPassword: String) async throws {
+        await mockDelay()
+    }
+    
     func feed(before: Date?) async throws -> Feed {
         await mockDelay()
         try await refreshTokenIfNeeded()

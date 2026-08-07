@@ -123,9 +123,9 @@ private struct LogInViewContent: View {
             .fontWeight(.medium)
             .foregroundStyle(.FG_2)
         
-        let link = Link(
-            destination: URL(string: "https://devplace.net/auth/signup")!
-        ) {
+        let link = NavigationLink {
+            SignUpView()
+        } label: {
             Text("Create new account").bold()
         }
         .foregroundStyle(Color.accentColor)

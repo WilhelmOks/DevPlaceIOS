@@ -42,13 +42,21 @@ final class PushNotificationManager {
         dlog("Failed to register for APNs: \(error)")
     }
 
+    // TODO: The current push payload carries no badge number, so we refetch counts from the
+    // backend on every received push. Once the backend adds `aps.badge` (server-side unread
+    // count) to the payload, read it directly here and set the icon badge from it — that also
+    // lets iOS update the icon badge while the app is backgrounded/terminated, without a fetch.
     func handleRemoteNotification(userInfo: [AnyHashable: Any]) async {
         dlog("Received push notification payload: \(Self.prettyPrinted(userInfo))")
-        guard let unreadCount = Self.unreadNotificationCount(in: userInfo) else {
-            return
+        await AppState.shared.loadUnreadCounts(api: api)
+        await setBadgeCount(AppState.shared.totalUnreadCount)
+    }
+
+    func handleNotificationTap(userInfo: [AnyHashable: Any]) async {
+        await handleRemoteNotification(userInfo: userInfo)
+        if let conversationUid = Self.conversationUid(in: userInfo) {
+            AppState.shared.pendingConversationUid = conversationUid
         }
-        AppState.shared.unreadNotificationCount = unreadCount
-        await setBadgeCount(unreadCount)
     }
 
     private func requestAuthorization() async {
@@ -89,12 +97,14 @@ final class PushNotificationManager {
         return String(describing: userInfo)
     }
 
-    // TODO: Confirm the APNs payload shape with the backend. It is currently undocumented,
-    // so we read the standard `aps.badge` field, which also drives the app-icon badge.
-    private static func unreadNotificationCount(in userInfo: [AnyHashable: Any]) -> Int? {
-        guard let aps = userInfo["aps"] as? [AnyHashable: Any] else {
+    private static func conversationUid(in userInfo: [AnyHashable: Any]) -> String? {
+        guard let urlString = userInfo["url"] as? String,
+              let components = URLComponents(string: urlString),
+              components.path.contains("messages"),
+              let uid = components.queryItems?.first(where: { $0.name == "with_uid" })?.value,
+              !uid.isEmpty else {
             return nil
         }
-        return aps["badge"] as? Int
+        return uid
     }
 }

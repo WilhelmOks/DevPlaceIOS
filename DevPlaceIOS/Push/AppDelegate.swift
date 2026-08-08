@@ -44,6 +44,6 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
         _ center: UNUserNotificationCenter,
         didReceive response: UNNotificationResponse,
     ) async {
-        await PushNotificationManager.shared.handleRemoteNotification(userInfo: response.notification.request.content.userInfo)
+        await PushNotificationManager.shared.handleNotificationTap(userInfo: response.notification.request.content.userInfo)
     }
 }

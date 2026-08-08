@@ -21,6 +21,12 @@ final class AppState {
 
     var unreadMessageCount = 0
 
+    var totalUnreadCount: Int {
+        unreadNotificationCount + unreadMessageCount
+    }
+
+    var pendingConversationUid: String?
+
     func isCurrentUser(id: String) -> Bool {
         currentUser?.id == id
     }
@@ -42,6 +48,15 @@ final class AppState {
 
     func loadUnreadNotificationCount(api: DevPlaceApi) async {
         await loadUnreadCounts(api: api)
+    }
+
+    func conversationUser(withUid uid: String, api: DevPlaceApi) async -> User? {
+        do {
+            return try await api.messages(withUid: uid).otherUser
+        } catch {
+            dlog("Failed to resolve conversation user for uid \(uid): \(error)")
+            return nil
+        }
     }
     
     func loadMoreFeed(api: DevPlaceApi) async throws {
@@ -74,5 +89,6 @@ final class AppState {
         currentUser = nil
         unreadNotificationCount = 0
         unreadMessageCount = 0
+        pendingConversationUid = nil
     }
 }

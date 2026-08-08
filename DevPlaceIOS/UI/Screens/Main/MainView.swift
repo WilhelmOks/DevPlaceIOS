@@ -49,6 +49,18 @@ struct MainView: View {
         content()
     }
 
+    private func openPendingConversationIfNeeded() async {
+        guard appState.isLoggedIn, let uid = appState.pendingConversationUid else {
+            return
+        }
+        appState.pendingConversationUid = nil
+        guard let otherUser = await appState.conversationUser(withUid: uid, api: api) else {
+            return
+        }
+        messagesPath = [otherUser]
+        selectedTab = .messages
+    }
+
     @ViewBuilder private func content() -> some View {
         TabView(selection: tabSelection) {
             Tab(value: .postsFeed) {
@@ -118,16 +130,24 @@ struct MainView: View {
         .task {
             if appState.isLoggedIn {
                 await PushNotificationManager.shared.registerForPushNotifications(api: api)
+                await openPendingConversationIfNeeded()
             }
         }
         .onChange(of: appState.isLoggedIn) { _, isLoggedIn in
             if isLoggedIn {
                 Task {
                     await PushNotificationManager.shared.registerForPushNotifications(api: api)
+                    await openPendingConversationIfNeeded()
                 }
             } else {
                 messagesPath = []
                 settingsPath = []
+            }
+        }
+        .onChange(of: appState.pendingConversationUid) { _, uid in
+            guard uid != nil else { return }
+            Task {
+                await openPendingConversationIfNeeded()
             }
         }
         .onChange(of: selectedTab) {

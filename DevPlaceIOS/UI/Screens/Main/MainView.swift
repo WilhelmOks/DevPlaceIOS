@@ -115,8 +115,17 @@ struct MainView: View {
                 }
             }
         }
+        .task {
+            if appState.isLoggedIn {
+                await PushNotificationManager.shared.registerForPushNotifications(api: api)
+            }
+        }
         .onChange(of: appState.isLoggedIn) { _, isLoggedIn in
-            if !isLoggedIn {
+            if isLoggedIn {
+                Task {
+                    await PushNotificationManager.shared.registerForPushNotifications(api: api)
+                }
+            } else {
                 messagesPath = []
                 settingsPath = []
             }

@@ -173,6 +173,16 @@ final class MockDevPlaceApi: DevPlaceApi {
         await mockDelay(0.2)
         try await refreshTokenIfNeeded()
     }
+
+    func registerPushDevice(deviceToken: String) async throws {
+        await mockDelay(0.2)
+        try await refreshTokenIfNeeded()
+    }
+
+    func unregisterPushDevice(deviceToken: String) async throws {
+        await mockDelay(0.2)
+        try await refreshTokenIfNeeded()
+    }
     
     func vote(targetType: TargetType, targetId: String, vote: Vote) async throws {
         await mockDelay(0.2)

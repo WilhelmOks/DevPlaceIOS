@@ -531,6 +531,18 @@ public extension DevPlaceRequest {
         try await request.requestJson(config: config, apiError: ApiError.self)
     }
 
+    // MARK: - Push
+
+    func registerPushDevice(provider: PushProvider, deviceToken: String, token: AuthToken) async throws {
+        struct Body: Encodable {
+            let provider: String
+            let token: String
+        }
+        let config = makeConfig(.post, path: "push.json", contentType: .jsonBody, token: token)
+        let body = Body(provider: provider.rawValue, token: deviceToken)
+        try await request.requestJson(config: config, json: body, apiError: ApiError.self)
+    }
+
     // MARK: - Uploads
 
     func uploadFile(data: Data, filename: String, mimeType: String, token: AuthToken) async throws -> UploadResponse {

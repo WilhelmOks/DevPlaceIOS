@@ -2,6 +2,7 @@ import SwiftUI
 
 @main
 struct DevPlaceIOSApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @State private var appSettings = AppSettingsStore.shared
 
     init() {

@@ -282,6 +282,24 @@ final class ProdDevPlaceApi: DevPlaceApi {
         try await request.markAllNotificationsRead(token: token)
     }
 
+    func registerPushDevice(deviceToken: String) async throws {
+        guard let token = AppState.shared.token else {
+            throw DevPlaceError.notLoggedIn
+        }
+        try await refreshTokenIfNeeded()
+        try await request.registerPushDevice(provider: .apns, deviceToken: deviceToken, token: token)
+    }
+
+    func unregisterPushDevice(deviceToken: String) async throws {
+        guard AppState.shared.token != nil else {
+            throw DevPlaceError.notLoggedIn
+        }
+        try await refreshTokenIfNeeded()
+        // TODO: Call the SDK's unregister-push-device request here once the backend API and SDK support are ready.
+        // The backend has no APNs unsubscribe endpoint yet; the server stops delivering once APNs
+        // reports the device token as invalid (e.g. app uninstalled). Pass `deviceToken` through when available.
+    }
+
     func profile(username: String?) async throws -> Profile {
         try await refreshTokenIfNeeded()
         if let username {

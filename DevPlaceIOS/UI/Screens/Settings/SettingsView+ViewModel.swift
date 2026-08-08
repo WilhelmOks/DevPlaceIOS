@@ -11,6 +11,7 @@ extension SettingsView {
         }
         
         func logOut() async {
+            await PushNotificationManager.shared.unregisterForPushNotifications(api: api)
             UserSessionStore.shared.email = nil
             UserSessionStore.shared.password = nil
             AppState.shared.clear()

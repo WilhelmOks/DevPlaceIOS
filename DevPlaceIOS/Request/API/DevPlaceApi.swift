@@ -29,6 +29,8 @@ protocol DevPlaceApi {
     func notificationCounts() async throws -> NotificationCounts
     func markNotificationRead(uid: String) async throws
     func markAllNotificationsRead() async throws
+    func registerPushDevice(deviceToken: String) async throws
+    func unregisterPushDevice(deviceToken: String) async throws
     func vote(targetType: TargetType, targetId: String, vote: Vote) async throws
     func submitPollChoice(pollId: String, optionId: String) async throws
     func react(targetType: TargetType, targetId: String, emoji: String) async throws

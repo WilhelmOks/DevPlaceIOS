@@ -39,4 +39,11 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
         await PushNotificationManager.shared.handleRemoteNotification(userInfo: notification.request.content.userInfo)
         return [.banner, .badge, .sound]
     }
+
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        didReceive response: UNNotificationResponse,
+    ) async {
+        await PushNotificationManager.shared.handleRemoteNotification(userInfo: response.notification.request.content.userInfo)
+    }
 }

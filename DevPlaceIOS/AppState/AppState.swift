@@ -21,10 +21,6 @@ final class AppState {
 
     var unreadMessageCount = 0
 
-    var totalUnreadCount: Int {
-        unreadNotificationCount + unreadMessageCount
-    }
-
     var pendingConversationUid: String?
 
     func isCurrentUser(id: String) -> Bool {
@@ -41,6 +37,7 @@ final class AppState {
             let counts = try await api.notificationCounts()
             unreadNotificationCount = counts.notifications
             unreadMessageCount = counts.messages
+            await PushNotificationManager.shared.updateAppIconBadge(unreadNotificationCount)
         } catch {
             dlog("Failed to load unread counts: \(error)")
         }

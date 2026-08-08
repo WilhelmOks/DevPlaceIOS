@@ -27,7 +27,7 @@ final class PushNotificationManager {
                 dlog("Failed to unregister push device: \(error)")
             }
         }
-        await setBadgeCount(0)
+        await updateAppIconBadge(0)
     }
 
     func didRegisterForRemoteNotifications(deviceToken: Data) {
@@ -49,7 +49,6 @@ final class PushNotificationManager {
     func handleRemoteNotification(userInfo: [AnyHashable: Any]) async {
         dlog("Received push notification payload: \(Self.prettyPrinted(userInfo))")
         await AppState.shared.loadUnreadCounts(api: api)
-        await setBadgeCount(AppState.shared.totalUnreadCount)
     }
 
     func handleNotificationTap(userInfo: [AnyHashable: Any]) async {
@@ -80,7 +79,7 @@ final class PushNotificationManager {
         }
     }
 
-    private func setBadgeCount(_ count: Int) async {
+    func updateAppIconBadge(_ count: Int) async {
         do {
             try await UNUserNotificationCenter.current().setBadgeCount(count)
         } catch {
